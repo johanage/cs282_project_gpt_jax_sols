@@ -3,12 +3,23 @@ import jax
 from flax.core import freeze, unfreeze
 from flax import linen as nn
 
-from model.model import LinearBlock, CausalSelfAttention, Block
+from model import GPT
+
+BATCH_SIZE = 4
+config = {
+    "n_layers": 4,
+    "n_head": 7,
+    "n_embd": 21,
+    "sequence_length": 10,
+    "vocab_size": 10,
+    "block_size": 10,
+    "embd_pdrop": 0.1
+}
 
 key1, key2, dropout_key = random.split(random.PRNGKey(0), 3)
 print(key1, key2)
-x = random.uniform(key1, (4, 10, 21))
-model = Block(n_head=7, n_embd=3, sequence_length=10) #CausalSelfAttention(n_head=7, n_embd=3, sequence_length=10)
+x = random.randint(key1, (BATCH_SIZE, config["sequence_length"]), 0, config["vocab_size"])
+model = GPT(**config) #CausalSelfAttention(n_head=7, n_embd=3, sequence_length=10)
 params = model.init(key2, x)
 
 y = model.apply(params, x)
