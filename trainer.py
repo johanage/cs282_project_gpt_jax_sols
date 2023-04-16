@@ -13,13 +13,7 @@ import optax
 from optax import chain, clip_by_global_norm, scale_by_adam, scale, scale_by_schedule, add_decayed_weights
 from jax import local_device_count
 
-from tqdm import tqdm
-import math
-import numpy as np
-from typing import Mapping
-import functools
 from functools import partial
-import pickle 
 
 import torch
 from torch.utils.data import Dataset, DataLoader
@@ -46,8 +40,9 @@ class Trainer:
         it = 0 # counter used for learning rate decay
         for epoch in range(max_epochs):
             params, optimizer_update = self.run_epoch(params, optimizer_update, it, 'train')
-            if self.test_dataset is not None:
+            if self.test_dataset:
                 test_loss = self.run_epoch(params, optimizer_update, 0, 'test')
+        return params, optimizer_update, test_loss
 
     def run_epoch(self, params, optimizer_update, it, mode):
         if mode == 'train':
@@ -89,7 +84,3 @@ class Trainer:
         updates, optimizer_update = self.optimizer.update(grads, optimizer_update, params)
         params = optax.apply_updates(params, updates)
         return loss, params, optimizer_update
-
-
-
-
