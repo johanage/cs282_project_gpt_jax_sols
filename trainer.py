@@ -54,10 +54,6 @@ class Trainer:
             loader = DataLoader(self.train_dataset, shuffle=False, 
                                 sampler=torch.utils.data.RandomSampler(self.train_dataset, replacement=True, num_samples=int(1e10)), 
                                 pin_memory=True, batch_size=batch_size, num_workers=num_workers)
-        else: 
-            loader = DataLoader(self.test_dataset, shuffle=True, pin_memory=True,
-                                batch_size=batch_size,
-                                num_workers=num_workers)
                             
         losses = []
         for batch in loader:
@@ -69,10 +65,6 @@ class Trainer:
 
             loss = loss[0]    
             losses.append(loss)
-        
-        if mode == 'test':
-            test_loss = float(jnp.mean(jnp.array(losses)))
-            return test_loss
             
         return params, optimizer_update
 
