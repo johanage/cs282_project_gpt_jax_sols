@@ -37,14 +37,13 @@ class Trainer:
     def run_trainer(self):
         params = self.get_training_params()
         self.optimizer = optax.adamw(learning_rate=learning_rate, b1=beta1, b2=beta2, weight_decay=weight_decay)
-        it = 0 # counter used for learning rate decay
         for epoch in range(max_epochs):
-            params, optimizer_update = self.run_epoch(params, optimizer_update, it, 'train')
+            params, optimizer_update = self.run_epoch(params, optimizer_update, 'train')
             if self.test_dataset:
                 test_loss = self.run_epoch(params, optimizer_update, 0, 'test')
         return params, optimizer_update, test_loss
 
-    def run_epoch(self, params, optimizer_update, it, mode):
+    def run_epoch(self, params, optimizer_update, mode):
         if mode == 'train':
             loader = DataLoader(self.train_dataset, shuffle=False, 
                                 sampler=torch.utils.data.RandomSampler(self.train_dataset, replacement=True, num_samples=int(1e10)), 
