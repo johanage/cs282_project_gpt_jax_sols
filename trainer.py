@@ -6,17 +6,9 @@ so nothing in this file really has anything to do with GPT specifically.
 
 import jax
 import jax.numpy as jnp
-import haiku as hk
-
-from jax.experimental import optimizers
 import optax
-from optax import chain, clip_by_global_norm, scale_by_adam, scale, scale_by_schedule, add_decayed_weights
-from jax import local_device_count
-
-from functools import partial
-
 import torch
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import DataLoader
 
 from train_config import *
 
