@@ -3,26 +3,26 @@ from jax import lax, random, numpy as jnp
 
 
 class LinearBlock(nn.Module):
-	dense1_features: int
-	dense2_features: int
+    dense1_features: int
+    dense2_features: int
 
-	def setup(self):
-		self.dense1 = nn.Dense(self.dense1_features)
-		self.dense2 = nn.Dense(self.dense2_features)
+    def setup(self):
+        self.dense1 = nn.Dense(self.dense1_features)
+        self.dense2 = nn.Dense(self.dense2_features)
 
-	def __call__(self, x):
-		x = self.dense1(x)
-		x = nn.gelu(x)
-		x = self.dense2(x)
-		return x
+    def __call__(self, x):
+        x = self.dense1(x)
+        x = nn.gelu(x)
+        x = self.dense2(x)
+        return x
 
 
 class CausalSelfAttention(nn.Module):
     n_head: int
     n_embd: int
     sequence_length: int
-    train: bool = False
     block_size: int
+    train: bool = False
 
     def setup(self, do_rate = 0.3):
         """
@@ -35,11 +35,11 @@ class CausalSelfAttention(nn.Module):
         self.vdense = nn.Dense(total_number_of_features)
         self.kdense = nn.Dense(total_number_of_features)
         self.mask = jnp.tril(jnp.ones((self.sequence_length, self.sequence_length)))
-		self.attn_dropout = nn.Dropout(rate = do_rate)
-		# this should be buffered such that update under SGD is avoided
-		# see nn.Module.register_buffer for reference
+        self.attn_dropout = nn.Dropout(rate = do_rate)
+        # this should be buffered such that update under SGD is avoided
+        # see nn.Module.register_buffer for reference
 
-		#self.mask = lax.broadcast(mask_inner, (self.n_embd+1, self.n_head)) #,self.sequence_length, self.sequence_length))
+        #self.mask = lax.broadcast(mask_inner, (self.n_embd+1, self.n_head)) #,self.sequence_length, self.sequence_length))
 
 
     def __call__(self, x):
@@ -90,12 +90,16 @@ class Block(nn.Module):
     n_head: int
     n_embd: int
     sequence_length: int
+    block_size: int
     train : bool = False
 
     def setup(self, do_rate = 0.3) -> None:
         # TODO: DROPOUT
         self.ln_1 = nn.LayerNorm(self.n_embd)
-        self.attn = CausalSelfAttention(n_head=self.n_head, n_embd=self.n_embd, sequence_length=self.sequence_length)
+        self.attn = CausalSelfAttention(n_head=self.n_head,
+                                        n_embd=self.n_embd,
+                                        sequence_length=self.sequence_length,
+                                        block_size=self.block_size)
         self.ln_2 = nn.LayerNorm(self.n_embd)
         self.fc = nn.Dense(self.n_embd*4)
         self.c_project = nn.Dense(self.n_embd)
@@ -127,7 +131,8 @@ class GPT(nn.Module):
         self.blocks = [Block(
                                 n_head=self.n_head,
                                 n_embd=self.n_embd,
-                                sequence_length=self.sequence_length
+                                sequence_length=self.sequence_length,
+                                block_size=self.block_size
                             )
                        for _ in range(self.n_layers)]
 
