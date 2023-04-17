@@ -40,7 +40,8 @@ class CausalSelfAttention(nn.Module):
 		# this should be buffered such that update under SGD is avoided
 		# see nn.Module.register_buffer for reference
 		mask_inner = jnp.tril(jnp.ones((self.sequence_length, self.sequence_length)))
-		self.mask = lax.broadcast(mask_inner, (self.n_embd+1, self.n_head)) #,self.sequence_length, self.sequence_length))
+		self.mask = mask_inner
+		#self.mask = lax.broadcast(mask_inner, (self.n_embd+1, self.n_head)) #,self.sequence_length, self.sequence_length))
 
 
 	def __call__(self, x):
@@ -63,7 +64,8 @@ class CausalSelfAttention(nn.Module):
 		# jax.lax.select(pred, on_true, on_false)
 		minfs = lax.broadcast(-jnp.inf, att.shape)
 		print("shape minfs : ", minfs.shape, "shape mask : ", self.mask.shape)
-		att = lax.select(self.mask[:,:,:sequence_length,:sequence_length] == 0, att, minfs)
+		mask = lax.broadcast(self.mask[:sequence_length,:sequence_length], (att.shape[0], att.shape[1]))
+		att = lax.select(mask == 0, att, minfs)
 
 		# apply softmax
 		att = nn.softmax(att, axis=3)
@@ -88,8 +90,9 @@ class Block(nn.Module):
 	n_head: int
 	n_embd: int
 	sequence_length: int
+	train : bool = False
 
-	def setup(self) -> None:
+	def setup(self, do_rate = 0.3) -> None:
 		# TODO: DROPOUT
 		self.ln_1 = nn.LayerNorm(self.n_embd)
 		self.attn = CausalSelfAttention(n_head=self.n_head, 
@@ -99,10 +102,12 @@ class Block(nn.Module):
 		self.fc = nn.Dense(self.n_embd*self.n_head*4)
 		self.c_project = nn.Dense(self.n_embd*self.n_head)
 		self.act = nn.gelu
-
+		self.block_dropout = nn.Dropout(rate = do_rate)
+	
 	def __call__(self, x):
 		attention_output = x + self.attn(self.ln_1(x))
 		# TODO Dropout
 		mlp_output = attention_output + self.c_project(self.act(self.fc(attention_output)))
+		mlp_output_do = self.block_dropout(mlp_output, deterministic = not self.train)
 
-		return mlp_output
+		return mlp_output_do
