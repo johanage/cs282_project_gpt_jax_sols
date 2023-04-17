@@ -22,7 +22,7 @@ x = random.randint(key1, (BATCH_SIZE, config["sequence_length"]), 0, config["voc
 model = GPT(**config) #CausalSelfAttention(n_head=7, n_embd=3, sequence_length=10)
 params = model.init(key2, x)
 
-y = model.apply(params, x)
+y = model.apply(params, x, rngs = {'dropout' : dropout_key})
 
 
 print('initialized parameter shapes:\n', jax.tree_util.tree_map(jnp.shape, unfreeze(params)))
