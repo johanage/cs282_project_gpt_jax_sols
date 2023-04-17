@@ -1,6 +1,6 @@
 import flax.linen as nn
 from jax import lax, random, numpy as jnp
-
+import optax
 
 class LinearBlock(nn.Module):
     dense1_features: int
@@ -20,7 +20,6 @@ class LinearBlock(nn.Module):
 class CausalSelfAttention(nn.Module):
     n_head: int
     n_embd: int
-    sequence_length: int
     block_size: int
     train: bool = False
 
@@ -34,12 +33,10 @@ class CausalSelfAttention(nn.Module):
         self.qdense = nn.Dense(total_number_of_features)
         self.vdense = nn.Dense(total_number_of_features)
         self.kdense = nn.Dense(total_number_of_features)
-        self.mask = 1-jnp.tril(jnp.ones((self.sequence_length, self.sequence_length)))
+        self.mask = 1-jnp.tril(jnp.ones((self.block_size, self.block_size)))
         self.attn_dropout = nn.Dropout(rate = do_rate)
         # this should be buffered such that update under SGD is avoided
         # see nn.Module.register_buffer for reference
-
-        #self.mask = lax.broadcast(mask_inner, (self.n_embd+1, self.n_head)) #,self.sequence_length, self.sequence_length))
 
 
     def __call__(self, x):
@@ -92,7 +89,6 @@ class CausalSelfAttention(nn.Module):
 class Block(nn.Module):
     n_head: int
     n_embd: int
-    sequence_length: int
     block_size: int
     train : bool = False
 
@@ -101,7 +97,6 @@ class Block(nn.Module):
         self.ln_1 = nn.LayerNorm(self.n_embd)
         self.attn = CausalSelfAttention(n_head=self.n_head,
                                         n_embd=self.n_embd,
-                                        sequence_length=self.sequence_length,
                                         block_size=self.block_size,
                                         train=self.train)
         self.ln_2 = nn.LayerNorm(self.n_embd)
@@ -121,7 +116,6 @@ class GPT(nn.Module):
     n_layers: int
     n_head: int
     n_embd: int
-    sequence_length: int
     vocab_size: int
     block_size: int
     embd_pdrop: float
@@ -137,7 +131,6 @@ class GPT(nn.Module):
         self.blocks = [Block(
                                 n_head=self.n_head,
                                 n_embd=self.n_embd,
-                                sequence_length=self.sequence_length,
                                 block_size=self.block_size,
                                 train=self.train
 
@@ -161,7 +154,12 @@ class GPT(nn.Module):
 
         return logits
 
-    def generate(self, params, x, max_new_tokens, temperature=1.0, do_sample=False, top_k=None, key=None):
+    def loss_fn(self, params, x, y, rngs):
+        y_hat = self.apply(params, x, rngs=rngs)
+        loss = optax.softmax_cross_entropy(y_hat.reshape(-1, y_hat.shape[-1]), y.reshape(-1))
+        return loss
+
+    def generate(self, params, x, max_new_tokens, temperature=1.0, do_sample=False, top_k=None, rngs=None):
         """
         Take a conditioning sequence of indices idx (LongTensor of shape (b,t)) and complete
         the sequence max_new_tokens times, feeding the predictions back into the model each time.
@@ -171,7 +169,7 @@ class GPT(nn.Module):
             # if the sequence context is growing too long we must crop it at block_size
             x = x if x.shape[1] <= self.block_size else x[:, -self.block_size:]
             # forward the model to get the logits for the index in the sequence
-            logits = self.apply(params, x)
+            logits = self.apply(params, x, rngs=rngs)
             # pluck the logits at the final step and scale by desired temperature
             logits = logits[:, -1, :] / temperature
             # optionally crop the logits to only the top k options
@@ -182,8 +180,7 @@ class GPT(nn.Module):
             probs = nn.softmax(logits, axis=-1)
             # either sample from the distribution or take the most likely element
             if do_sample:
-                assert key is not None
-                idx_next = random.categorical(key, probs, shape=(1,))[:, 0]
+                idx_next = random.categorical(rngs["params"], probs, shape=(1,))[:, 0]
             else:
                 _, idx_next = lax.top_k(probs, k=1)
             # append sampled index to the running sequence and continue
