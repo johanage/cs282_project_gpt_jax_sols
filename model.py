@@ -113,3 +113,33 @@ class GPT(nn.Module):
         logits = self.lm_head(x)
 
         return logits
+
+    def generate(self, params, x, max_new_tokens, temperature=1.0, do_sample=False, top_k=None, key=None):
+        """
+        Take a conditioning sequence of indices idx (LongTensor of shape (b,t)) and complete
+        the sequence max_new_tokens times, feeding the predictions back into the model each time.
+        Most likely you'll want to make sure to be in model.eval() mode of operation for this.
+        """
+        for _ in range(max_new_tokens):
+            # if the sequence context is growing too long we must crop it at block_size
+            x = x if x.shape[1] <= self.block_size else x[:, -self.block_size:]
+            # forward the model to get the logits for the index in the sequence
+            logits = self.apply(params, x)
+            # pluck the logits at the final step and scale by desired temperature
+            logits = logits[:, -1, :] / temperature
+            # optionally crop the logits to only the top k options
+            if top_k is not None:
+                v, _ = lax.top_k(logits, top_k)
+                logits[logits < v[:, [-1]]] = -float('Inf')
+            # apply softmax to convert logits to (normalized) probabilities
+            probs = nn.softmax(logits, axis=-1)
+            # either sample from the distribution or take the most likely element
+            if do_sample:
+                assert key is not None
+                idx_next = random.categorical(key, probs, shape=(1,))[:, 0]
+            else:
+                _, idx_next = lax.top_k(probs, k=1)
+            # append sampled index to the running sequence and continue
+            x = jnp.concatenate((x, idx_next), axis=1)
+
+        return x

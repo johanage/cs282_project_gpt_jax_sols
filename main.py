@@ -16,7 +16,7 @@ config = {
     "embd_pdrop": 0.1
 }
 
-key1, key2, dropout_key = random.split(random.PRNGKey(0), 3)
+key1, key2, dropout_key = random.split(random.PRNGKey(1), 3)
 print(key1, key2)
 x = random.randint(key1, (BATCH_SIZE, config["sequence_length"]), 0, config["vocab_size"])
 model = GPT(**config) #CausalSelfAttention(n_head=7, n_embd=3, sequence_length=10)
@@ -28,3 +28,5 @@ y = model.apply(params, x)
 print('initialized parameter shapes:\n', jax.tree_util.tree_map(jnp.shape, unfreeze(params)))
 print('output:\n', y)
 print(f"Output shape: {y.shape}")
+
+print(model.generate(params, x, 5, 1))
