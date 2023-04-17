@@ -34,7 +34,7 @@ class CausalSelfAttention(nn.Module):
         self.qdense = nn.Dense(total_number_of_features)
         self.vdense = nn.Dense(total_number_of_features)
         self.kdense = nn.Dense(total_number_of_features)
-        self.mask = jnp.tril(jnp.ones((self.sequence_length, self.sequence_length)))
+        self.mask = 1-jnp.tril(jnp.ones((self.sequence_length, self.sequence_length)))
         self.attn_dropout = nn.Dropout(rate = do_rate)
         # this should be buffered such that update under SGD is avoided
         # see nn.Module.register_buffer for reference
@@ -62,10 +62,13 @@ class CausalSelfAttention(nn.Module):
         # value - the vbalue to fill in with
         # jax.lax.select(pred, on_true, on_false)
         minfs = lax.broadcast(-jnp.inf, att.shape)
-        print("shape minfs : ", minfs.shape, "shape mask : ", self.mask.shape)
+        #print("shape minfs : ", minfs.shape, "shape mask : ", self.mask.shape)
         mask = lax.broadcast(self.mask[:sequence_length,:sequence_length], (att.shape[0], att.shape[1]))
+        #print(mask)
         att = lax.select(mask == 0, att, minfs)
 
+
+        #print(att[0,0])
         # apply softmax
         att = nn.softmax(att, axis=-1)
 
@@ -99,7 +102,8 @@ class Block(nn.Module):
         self.attn = CausalSelfAttention(n_head=self.n_head,
                                         n_embd=self.n_embd,
                                         sequence_length=self.sequence_length,
-                                        block_size=self.block_size)
+                                        block_size=self.block_size,
+                                        train=self.train)
         self.ln_2 = nn.LayerNorm(self.n_embd)
         self.fc = nn.Dense(self.n_embd*4)
         self.c_project = nn.Dense(self.n_embd)
@@ -121,23 +125,26 @@ class GPT(nn.Module):
     vocab_size: int
     block_size: int
     embd_pdrop: float
+    train: bool = False
 
     def setup(self):
         self.wte = nn.Embed(self.vocab_size, self.n_embd)
         self.wpe = nn.Embed(self.block_size, self.n_embd)
-        self.drop = lambda x: x #;nn.Dropout(self.emdb_pdrop)
+
+        self.drop = nn.Dropout(self.embd_pdrop)
         self.ln_f = nn.LayerNorm(self.n_embd)
 
         self.blocks = [Block(
                                 n_head=self.n_head,
                                 n_embd=self.n_embd,
                                 sequence_length=self.sequence_length,
-                                block_size=self.block_size
+                                block_size=self.block_size,
+                                train=self.train
+
                             )
                        for _ in range(self.n_layers)]
 
         self.lm_head = nn.Dense(self.vocab_size, use_bias=False)
-
         # TODO: Special init
 
     def __call__(self, x):
@@ -145,7 +152,7 @@ class GPT(nn.Module):
         pos = jnp.arange(0, sequence_length).reshape(1, sequence_length)
         tok_emb = self.wte(x)  # token embeddings of shape (b, t, n_embd)
         pos_emb = self.wpe(pos)  # position embeddings of shape (1, t, n_embd)
-        x = self.drop(tok_emb + pos_emb)
+        x = self.drop(tok_emb + pos_emb, deterministic=not self.train)
         for block in self.blocks:
             x = block(x)
 
