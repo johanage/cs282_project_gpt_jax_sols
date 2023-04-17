@@ -68,7 +68,7 @@ class CausalSelfAttention(nn.Module):
 		att = lax.select(mask == 0, att, minfs)
 
 		# apply softmax
-		att = nn.softmax(att, axis=3)
+		att = nn.softmax(att, axis=-1)
 
 		# the manual way
 		#key = random.PRNGKey(2023) # can/should be changed
@@ -93,7 +93,6 @@ class Block(nn.Module):
 	train : bool = False
 
 	def setup(self, do_rate = 0.3) -> None:
-		# TODO: DROPOUT
 		self.ln_1 = nn.LayerNorm(self.n_embd)
 		self.attn = CausalSelfAttention(n_head=self.n_head, 
 										n_embd=self.n_embd, 
@@ -106,7 +105,6 @@ class Block(nn.Module):
 	
 	def __call__(self, x):
 		attention_output = x + self.attn(self.ln_1(x))
-		# TODO Dropout
 		mlp_output = attention_output + self.c_project(self.act(self.fc(attention_output)))
 		mlp_output_do = self.block_dropout(mlp_output, deterministic = not self.train)
 
