@@ -7,7 +7,7 @@ from model import GPT
 
 BATCH_SIZE = 4
 config = {
-    "n_layers": 4,
+    "n_layers": 1,
     "n_head": 7,
     "n_embd": 21,
     "vocab_size": 10,
@@ -24,7 +24,8 @@ model = GPT(**config)
 print(model)
 
 params = model.init({"params": key2, 'dropout' : dropout_key}, x)
-
+param_count = sum(x.size for x in jax.tree_leaves(params))
+print("Number of parameters: ", param_count)
 print('initialized parameter shapes:\n', jax.tree_util.tree_map(lambda x: x.shape, params)) # Checking output shapes
 
 y = model.apply(params, x, rngs = {'dropout' : dropout_key})

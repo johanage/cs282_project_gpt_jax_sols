@@ -4,7 +4,7 @@ from mingpt.utils import CfgNode
 
 BATCH_SIZE = 4
 config = {
-    "n_layer": 4,
+    "n_layer": 1,
     "n_head": 7,
     "n_embd": 21,
     "sequence_length": 10,
@@ -17,9 +17,17 @@ config = {
 	"model_type" : None
 }
 
+def count_parameters(model, full=False):
+    if full:
+        return sum(p.numel() for p in model.parameters())
+    else:
+        return sum(p.numel() for p in model.parameters() if p.requires_grad)
+
 
 model_config = CfgNode(**config)
 print(model_config)
 
 model = GPT(model_config)
 print(model)
+gpt_param_count = count_parameters(model)
+print("Number of parameters in 1-layer GPT model: ", gpt_param_count)
