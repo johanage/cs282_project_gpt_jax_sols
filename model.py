@@ -27,17 +27,15 @@ class CausalSelfAttention(nn.Module):
         """
         Sets up the attention block
         do_rate - dropout probability, float
-
         """
         total_number_of_features = self.n_embd
         self.qdense = nn.Dense(total_number_of_features)
         self.vdense = nn.Dense(total_number_of_features)
         self.kdense = nn.Dense(total_number_of_features)
+        self.c_proj = nn.Dense(total_number_of_features)
         self.mask = 1-jnp.tril(jnp.ones((self.block_size, self.block_size)))
-        self.attn_dropout = nn.Dropout(rate = do_rate)
-        # this should be buffered such that update under SGD is avoided
-        # see nn.Module.register_buffer for reference
-
+        self.attn_dropout  = nn.Dropout(rate = do_rate)
+        self.resid_dropout = nn.Dropout(rate = do_rate)
 
     def __call__(self, x):
         """
@@ -83,34 +81,47 @@ class CausalSelfAttention(nn.Module):
         y = y.transpose(0,2,1,3)
         # MISSING: making y contiguous
         y = y.reshape((batch_size, sequence_length, self.n_embd))
+        # residual dropout
+        y = self.resid_dropout(self.c_proj(y), deterministic = not self.train)
         return y
 
+class MLP(nn.Module):
+    n_embd: int
+    train : bool = False
+
+    def setup(self, do_rate = 0.3):
+        self.fc = nn.Dense(self.n_embd*4)
+        self.c_project = nn.Dense(self.n_embd)
+        self.act = nn.gelu
+        self.mlp_dropout = nn.Dropout(rate=do_rate)
+    def __call__(self,x):
+        mlp_out = self.c_project(self.act(self.fc( x ) ) )
+        mlp_do_out = self.mlp_dropout(x, deterministic=not self.train)
+        return mlp_do_out
 
 class Block(nn.Module):
     n_head: int
     n_embd: int
     block_size: int
     train : bool = False
-
     def setup(self, do_rate = 0.3) -> None:
-        # TODO: DROPOUT
         self.ln_1 = nn.LayerNorm(self.n_embd)
         self.attn = CausalSelfAttention(n_head=self.n_head,
                                         n_embd=self.n_embd,
                                         block_size=self.block_size,
                                         train=self.train)
         self.ln_2 = nn.LayerNorm(self.n_embd)
-        self.fc = nn.Dense(self.n_embd*4)
-        self.c_project = nn.Dense(self.n_embd)
-        self.act = nn.gelu
-        self.block_dropout = nn.Dropout(rate=do_rate)
+        self.mlpf = MLP(self.n_embd, self.train)
+        #self.fc = nn.Dense(self.n_embd*4)
+        #self.c_project = nn.Dense(self.n_embd)
+        #self.act = nn.gelu
+        #self.block_dropout = nn.Dropout(rate=do_rate)
 
     def __call__(self, x):
         attention_output = x + self.attn(self.ln_1(x))
-        mlp_output = attention_output + self.c_project(self.act(self.fc(attention_output)))
-        mlp_output_do = self.block_dropout(mlp_output, deterministic=not self.train)
-
-        return mlp_output_do
+        mlp_out = attention_output + self.mlpf( self.ln_2(attention_output) )
+		#mlp_output = attention_output + self.c_project(self.act(self.fc( self.ln_2(attention_output) ) ) )
+        return mlp_out
 
 class GPT(nn.Module):
     n_layers: int
