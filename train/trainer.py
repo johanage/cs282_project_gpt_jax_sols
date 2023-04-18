@@ -10,7 +10,7 @@ import optax
 import torch
 from torch.utils.data import DataLoader
 
-from train_config import *
+from train.train_config import *
 
 class Trainer:
     def __init__(self, loss_fn, train_dataset, test_dataset):
