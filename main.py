@@ -3,17 +3,36 @@ import jax
 from flax.core import freeze, unfreeze
 from flax import linen as nn
 
-from model.model import LinearBlock, CausalSelfAttention, Block
+from model import GPT
 
-key1, key2, dropout_key = random.split(random.PRNGKey(0), 3)
-print(key1, key2)
-x = random.uniform(key1, (4, 10, 21))
-model = Block(n_head=7, n_embd=3, sequence_length=10) #CausalSelfAttention(n_head=7, n_embd=3, sequence_length=10)
-params = model.init(key2, x)
+BATCH_SIZE = 4
+config = {
+    "n_layers": 4,
+    "n_head": 7,
+    "n_embd": 21,
+    "vocab_size": 10,
+    "block_size": 10,
+    "embd_pdrop": 0.1,
+    "train": True
+}
 
-y = model.apply(params, x)
+key1, key2, dropout_key = random.split(random.PRNGKey(1), 3)
+
+x = random.randint(key1, (BATCH_SIZE, config["block_size"]), 0, config["vocab_size"])
+
+model = GPT(**config)
+print(model)
+
+params = model.init({"params": key2, 'dropout' : dropout_key}, x)
+
+print('initialized parameter shapes:\n', jax.tree_util.tree_map(lambda x: x.shape, params)) # Checking output shapes
+
+y = model.apply(params, x, rngs = {'dropout' : dropout_key})
 
 
-print('initialized parameter shapes:\n', jax.tree_util.tree_map(jnp.shape, unfreeze(params)))
-print('output:\n', y)
-print(f"Output shape: {y.shape}")
+#print('output:\n', y)
+#print(f"Output shape: {y.shape}")
+
+print(f"input: {x}")
+x_2 = model.generate(params, x, 5, 1, rngs = {'dropout' : dropout_key})
+print(f"output: {x_2}")
