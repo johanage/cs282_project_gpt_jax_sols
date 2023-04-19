@@ -9,7 +9,7 @@ import unittest
 import torch
 from transformers import GPT2Tokenizer, GPT2LMHeadModel
 from model import GPT
-#from bpe import BPETokenizer
+from encoding.bpe import BPETokenizer
 # -----------------------------------------------------------------------------
 
 class TestHuggingFaceImport(unittest.TestCase):
