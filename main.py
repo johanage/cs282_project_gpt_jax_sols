@@ -28,6 +28,7 @@ param_count = sum(x.size for x in jax.tree_leaves(params))
 print("Number of parameters: ", param_count)
 print('initialized parameter shapes:\n', jax.tree_util.tree_map(lambda x: x.shape, params)) # Checking output shapes
 
+
 y = model.apply(params, x, rngs = {'dropout' : dropout_key})
 
 
