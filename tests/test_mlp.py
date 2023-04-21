@@ -19,3 +19,9 @@ class TestMLP():
         self.test_mlp_forward_input = 0.5
         self.mlp = MLP(self.mlp_embd, self.mlp_train)
         self.mlp.setup(0.2)
+
+    def test_mlp_init(self):
+        assert self.mlp.fc == nn.Dense(4*self.mlp_embd)
+        assert self.mlp.c_project == nn.Dense(self.mlp_embd)
+        assert self.mlp.act == nn.gelu
+        assert self.mlp.mlp_dropout == nn.Dropout(rate=self.mlp_do_rate)
