@@ -30,4 +30,4 @@ class TestMLP():
         x = self.test_mlp_forward_input
         forward_output = self.mlp(x)
         mlp_out = self.mlp.c_project(self.mlp.act(self.mlp.fc(x)))
-        assert forward_output == self.mlp.mlp_dropout(x, deterministic=True)
+        assert forward_output == self.mlp.mlp_dropout(mlp_out, deterministic=True)
