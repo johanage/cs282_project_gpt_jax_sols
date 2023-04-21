@@ -3,3 +3,6 @@ jax
 jaxlib
 flax
 optax
+torch
+clu
+tqdm

@@ -2,6 +2,7 @@ import flax.linen as nn
 from jax import lax, random, numpy as jnp
 import optax
 
+
 class LinearBlock(nn.Module):
     dense1_features: int
     dense2_features: int
@@ -21,9 +22,8 @@ class CausalSelfAttention(nn.Module):
     n_head: int
     n_embd: int
     block_size: int
-    train: bool = False
 
-    def setup(self, do_rate = 0.3):
+    def setup(self, do_rate=0.3):
         """
         Sets up the attention block
         do_rate - dropout probability, float
@@ -33,18 +33,18 @@ class CausalSelfAttention(nn.Module):
         self.vdense = nn.Dense(total_number_of_features)
         self.kdense = nn.Dense(total_number_of_features)
         self.c_proj = nn.Dense(total_number_of_features)
-        self.mask = 1-jnp.tril(jnp.ones((self.block_size, self.block_size)))
-        self.attn_dropout  = nn.Dropout(rate = do_rate)
-        self.resid_dropout = nn.Dropout(rate = do_rate)
+        self.mask = 1 - jnp.tril(jnp.ones((self.block_size, self.block_size)))
+        self.attn_dropout = nn.Dropout(rate=do_rate)
+        self.resid_dropout = nn.Dropout(rate=do_rate)
 
-    def __call__(self, x):
+    def __call__(self, x, training=False):
         """
         Args:
         x    - input, jnp tensor
         """
         batch_size, sequence_length, _ = x.shape
         q, v, k = self.qdense(x), self.vdense(x), self.kdense(x)
-        embds_pr_head = self.n_embd//self.n_head
+        embds_pr_head = self.n_embd // self.n_head
         q = q.reshape(batch_size, sequence_length, self.n_head, embds_pr_head).transpose(0, 2, 1, 3)
         v = v.reshape(batch_size, sequence_length, self.n_head, embds_pr_head).transpose(0, 2, 1, 3)
         k = k.reshape(batch_size, sequence_length, self.n_head, embds_pr_head).transpose(0, 2, 1, 3)
@@ -57,71 +57,72 @@ class CausalSelfAttention(nn.Module):
         # value - the vbalue to fill in with
         # jax.lax.select(pred, on_true, on_false)
         minfs = lax.broadcast(-jnp.inf, att.shape)
-        #print("shape minfs : ", minfs.shape, "shape mask : ", self.mask.shape)
-        mask = lax.broadcast(self.mask[:sequence_length,:sequence_length], (att.shape[0], att.shape[1]))
-        #print(mask)
+        # print("shape minfs : ", minfs.shape, "shape mask : ", self.mask.shape)
+        mask = lax.broadcast(self.mask[:sequence_length, :sequence_length], (att.shape[0], att.shape[1]))
+        # print(mask)
         att = lax.select(mask == 0, att, minfs)
 
-
-        #print(att[0,0])
+        # print(att[0,0])
         # apply softmax
         att = nn.softmax(att, axis=-1)
 
         # the manual way
-        #key = random.PRNGKey(2023) # can/should be changed
-        #dropout = random.bernoulli(key, p = p_do, shape = att.size())
-        #att_do = att * dropout
+        # key = random.PRNGKey(2023) # can/should be changed
+        # dropout = random.bernoulli(key, p = p_do, shape = att.size())
+        # att_do = att * dropout
 
         # using the nn module and jax
         # possibly use module.apply to get full jax functionality
         # may have to inherit something from a flax/jax module class
-        att = self.attn_dropout(att, deterministic=not self.train)
+        att = self.attn_dropout(att, deterministic=not training)
 
         y = att @ v
-        y = y.transpose(0,2,1,3)
+        y = y.transpose(0, 2, 1, 3)
         # MISSING: making y contiguous
         y = y.reshape((batch_size, sequence_length, self.n_embd))
         # residual dropout
-        y = self.resid_dropout(self.c_proj(y), deterministic = not self.train)
+        y = self.resid_dropout(self.c_proj(y), deterministic=not training)
         return y
+
 
 class MLP(nn.Module):
     n_embd: int
-    train : bool = False
 
-    def setup(self, do_rate = 0.3):
-        self.fc = nn.Dense(self.n_embd*4)
+    def setup(self, do_rate=0.3):
+        self.fc = nn.Dense(self.n_embd * 4)
         self.c_project = nn.Dense(self.n_embd)
         self.act = nn.gelu
         self.mlp_dropout = nn.Dropout(rate=do_rate)
-    def __call__(self,x):
-        mlp_out = self.c_project(self.act(self.fc( x ) ) )
-        mlp_do_out = self.mlp_dropout(x, deterministic=not self.train)
+
+    def __call__(self, x, training=False):
+        mlp_out = self.c_project(self.act(self.fc(x)))
+        mlp_do_out = self.mlp_dropout(x, deterministic=not training)
         return mlp_do_out
+
 
 class Block(nn.Module):
     n_head: int
     n_embd: int
     block_size: int
-    train : bool = False
-    def setup(self, do_rate = 0.3) -> None:
+
+    def setup(self, do_rate=0.3) -> None:
         self.ln_1 = nn.LayerNorm(self.n_embd)
         self.attn = CausalSelfAttention(n_head=self.n_head,
                                         n_embd=self.n_embd,
-                                        block_size=self.block_size,
-                                        train=self.train)
+                                        block_size=self.block_size)
         self.ln_2 = nn.LayerNorm(self.n_embd)
-        self.mlpf = MLP(self.n_embd, self.train)
-        #self.fc = nn.Dense(self.n_embd*4)
-        #self.c_project = nn.Dense(self.n_embd)
-        #self.act = nn.gelu
-        #self.block_dropout = nn.Dropout(rate=do_rate)
+        self.mlpf = MLP(self.n_embd)
+        # self.fc = nn.Dense(self.n_embd*4)
+        # self.c_project = nn.Dense(self.n_embd)
+        # self.act = nn.gelu
+        # self.block_dropout = nn.Dropout(rate=do_rate)
 
-    def __call__(self, x):
-        attention_output = x + self.attn(self.ln_1(x))
-        mlp_out = attention_output + self.mlpf( self.ln_2(attention_output) )
-		#mlp_output = attention_output + self.c_project(self.act(self.fc( self.ln_2(attention_output) ) ) )
+    def __call__(self, x, training=False):
+        attention_output = x + self.attn(self.ln_1(x), training=training)
+        mlp_out = attention_output + self.mlpf(self.ln_2(attention_output), training=training)
+        # mlp_output = attention_output + self.c_project(self.act(self.fc( self.ln_2(attention_output) ) ) )
         return mlp_out
+
 
 class GPT(nn.Module):
     n_layers: int
@@ -130,7 +131,6 @@ class GPT(nn.Module):
     vocab_size: int
     block_size: int
     embd_pdrop: float
-    train: bool = False
 
     def setup(self):
         self.wte = nn.Embed(self.vocab_size, self.n_embd)
@@ -140,23 +140,22 @@ class GPT(nn.Module):
         self.ln_f = nn.LayerNorm(self.n_embd)
 
         self.blocks = [Block(
-                                n_head=self.n_head,
-                                n_embd=self.n_embd,
-                                block_size=self.block_size,
-                                train=self.train
+            n_head=self.n_head,
+            n_embd=self.n_embd,
+            block_size=self.block_size
 
-                            )
-                       for _ in range(self.n_layers)]
+        )
+            for _ in range(self.n_layers)]
 
         self.lm_head = nn.Dense(self.vocab_size, use_bias=False)
         # TODO: Special init
 
-    def __call__(self, x):
+    def __call__(self, x, training=False):
         bath_size, sequence_length = x.shape
         pos = jnp.arange(0, sequence_length).reshape(1, sequence_length)
         tok_emb = self.wte(x)  # token embeddings of shape (b, t, n_embd)
         pos_emb = self.wpe(pos)  # position embeddings of shape (1, t, n_embd)
-        x = self.drop(tok_emb + pos_emb, deterministic=not self.train)
+        x = self.drop(tok_emb + pos_emb, deterministic=not training)
         for block in self.blocks:
             x = block(x)
 
