@@ -25,3 +25,9 @@ class TestMLP():
         assert self.mlp.c_project == nn.Dense(self.mlp_embd)
         assert self.mlp.act == nn.gelu
         assert self.mlp.mlp_dropout == nn.Dropout(rate=self.mlp_do_rate)
+
+    def test_mlp_forward(self):
+        x = self.test_mlp_forward_input
+        forward_output = self.mlp(x)
+        mlp_out = self.mlp.c_project(self.mlp.act(self.mlp.fc(x)))
+        assert forward_output == self.mlp.mlp_dropout(x, deterministic=True)
