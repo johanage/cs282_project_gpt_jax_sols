@@ -96,7 +96,7 @@ class MLP(nn.Module):
         self.mlp_dropout = nn.Dropout(rate=do_rate)
     def __call__(self,x):
         mlp_out = self.c_project(self.act(self.fc( x ) ) )
-        mlp_do_out = self.mlp_dropout(x, deterministic=not self.train)
+        mlp_do_out = self.mlp_dropout(mlp_out, deterministic=not self.train)
         return mlp_do_out
 
 class Block(nn.Module):
