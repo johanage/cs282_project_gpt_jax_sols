@@ -1,6 +1,6 @@
 # a main that is supposed to be identical in nature as main.py for the min/nano-GPT implementation
-from mingpt.model import CausalSelfAttention, Block, GPT
-from mingpt.utils import CfgNode
+from mingpt_pytorch.model import CausalSelfAttention, Block, GPT
+from mingpt_pytorch.utils import CfgNode
 
 BATCH_SIZE = 4
 config = {

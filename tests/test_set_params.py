@@ -8,8 +8,8 @@ For simplicity we set the architecture to have 1 layer. If it works for one laye
 Should test for 2 layers after to check multi-layer correctness.
 
 """
-from mingpt.model import CausalSelfAttention, Block, GPT
-from mingpt.utils import CfgNode
+from mingpt_pytorch.model import CausalSelfAttention, Block, GPT
+from mingpt_pytorch.utils import CfgNode
 import torch
 
 from jax import lax, random, numpy as jnp

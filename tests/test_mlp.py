@@ -6,8 +6,8 @@ from flax import linen as nn, traverse_util
 
 from model import GPT as GPT_jax
 from model import MLP
-from mingpt.model import CausalSelfAttention, Block, GPT
-from mingpt.utils import CfgNode
+from mingpt_pytorch.model import CausalSelfAttention, Block, GPT
+from mingpt_pytorch.utils import CfgNode
 
 from config import config_gpt, config_jax, BATCH_SIZE
 
