@@ -17,7 +17,7 @@ from jax import numpy as jnp, lax
 from tqdm import tqdm
 @struct.dataclass
 class Metrics(metrics.Collection):
-    accuracy: metrics.Accuracy
+    accuracy: metrics.Average.from_output("accuracy")
     loss: metrics.Average.from_output('loss')
 
 
@@ -38,15 +38,26 @@ def create_train_state(module, rng, learning_rate, momentum, config, key):
 def compute_metrics(*, state, batch):
     x, y = batch
     y_hat = state.apply_fn(state.params, x, training=False)
-    individual_loss = optax.softmax_cross_entropy_with_integer_labels(y_hat.reshape(-1, y_hat.shape[-1]),
-                                                                      y.reshape(-1))
+
+    flattened_y_hat = y_hat.reshape(-1, y_hat.shape[-1])
+    flattened_y = y.reshape(-1)
+
+    individual_loss = optax.softmax_cross_entropy_with_integer_labels(flattened_y_hat,
+                                                                      flattened_y)
     zeros = jnp.zeros_like(y, dtype=float)
 
     individual_loss = individual_loss.reshape(*y.shape)
     individual_loss = lax.select(y == -1, zeros, individual_loss)
     loss = individual_loss.mean()
+
+    ones = jnp.ones_like(flattened_y, dtype=int)
+
+    predictions = jnp.argmax(flattened_y_hat, axis=-1)
+    predictions_masked =  lax.select(flattened_y == -1, ones*-1, predictions)
+    count = jnp.sum(predictions_masked==flattened_y)
+    accuracy = count/predictions_masked.shape[0]
     metric_updates = state.metrics.single_from_model_output(
-        logits=y_hat, labels=y, loss=loss)
+        accuracy=accuracy, loss=loss)
     metrics = state.metrics.merge(metric_updates)
     state = state.replace(metrics=metrics)
     return state

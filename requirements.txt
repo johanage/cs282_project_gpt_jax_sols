@@ -6,3 +6,5 @@ optax
 torch
 clu
 tqdm
+matplotlib
+jupyter
