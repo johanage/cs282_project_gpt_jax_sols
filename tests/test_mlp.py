@@ -1,25 +1,21 @@
-from jax import lax, random, numpy as jnp
 import jax
+import torch
+from jax import lax, random, numpy as jnp
 from flax.core import freeze, unfreeze
 from flax import linen as nn, traverse_util
 
 from model import GPT as GPT_jax
+from model import MLP
+from mingpt.model import CausalSelfAttention, Block, GPT
+from mingpt.utils import CfgNode
 
-BATCH_SIZE = 4
-config_jax = {
-    "n_layers": 1,
-    "n_head": 7,
-    "n_embd": 21,
-    "vocab_size": 10,
-    "block_size": 10,
-    "embd_pdrop": 0.1,
-    "train": True
-}
+from config import config_gpt, config_jax, BATCH_SIZE
 
-def test_mlp():
-    key1, key2, dropout_key = random.split(random.PRNGKey(1), 3)
-    x = random.randint(key1, (BATCH_SIZE, config_jax["block_size"]), 0, config_jax["vocab_size"])
-    model_jax = GPT_jax(**config_jax)
-    params_jax = model_jax.init({"params": key2, 'dropout' : dropout_key}, x)
-    param_count = sum(x.size for x in jax.tree_leaves(params_jax))
-
+class TestMLP():
+    def __init__(self):
+        self.mlp_train = False
+        self.mlp_embd = 3
+        self.mlp_do_rate = 0.2
+        self.test_mlp_forward_input = 0.5
+        self.mlp = MLP(self.mlp_embd, self.mlp_train)
+        self.mlp.setup(0.2)
