@@ -96,7 +96,7 @@ class MLP(nn.Module):
 
     def __call__(self, x, training=False):
         mlp_out = self.c_project(self.act(self.fc(x)))
-        mlp_do_out = self.mlp_dropout(x, deterministic=not training)
+        mlp_do_out = self.mlp_dropout(mlp_out, deterministic=not training)
         return mlp_do_out
 
 
