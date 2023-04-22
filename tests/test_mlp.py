@@ -20,6 +20,10 @@ class TestMLP():
         self.mlp = MLP(self.mlp_embd, self.mlp_train)
         self.mlp.setup(0.2)
 
+    def autograde(self):
+        self.test_mlp_init()
+        self.test_mlp_forward()
+
     def test_mlp_init(self):
         assert self.mlp.fc == nn.Dense(4*self.mlp_embd)
         assert self.mlp.c_project == nn.Dense(self.mlp_embd)
