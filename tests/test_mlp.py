@@ -1,15 +1,6 @@
-import jax
-import torch
-from jax import lax, random, numpy as jnp
-from flax.core import freeze, unfreeze
-from flax import linen as nn, traverse_util
+from flax import linen as nn
 
-from model import GPT as GPT_jax
 from model import MLP
-from mingpt_pytorch.model import CausalSelfAttention, Block, GPT
-from mingpt_pytorch.utils import CfgNode
-
-from config import config_gpt, config_jax, BATCH_SIZE
 
 class TestMLP():
     def __init__(self):
