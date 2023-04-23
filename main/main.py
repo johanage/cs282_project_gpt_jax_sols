@@ -3,6 +3,7 @@ import jax
 from flax.core import freeze, unfreeze
 from flax import linen as nn
 
+
 from model import GPT
 
 BATCH_SIZE = 4
@@ -12,8 +13,7 @@ config = {
     "n_embd": 21,
     "vocab_size": 10,
     "block_size": 10,
-    "embd_pdrop": 0.1,
-    "train": True
+    "embd_pdrop": 0.1
 }
 
 key1, key2, dropout_key = random.split(random.PRNGKey(1), 3)

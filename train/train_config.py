@@ -1,6 +1,6 @@
 import jax
 
-max_epochs = 10
+max_epochs = 3
 batch_size = 64
 learning_rate = 3e-4
 beta1 = 0.9
