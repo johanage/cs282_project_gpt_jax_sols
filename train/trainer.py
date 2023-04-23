@@ -9,12 +9,14 @@ from torch.utils.data import DataLoader
 
 from train.train_config import *
 from clu import metrics
-from flax.training import train_state  # Useful dataclass to keep train state
+from flax.training import train_state, checkpoints  # Useful dataclass to keep train state
 from flax import struct  # Flax dataclasses
 import optax
 import jax
 from jax import numpy as jnp, lax
 from tqdm import tqdm
+
+
 @struct.dataclass
 class Metrics(metrics.Collection):
     accuracy: metrics.Average.from_output("accuracy")
@@ -25,13 +27,26 @@ class TrainState(train_state.TrainState):
     metrics: Metrics
     key: jax.random.KeyArray
 
-def create_train_state(module, rng, learning_rate, momentum, config, key):
+
+def create_train_state(module, rng, config, key):
     x = jnp.ones((1, config["block_size"]), dtype=int)
     params = module.init(rng, x, training=False)  # initialize parameters by passing a template image
-    tx = optax.adamw(learning_rate, momentum)
+    tx = optax.adam(learning_rate, b1=beta1, b2=beta2)
     return TrainState.create(
         apply_fn=module.apply, params=params, tx=tx,
         metrics=Metrics.empty(), key=key)
+
+
+def save_train_state(train_state, filename='tmp/checkpoint'):
+    checkpoints.save_checkpoint(ckpt_dir=filename,
+                                target=train_state,
+                                step=0,
+                                overwrite=True,
+                                keep=2)
+
+
+def load_train_state(example_instance, filename='tmp/checkpoint', step=0) -> TrainState:
+    return checkpoints.restore_checkpoint(ckpt_dir=filename, target=example_instance, step=step)
 
 
 @jax.jit
@@ -53,14 +68,15 @@ def compute_metrics(*, state, batch):
     ones = jnp.ones_like(flattened_y, dtype=int)
 
     predictions = jnp.argmax(flattened_y_hat, axis=-1)
-    predictions_masked =  lax.select(flattened_y == -1, ones*-1, predictions)
-    count = jnp.sum(predictions_masked==flattened_y)
-    accuracy = count/predictions_masked.shape[0]
+    predictions_masked = lax.select(flattened_y == -1, ones * -1, predictions)
+    count = jnp.sum(predictions_masked == flattened_y)
+    accuracy = count / predictions_masked.shape[0]
     metric_updates = state.metrics.single_from_model_output(
         accuracy=accuracy, loss=loss)
     metrics = state.metrics.merge(metric_updates)
     state = state.replace(metrics=metrics)
     return state
+
 
 @jax.jit
 def train_step(state, batch):
@@ -85,6 +101,7 @@ def train_step(state, batch):
     state = state.apply_gradients(grads=grads)
     return state
 
+
 class Trainer:
     def __init__(self, train_dataset, test_dataset, train_state):
         self.train_dataset = train_dataset
@@ -94,9 +111,9 @@ class Trainer:
         self.test_loader = DataLoader(self.test_dataset, shuffle=False, batch_size=batch_size, num_workers=num_workers)
 
         self.metrics_history = {'train_loss': [],
-                   'train_accuracy': [],
-                   'test_loss': [],
-                   'test_accuracy': []}
+                                'train_accuracy': [],
+                                'test_loss': [],
+                                'test_accuracy': []}
 
     def run_trainer(self, epochs):
         for epoch in range(epochs):
@@ -113,18 +130,19 @@ class Trainer:
 
         state = self.train_state
         for batch in loader:
-            #batch = map(jnp.array, batch)
+            # batch = map(jnp.array, batch)
             x, y = batch
             x, y = jnp.array(x), jnp.array(y)
             batch = (x, y)
             if mode == 'train':
-                state = train_step(state=state, batch=batch)  # get updated train state (which contains the updated parameters)
+                state = train_step(state=state,
+                                   batch=batch)  # get updated train state (which contains the updated parameters)
                 state = compute_metrics(state=state, batch=batch)
             else:
                 state = compute_metrics(state=state, batch=batch)
 
-
         for metric, value in state.metrics.compute().items():  # compute metrics
+            print(f'{mode}_{metric}: {value}')
             self.metrics_history[f'{mode}_{metric}'].append(value)  # record metrics
         if mode == "train":
             self.train_state = state.replace(
