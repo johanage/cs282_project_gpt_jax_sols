@@ -265,24 +265,18 @@ class BPETokenizer:
         assert return_tensors == 'jax'
         # single string input for now, in the future potentially a list of strings
         assert isinstance(text, str)
-
-        ### YOUR CODE HERE ###
-        
-        # Here you should encode the text that is inputted into this function
-        # Make sure the value you are returning is an array (specificaly jnp array)
-
-        ### END YOUR CODE ###
+        # encode and create a "batch dimension" of 1
+        idx = [self.encoder.encode(text)]
+        # wrap into PyTorch tensor
+        out = jnp.asarray(idx, dtype=jnp.long)
+        return out
 
     def decode(self, idx):
         # ensure a simple 1D tensor for now
         assert idx.ndim == 1
-       
-        ### YOUR CODE HERE ###
-        
-        # Here you should decode the data that in inputted into this function
-        # As a reminder, this should return a string!
-
-        ### END YOUR CODE ###
+        # decode indices to text
+        text = self.encoder.decode(idx.tolist())
+        return text
 
 
 if __name__ == '__main__':
