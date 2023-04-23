@@ -270,6 +270,8 @@ class BPETokenizer:
         
         # Here you should encode the text that is inputted into this function
         # Make sure the value you are returning is an array (specificaly jnp array)
+        # Hint: read through the encoder function above and see what it does to the input
+        # Hint #2: see the example case at the bottom of this file
 
         ### END YOUR CODE ###
 
@@ -281,6 +283,8 @@ class BPETokenizer:
         
         # Here you should decode the data that in inputted into this function
         # As a reminder, this should return a string!
+        # Hint: this should be mainly just 1 function call
+        # Hint #2: look at the decode function above, and see how it works
 
         ### END YOUR CODE ###
 
