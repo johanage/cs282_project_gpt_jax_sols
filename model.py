@@ -172,7 +172,7 @@ class GPT(nn.Module):
             x = jnp.array(x)
             pred = self.apply(params, x, training=False)
 
-            pred_token = int(random.categorical(key, pred[0][-1] / 0.4))
+            pred_token = int(random.categorical(key, pred[0][-1] / temperature))
 
             sequence.append(pred_token)
 
