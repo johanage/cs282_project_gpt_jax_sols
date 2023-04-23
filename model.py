@@ -1,6 +1,7 @@
 import flax.linen as nn
 from jax import lax, random, numpy as jnp
-import optax
+from tqdm import tqdm
+import numpy as np
 
 
 class LinearBlock(nn.Module):
@@ -23,7 +24,7 @@ class CausalSelfAttention(nn.Module):
     n_embd: int
     block_size: int
 
-    def setup(self, do_rate=0.3):
+    def setup(self, do_rate=0.1):
         """
         Sets up the attention block
         do_rate - dropout probability, float
@@ -88,7 +89,7 @@ class CausalSelfAttention(nn.Module):
 class MLP(nn.Module):
     n_embd: int
 
-    def setup(self, do_rate=0.3):
+    def setup(self, do_rate=0.1):
         self.fc = nn.Dense(self.n_embd * 4)
         self.c_project = nn.Dense(self.n_embd)
         self.act = nn.gelu
@@ -105,7 +106,7 @@ class Block(nn.Module):
     n_embd: int
     block_size: int
 
-    def setup(self, do_rate=0.3) -> None:
+    def setup(self, do_rate=0.1) -> None:
         self.ln_1 = nn.LayerNorm(self.n_embd)
         self.attn = CausalSelfAttention(n_head=self.n_head,
                                         n_embd=self.n_embd,
@@ -164,36 +165,19 @@ class GPT(nn.Module):
 
         return logits
 
-    def loss_fn(self, params, x, y, rngs):
-        y_hat = self.apply(params, x, rngs=rngs)
-        loss = optax.softmax_cross_entropy(y_hat.reshape(-1, y_hat.shape[-1]), y.reshape(-1))
-        return loss
+    def generate(self, params, x, max_new_tokens, random_key, temperature=1.0):
+        sequence = [int(x_i) for x_i in x[0]]
+        for i in tqdm(range(max_new_tokens)):
+            key = random.fold_in(random_key, i)
+            x = jnp.array(x)
+            pred = self.apply(params, x, training=False)
 
-    def generate(self, params, x, max_new_tokens, temperature=1.0, do_sample=False, top_k=None, rngs=None):
-        """
-        Take a conditioning sequence of indices idx (LongTensor of shape (b,t)) and complete
-        the sequence max_new_tokens times, feeding the predictions back into the model each time.
-        Most likely you'll want to make sure to be in model.eval() mode of operation for this.
-        """
-        for _ in range(max_new_tokens):
-            # if the sequence context is growing too long we must crop it at block_size
-            x = x if x.shape[1] <= self.block_size else x[:, -self.block_size:]
-            # forward the model to get the logits for the index in the sequence
-            logits = self.apply(params, x, rngs=rngs)
-            # pluck the logits at the final step and scale by desired temperature
-            logits = logits[:, -1, :] / temperature
-            # optionally crop the logits to only the top k options
-            if top_k is not None:
-                v, _ = lax.top_k(logits, top_k)
-                logits[logits < v[:, [-1]]] = -float('Inf')
-            # apply softmax to convert logits to (normalized) probabilities
-            probs = nn.softmax(logits, axis=-1)
-            # either sample from the distribution or take the most likely element
-            if do_sample:
-                idx_next = random.categorical(rngs["params"], probs, shape=(1,))[:, 0]
-            else:
-                _, idx_next = lax.top_k(probs, k=1)
-            # append sampled index to the running sequence and continue
-            x = jnp.concatenate((x, idx_next), axis=1)
+            pred_token = int(random.categorical(key, pred[0][-1] / 0.4))
 
-        return x
+            sequence.append(pred_token)
+
+            x = np.array(x)
+
+            x[0, 0:-1] = x[0, 1:]
+            x[0, -1] = pred_token
+        return sequence
