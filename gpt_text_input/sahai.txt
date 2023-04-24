@@ -3916,3 +3916,734 @@ which is the other thing you could try to do is to try to be adaptive and try to
 gradients there's a way of doing it that kind of builds off of gradient descent momentum
 um and that's called the atom Optimizer which we'll talk about next time and then we'll like get into how you use all
 this stuff okay lecture ends here switched office hours any questions
+midterm is on March 21st that's the week before spring break
+on the Tuesday Okay so um what we will do is we will when we
+give you the mid we give the midterm we will also then have the midterm available for people to do as the
+homework for that week so we won't be assigning a different homework for that week except maybe a
+couple of small problems or something um okay so the
+topic we want to continue is optimization if you got talked to talk momentum last time I want to recap where
+we are there were some questions that I got I want to make sure that everyone understands and then uh talk about adaptive methods
+like Adam and kind of the idea behind them and then we will go into a brief survey
+of architectures and problems I'm going to cut this part of the class down to make up for time
+um and then we'll start into con nuts you want to make sure we hit the main technical material in the course as
+opposed to survey stuff um Okay so
+let's recall optimization basic properties so recall
+plain vanilla gradient descent what are the properties that you've learned so hopefully discussion
+uh on the last two days has made this much much clearer to everyone everyone's
+on the same page just make sure and it's on the homework again for those people who didn't go to discussion
+but you know that there's a a limit on the learning rate
+which you've been using Ada sometimes use Alpha is used in some parts of the community that comes from
+the largest singular value
+right Max
+right in the non-linear case you can think of this as the local uh training features
+so when you have this limit on the learning rate the impact of it is that
+for the smaller singular values and for the direction that they represent you have to use more iterations to converge
+okay now I think one of the important things to keep in mind is the difference
+between the perspectives in an optimization course and the perspectives in a deep learning
+course right so I thought it might be a good worthwhile kind of keeping these two perspectives a little bit different
+in an optimization course that you've taken the optimization objective is typically
+believed to be the thing that you care about you actually care about you know minimizing or maximizing your
+optimization objective uh in the context of a deep learning course
+uh we only kind of care about actually minimizing or maximizing whatever our
+optimization objective is the optimization objective and the iterations everything is merely
+instrumental to us in that our actual goal is to have good generalization performance to learn
+patterns correctly so we would gladly trade off
+for a worse optimization if it gives us better generalization
+okay so for us in a deep learning class
+the choice of the regularizer and things that are the the properties of the learning algorithm matter
+especially to the extent that they might change what we actually end up learning
+for the better or worse okay that's why we're spending time in a
+deep learning class talking about optimizers um because we need you to understand the
+basic idea behind them but also to keep in mind always that they can change what
+you converge to okay so this is really important uh to keep
+in mind I think some people ask me questions that were a little bit kind of coming from this uh this kind of
+philosophical distinction okay so uh then I was a point I want to
+clarify so when
+the Ada is small small enough
+what do I mean by small enough I mean by small enough when if you look at on the unit circle
+where the 1 minus two
+ETA Sigma you know whatever we're using right where these guys end up
+right where the closed loop singular values closed loop eigenvalues of the iterates of gradient descent where they
+end up if they end up like this
+okay all on this side of the unit circle that's what I mean when I say small enough that's typically what I mean
+okay when you end up in this situation right this is the one here
+that comes from Sigma 1 or Alternatives you want to
+think of it you know Sigma Max to remind yourself that the first one is the biggest and
+you know these are the ones coming from small ones
+when Six Ada is small enough you have this Behavior why because you know at a
+equals zero everyone starts off here at one and then they all move back depending on how big a is right
+so when it is small enough uh what you see is
+we converge first in directions
+associated with Sigma one
+then Sigma 2 and so on so this is what I meant about the uh
+when I talked about the question of hey you first learned the you know dominant
+Direction in the training data then the next one and the next one kind of by the iterates of gradient descent so people
+ask the question so that was really good um saying that well when Ada isn't small enough right does this story still hold
+so the thing is you already know the answer to that question so let's look at
+medium
+values of ADA so for medium values of beta what you get is
+on the unit circle some things have crossed over perhaps
+okay so now I'm going to say uh okay I'll put one more here okay
+by show of hands I'm going to ask you all to vote for a
+b c d e f g these are them uh show of
+hands which one converges first okay does everyone see the picture keep
+on the back see the circles uh see the unit circle and where the closed loop
+1 minus two ETA Sigma end up can you guys see in the back
+okay good so now let's vote which one of these converges first so
+over here we said this one converges first Sigma one converges the that direction conversion okay how many
+people vote for a which comes from Sigma one B Sigma 2.
+C Sigma 3. everybody yes D Sigma okay good everyone gets it right so what
+matters is which one is the closest to the center which one has the fastest uh
+convergence right that's what matters so for medium learning rates the order
+in which gradient descent will sort of fit these things can be different
+right so you can see how the learning rate even when things converge can
+um through if you look at the entire learning system which includes early stopping
+the choice of learning rate can affect where you end up right in terms of
+what model you'll end up picking because suppose it was the case that the model generalizes best was the one that fit C
+really well um and a and b kind of didn't really help that much in generalizing
+right in that case this with early stopping isn't going to do as
+well as this will do with early stopping okay so this is why you know hyper
+parameters like learning rate and so on actually you know this is kind of picture in your mind to say why that
+actually might affect things so this is also a really good time to
+again review something else I mentioned it at the beginning um in earlier in the in the class but I
+want to make sure it's completely clear uh you might be thinking that wait in my convex optimization
+class you know my optimization class I was taught that if problems are nicely
+convex that you know they will have a unique
+Global minimum for my optimization problem and so the choice of the
+optimizer uh is just a matter of details right you know we end up where we'll end
+up where we end up at the end so how does that square with what I'm
+telling you okay we're saying it matters so it's a very good question to have
+right so again the distinction is that first um in terms of the actual flow of how
+one does training and the use of deep neural Nets we are you're typically
+going to invoke checkpoints along the way and think about early stopping so we're not just interested in where we
+converge to at the end what the minimum is that's like the one very important
+reason there's also other reasons that are more surface level um less deep that is well our problems
+aren't necessarily going to be convex we might not have a unique Global uh minimum uh in that case
+that's kind of also true but I think philosophic is less important than the first one
+um but there's one more thing too which is that even when problems are you know
+seemingly convex and nice you also have the possibility of having your
+optimization problem having uh infinitely many Global Optima
+okay and so first can anyone give me the
+simplest possible example of a problem that has all the beautiful nice
+convexity type pictures that you would expect because the kind of problem you're like yeah that's like the poster
+child for a nice optimization problem but it has infinitely many Global Optima
+you don't understand the question so it's like I'm not asking a very technical way but you say wait no the theorem says if something is strictly
+convex yes it's true I'm not not asking you to deny the theorem yes it's true right they'll have a unique but I'm
+saying a problem that looks very nice but has infinitely many
+um Global Optima flat okay yes so that's a very good
+somewhat trivial example but spiritually correct which is the problem optimize
+zero times the parameter Vector minus x squared or minus y squared okay yes because your
+parameters don't matter infinitely many Global Optima namely anything okay good that's actually a good answer but let's
+make it more realistic something that'll actually you know can show up where you don't have zero necessarily yeah
+got a parabola that's been like extruded been like a third dimension okay so the
+the the picture that was asked was was asked is to think of a third dimension so let's think of a parabola but let me
+like make it into uh like a big like a a like a a skateboarder uh playground
+right so it's like a long pipe okay that's what you're thinking of an optimization like that good can anyone
+give me a mathematical representation that would have this as the Lost surface
+it's good to be able to go back and forth I just want to make sure that everyone has these intuitions exercise so
+um okay I'm gonna like don't censor yourself if you know the answer give me a give me a
+something mathematically some kind of optimization problem who's lost surface to look like this
+yeah X1 X2 maybe I'll just use more deep
+learning e language w1w2
+yeah right did everyone see that you don't care about the other parameter now this is themes very special but
+actually let's make it completely not special right these pictures
+where this is the wide Matrix
+okay so it's good to have this intuition if a is a wide Matrix
+you have more unknowns than equations you can fit everything with room to spare
+right you can fit everything with room to spare it means you can have a global
+minimum namely something which achieve zero can get better than zero
+and there's infinitely many of them okay so you might say why am I talking about
+this you know what might seem like uh from optimization point of view a weird Corner case like oh why do you need
+positive definiteness and not positive semi-definiteness you know an optimization course would be something like that it's like it feels like I have
+some weird technicality right but here this really matters because
+many modern uh deep Learning Systems will operate in a regime where you have gobs and gobs and gobs of parameters so
+many parameters and you have fewer training points than you have parameters so if you have fewer training points
+then you have parameters you're in something that locally always looks like this and so that thing will tend to have
+infinitely many Global Optima and once you have infinitely many Global
+Optima you know there's this question right that arises which is your algorithm
+which one does it go to even if it converges it's not just a question of the path
+right as it would be for early stopping once there's infinitely many Global optimize to go to any one of them
+and so it matters a lot for generalization which one it goes to
+because although you have a small number of trading points you
+actually want to work on a whole bunch of points you haven't seen yet right so you know they might behave all
+of them might behave the same on the training points but differently on other points okay so this I want to make sure that I
+know I'm spending a little bit of time on this but it's really important to keep the perspective in mind right that
+the Deep why do deep learning classes talk about optimization this is why okay
+so speaking of this if you just we know that if you do
+vanilla gradient descent on a problem like this
+we actually know where you converge to okay which is if you start at zero
+will I initialize my weights at zero for this problem if I initialize at zero the only W's
+I'll ever get we talked about this before and we talked about the actual iterates of gradient descent for Ridge or for uh gradient descent the only
+iterates of w I'm ever going to get are going to be linear combinations of data points
+right which means you're in this you're in exactly the same Subspace that guarantees that you'll get the mid-norm
+solution so it's important to remember that by itself vanilla gradient descent will
+tend to and this is a very robust thing it will tend to go to the Min Norm solution
+where by mid Norm we mean it's lazy wherever you start it'll try to go to
+the closest place that'll get it to minimizing the loss
+okay where close is in this local sense right remember everything here is in terms of the local features
+if it can get there locally it'll get it'll go there okay good
+is all this clear to people okay so now you understand like why do we care about what's going on here
+so now we talked last time about sdd with momentum
+which is a gradient to set with momentum okay so actually this is a good point
+to comment on one thing which is we often talk about vanilla
+gradient descent uh but we use in practice is always stochastic gradient
+descent and the two are not the same
+okay they're not the same so let's take a brief moment to
+understand the difference okay so when you're doing stochastic gradient
+descent what you expect to see is that when you do the gradient step you're going to get
+some noise that comes from the randomness of which batch you chose so the general feeling is that if there
+is still a dominant uh singular value locally that probably again this is a
+hope this doesn't have to be this way the dominant singular value is probably something which will be well represented
+in many many many data points so your batch will probably have it and you'll probably still get a pull in that
+direction typically and so for this reason you believe that even when you do SGD that
+kind of in spirit these findings will still hold
+um except you're gonna get a little bit of shaking everything will shake more right so it'll be some noise that makes
+a chick um it's actually a really interesting thing
+uh and we actually I have a homework problem I could give on this but I don't know if I will um
+if you do SGD in so first first something you should
+be able to prove right if you do SGD and you're in this situation here
+do you go to the Min Norm solution if you converge
+so this is the
+difference on the question you're not going to do gradient descent so you're not going to look at the entire a matrix at once you're just
+going to take a subset of rows randomly every time and you're going to take an
+SGD step so I'm going to say suppose you actually converge
+I'm going to make that let's assume that we converge okay the SGD suppose I say SGD converges
+on this problem and the question is will you converge having
+started at zero will you converge the Min Norm solution everyone understand
+the question okay so now let's uh see what you guys
+think uh let's first take a initial poll how many people think yes you will converge
+to the Min Norm solution raise your hand few people okay how many people think no
+you won't converge them in normal solution raise your hand okay a few other people a few more people some people are like I'm not sure
+and I didn't just say I'm not sure about this how high I raised my hand it's really nice it's the Deep learning class
+good to have confidences right yeah sort of no definitely you know like so
+um good for you um but how many people are like I really am not sure at all okay so it's a good mix okay so let's
+see uh couldn't someone advocate for why they think that if this thing converges
+it will converge to the Min Norm solution you start at zero you're doing STD
+taking random rows at a time who wants to advocate for that
+yeah so ever heard that the argument was you're moving you're still moving within
+the Subspace of data points right and if you remember
+when you prove that you know the appropriate more Penrose pseudo-inverse formula holds
+for the minimum solution you say that once you're constrained moving within that Subspace there is a unique
+Optimum point that fits the data points okay
+so in fact that argument carries the day if SGD were to converge on this problem
+right it would have no choice to converge except to the Min Norm solution
+why is that okay because the reason is anywhere else
+that's not a solution would still Shake
+right because you draw that point randomly it wouldn't fit there would be a stochastic gradient and you would move
+and the point of convergence is that you stop moving or you know asymptotically stop moving so indeed that's correct so
+SGD so this is one I bring this up because this is one of the reasons we believe generally that SGD will tend to
+inherit the properties of gradient descent except you know some amount of like shaking around
+uh to do that um it's actually a very interesting and
+completely non-trivial fact that not only will SGD converge in these cases
+but you can get SGD to converge in these cases with a constant step size you
+don't even need the step size to get go down typically for SGD and your optimization classes you learned you need the step size to drop why because
+things are shaking you need to do more averaging so but the point is here if it converges it stops shaking which means
+it can converge even with a constant substance so just a comment on that okay so
+now we're going to talk about gradient descent momentum like we talked about last time and we're gradient descent with momentum says is that
+we would like to basically be able to use a larger learning rate and to use a larger learning rate so
+it's really important to keep that in mind like that's the goal the goal is to converge faster these are
+called acceleration methods right um and from a traditional optimization
+perspective the goal is to converge to the same place the unique Global Optimum just to do it faster
+um so you want to go faster
+uh Ada and to do that we want to basically
+avoid the problem that you saw in the discussion which is this thing as it approaches this side is going to start swinging quite violently up and down
+right and we want to dampen those oscillations so the idea is
+low pass filter the gradient
+and you know you do that so now here it's good to
+do a couple of things to like comment in case people haven't seen this before it's also relevant there's a good good
+way to review something a comment
+on low pass filtering and averaging
+so how do you smooth out the shaking or ups and downs in something very
+intuitively you can average right you might just believe that by you
+know yourself averaging is good for removing variation you can also think
+about an alternative picture you know circuits picture which is the simplest low-pass filter
+looks like this right and if this input voltage shakes
+the capacitor will help you know achieve averaging and the output voltage won't Shake as much right that's kind of
+circuit's picture now what connects these two pictures what connects these two pictures is that this is like a
+continuous time uh differential equation right and you know the solution of
+linear continuous time differential equations involves integrals that look like this
+foreign called the convolution integral
+where this is the input function of time
+and this is the alternatively called
+impulse response or kernel
+depending on the community and it's important to remember that all
+this integral is is a fancy generalized average
+right because what's an average add a bunch of things up together with some weights
+right that's an average what is this doing what's an integral it's a limit of Riemann sums what's that
+sums right so there's adding up a bunch of these with some weight
+okay so it's like a fancy average all convolutions are fancy averages
+so for these kinds of systems again for those who remember for first order differential equation
+the H of Tau looks like this
+exponential
+and what that means is it's a it's a move this thing is like the convolent relevant convolutional convolutional
+integral is like a moving average that most heavily awaits the present
+and weights the past in a decaying way so that's the kind of average this
+represents so when you think of this kind of a thing the way it does the way it dampens out oscillations is that it
+weighs whatever is going in in this kind of exponentially weighted way okay so this is this should be review uh
+for people probably you've seen the convolution integral in some course
+um and when you talk about the response of uh differential equations to linear linear differential equations to systems
+some of you in physics uh context might have seen this in the context of greens functions and the like
+um all related things okay so this is like a differential equation
+point of view I could draw a circuit to the differential equation what's the discrete time counter part of this
+right you basically take a sum
+oops and you know that's what you do you just do
+everything with a awesome so I could put an H here but let me just capture something that looks
+like this with a specific specific discrete time counterpart of this you get something that looks like this
+foreign
+so you notice this is just a geometric that dies down
+and I just chose a parameterization that made it an actual averaging right so it
+integrates to one or sums up to sums up to one right so it's like like an average so you have this kind of uh infinite uh
+response that corresponds to this thing but the nice thing is this corresponds
+this this solution corresponds to the following difference equation
+I guess I used brackets so I'll put a bracket
+for you Okay so
+this is where so you know and when I talked about last time I jumped immediately to this equate this kind of
+equation I want to show you like where would that come from right it's the natural discrete time counterpart of a
+first order differential equation right and it achieves smoothing so this a
+is going to be a smooth version of the input U whatever you stick into it
+where the smoothing is going to happen this way if you want to make it more smooth
+right for the exponential you want to make it decay slower right because if the exponential decays
+slower you're averaging you're getting more weight to more terms in the past and so here decaying slower is making
+beta closer to zero right so just to see the see the
+connection any questions on this kind of comment on how you know where this particular
+formula we did last time where it came from any questions on how this works why it
+works what it's connected to and so on so
+uh what's nice about it again remember from the perspective of deep learning in
+practice uh you care about actual resource limitations on your machines right there's like stuff has to stay in
+appropriate memory you have to be able to keep your parameters and store them if you're going to be doing updates of
+things everything you need to do the updates has to stay in memory
+okay so uh what's really nice about this is
+that if you had to say I would like to average the last three gradients that's the way I'm going to be averaging I'll
+average the last three things how many things you have to keep in memory
+you know at least three maybe two right if you're like tricky right
+you do this you keep one thing in memory the state so you have your actual
+gradient and one more you keep actual parameters and one more thing is that this running average
+what's nice about this running averages if you say I don't want three I want more smoothing I want to do 10. you just
+change beta now of course this is not the same as averaging the last three or last four but in spirit it is
+right and all we care about is the appropriately dampen things right we don't care about this average
+the last five like it doesn't matter to us we just want the effect of smoothing of averaging the last five and this will
+also give us that effect so in deep learning we always like to choose architectures and
+parameterization and ways of doing things that will within a little bit of an eye towards the implementation to
+make sure that we're not like blowing our memory budget because of some fancy thing that we're doing so keep it simple
+right okay so using this in the context of momentum
+the update we actually do for gradient descent or SGD with momentum is
+we'll still keep the update to the parameters just as it was before with one exception
+instead of using the gradient we're going to use our smooth gradient
+to compute our smooth gradient as I mentioned before we just use that
+formula
+whatever upgrading to the losses that we want to do evaluated at
+the parameterization that we have last time
+okay is momentum clear in terms of like the how it works
+oh this connection yeah ah so okay
+this kind of thing right this kind of thing but so it goes this
+way for integrals this kind of thing solves linear differential equations with inputs
+right so you can go in spirit back and forth between this kind of integral
+and a differential equation right look at the solution so it's like I can
+give you the questions or I can give you the answer same information in both
+is that part clear okay so same way
+this thing solves a recurrence relation A first order in particular A first
+order discrete time recurrence relation namely this one
+so instead of doing this which is crazy because you
+have to do infinite sums right you just do this and keep going
+so it's this realization that if I want to do this I can also do this
+ah the output so this whole thing is
+instead of 80 plus one ah good question excellent question the question is why
+do I write a t plus one here right is the spirit of the question you asked
+um why didn't I write a t it's kind of weird that makes t and t plus ones in one equation usually you have t plus one
+on this side and everything here is on T so first is like you can just substitute this in and then everything will be in
+terms of t so that's that part's clear so now why did I put t plus one here the reason is
+the Step I Take I want to depend on the gradient at where I was not where I was two times
+ago but this actually leads to a very interesting and kind of twisty little
+point that I want to get to okay and you probably kind of brought me right to it
+so where should we evaluate the gradient
+we have a choice of where to evaluate the gradient right standard thing is we'll evaluate the variant where my
+parameters are right now okay
+now one of the interesting things that one can do in the context of momentum
+is you say look wait stop wait a minute if I did traditional gradient descent
+right I'd say look I'm here right now what does my local neighborhood look
+like let me look at the gradient and then let me move so for gradient descent it's
+clear that you should look at the gradient where you are right now okay but here you think wait a minute
+I want to look at the gradient in the local neighborhood of
+where to know how to steer the goal of the gradient is a steer
+okay and so in the context of momentum I'm already moving
+and I already know a little bit about where I'm going to end up
+because of this term so the question is should I evaluate the gradient where I am now
+or where I know I'm going to end up and then steer from there
+you see subtly different okay if you're moving right
+generally in a control setting if you're moving you want to know
+if it's already inevitable that you'll end up here you want to know and all you can do is
+going to choose what happens after you get there you want the best information there
+not here very subtle it's a small thing okay
+so there is a variant of SGD of SGD and gradient descent momentum in which we
+change this part and this is sometimes called the
+nesterov variant so alternatively
+instead of evaluating the gradient at WT you evaluated at the part where
+you know you're going to end up you're already committed to by your algorithm
+so you see like next time you're going to move minus ETA times oh beta with the a down right
+you're going to move minus ETA times 80 plus 1. this part is already determined
+that's not going to change so evaluate the gradient there
+get a little bit better local View of what's going on
+so you know use this instead
+so if you look for example in pi torch there's a flag that you can set that will make it do
+this one versus this one and so the theoretical reasons why in
+certain settings this is provably um you can prove it's better for practically speaking it makes very
+little difference in memo settings on which one you do in the context of using SGD but you know should know it's there
+yeah yeah
+great question so I've given you a treatment of
+momentum that I believe is easier to understand where it's coming from
+uh in the code they actually mix in pi
+torch standard implementation they mix eight the role of ADA and beta to be
+like beta 1 beta 2 and so on so let's think what happens right
+the reason remember I said we did this so that we would have an average meaning an average this is like a normalization
+we did to have it be this way what governs the kind of amount of of
+smoothing is actually this thing but this is telling you how far you go back in the past
+this is like a normalization term to make the average be whatever it is but remember a
+only enters into what you care about after being multiplied by Ada so already has a scaling that gets hit by so you
+don't need this thing to be normalized in the way that I did here in terms of interpretation it makes it
+easier to understand but in terms of having the same expressive power
+it doesn't matter right I can have two different things here and here
+however if you do that if you put something here different than one minus
+beta then effectively what you're doing is changing the learning rate
+and this confuses a lot of people that's why I did this why Pi torch does it that way
+uh is historical I have no idea like there's some historical reason some paper had it be a
+separate parameter and they just stuck to that way of doing it I think
+this is a lot easier to understand yeah [Music]
+like our goal is to go faster so
+um yeah so what happens if you use this gradient so again in the homework we
+have you grind out you know what happens so just I'll answer your question about what happens but in reference to the
+homework right in the homework you're grinding this one out for analysis purposes um
+and when you analyze this thing uh you see first that look although everything
+here is vectors in the context of a problem like this
+you can just go to SVD coordinates From perspective of the Observer and everything will again decouple
+right all the different um SVD directions will decouple and you'll get a bunch of two by two
+problems for every different dimension and then you have to deal with the eigenvalue structure of this the resulting two by two okay
+notice that that entire Global story doesn't change if you use this or this
+like it doesn't matter just get a different two by two if you did that
+so uh basically if you do this you can
+prove theoretically that with the appropriate choice of beta and the learning rate you can in general do
+better in terms of convergence then if you do this right so in the homework we say hey just
+but he's kind of involved right like you you grind it out you get like these quadratics there's like some limit then
+you can kind of see empirically what happens and you can see that acceleration that this gives you
+it's just you know we could have added a part we say now repeat for this right it would have just changed the
+equations a little bit um there would still be some grungy thing you still have to grind it out and
+you'd see that okay can we get it make it a little faster um it won't make it instant because you
+still have the problem you can still diverge so does that answer your question
+okay uh in general you want to you want to use a small step small enough step size so
+that the local things are changing slowly for General non-linear problems right
+now let's come back just as in vanilla gradient descent now
+what happens is that the resulting eigenvalues that govern what's happening
+is you get a pair of eigenvalues for every one of these things instead of one eigenvalue why because you've added
+you've doubled your state Dimension before all you had was your weights now you have the weights and average
+gradients two things you're tracking so you have twice as many eigenvalues and
+so each of these will split into two things and then your convergence is going to be
+dominated by which ones are closer which ones are further and the same kind of story will occur
+right depending on the learning rate depending on how what momentum term is you will get different modes converging
+fast fastest okay so that's again why the choice of
+momentum and the choice of learning rate momentum parameter and learning parameter these are hyper parameters
+that will effect can affect what you how the how the generalization behavior is in the context of especially in the
+context of early stopping okay so that's hopefully makes this clear
+um I wanted to draw before I move on to Adaptive methods uh
+I wanted to draw a little
+a little circuit analogy for what happens when you're the small learning rate
+Ada is small enough
+okay so comment uh if you look at the Deep learning literature
+you will often in from people trying to unders understand what's happening in deep learning
+um one of the tools that they will use is they will say let me instead of
+thinking about the discrete time behavior of the iterates of gradient descent or stochastic gradient descent
+let me make the Assumption for purposes of understanding that
+we actually have a continuous time flow the reason is that our tools and our
+concepts for understanding differential equations are more mature and better developed than our tools and concepts
+for understanding discrete time iterations in part because discrete time iterations in the non-linear context can have all kinds of pathological behavior
+that nice continuous time differential equation flows will not so you try to
+use so people will in papers will try to use differential equation flows whenever so when I when I when we draw right now
+is kind of the same Ada is small enough spirit and I'm going to express the
+differential equations that come out of this thing using a physical analogy of a
+circuit so you can kind of see what's happening so simple circuit analogy of gradient
+descent so gradient descent first looks like this
+like a toy again for those who understand these things this can be helpful for those who
+do not it's fine don't worry about it
+okay so what this this is a simple circuit that has an inductor a current
+source and a resistor and the way you think about training is
+that when training starts this current Source turns on
+this is is what does this represent
+is represents the training data in the mode the relevant mode of uh the you know so
+think about the singular value structure let's think of each of those different singular values as correspond to a mode
+like a physical mode of a system and the training data is exciting that mode
+when you start training that excitement is this current that's what it's
+modeling l the gradient the this uh sorry the
+inductor represents what the parameters learn so at convergence
+everything about all this current is accounted for in this inductor the parameters perfectly fit
+uh the the excitement that the training is doing you fit okay
+however when you start off there's no current through here and so you have a residual the current
+that's coming out of here coming through here is not the current that's going here that residual passes through this
+resistor generating a voltage here which is the gradient that gradient moves the current here and
+makes again it makes a change so this is gradient descent expressed as a RL circuit
+okay and so what you get is the convergence of this current
+this reflects the current through here reflects the parameter that's being learned okay
+so the interesting thing here is that in the continuous time setting you could just if you want to make it
+converge faster you just increase this make the voltage bigger and you know a plot make this current
+converge faster that would correspond to increasing the learning rate by a lot which is why in continuous time
+gradient flows you know there's no limit on how big the learning rate is because the learning rate is assumed to be infinitesimal and
+so the infinitesimal can be as big as it wants it's still infinitesimal so never actually you never feel this great time
+so this is gradient descent so what's gradient descent or momentum
+it's the same picture because you still have
+the excitation that's coming from the training data you still have the parameters that you need to learn
+you still have a gradient that's going to be generated by having a residual go somewhere
+but you're going to dampen the voltage by momentum term and that's a capacitor
+you add to it so with momentum the averaging of the
+gradient that happens is captured by another state variable another thing
+that holds state in this physical analogy this state represented by this
+element is the parameters this state is the average and again if you look at this if you
+have physical anal uh feeling for this I could draw this like mechanical counterpart too this is like a electrical counterpart there's a
+mechanical counterpart the same thing what happens is this thing will initially it will go here
+there's not current flowing through here but it will just get sunk here first
+and make the voltage start going up that corresponds to what if you initialize this at zero initially
+this gradient is just going here it's not really moving this very much because this is ramping up
+but once this thing ramps up it sees the average gradient it's smooth the gradient and now you get convergence
+but now for this case you know that there's many different settings you could get convergence that looks like it
+did before you could also get conversions that looks like this
+oscillating modes you know and the same thing applies to the
+understanding of what happens for great uh gradient descent momentum
+even in discrete time of course in the context of continuous time analogies which are going to be in
+the infinitesimal learning rate case you will never have instability there can't be any instability in this system if
+everything is passive right but you know it just still helps you understand why
+they'll have the oscillations and why there's a consideration of how you how much dampening you have and so on here's
+this helped helps some people understand um on the lecture Ed post I posted a a
+link to a Blog which I think has a really nice visualizations of like some of this
+story of The Continuous time kind of picture and and so on so that can help you understand momentum
+okay any questions I mentioned before I talk about adaptive methods
+again here if this helps you understand great if this does not help you understand that's fine too you can just
+think of it in terms of differential equations or in terms of recurrence relations and eigenvalues it's all it's
+all good okay
+so with that I'm going to no questions
+okay
+I'm going to now talk about adaptive methods
+it's actually a long history of adaptive methods but I could talk about more of them but I'm not going to I'm just going
+to talk about the one that everyone will use which is called Adam
+but if you want to know some of the history of what's going on I mentioned it before uh
+there's an entire approach to thinking about learning problems that is
+coming from an area called online optimization right it's sometimes called online
+optimization sometimes called online learning and that has to do with how do you think
+about doing uh learning problems where you don't see all the data all at once
+you just see it Bit by Bit by Bit it's quite beautiful it's quite fun
+um you have lots of interesting theorems and lots of interesting perspectives that that kind of way of looking at the
+world um connects to but one of the interesting things about online learning is the
+spirit that says as the game continues you learn what
+game you're playing like you don't know what situation you're actually facing because it's
+being unfurled to you bit by bit by bit and so in that context the idea of
+adaptation is really important right because you need to adapt to the
+situation you find yourself in in that context it's like fundamental that context
+and so a lot of the analysis and ways of thinking about adaptive algorithms kind
+of you can intellectually root in that literature and so there's a whole story behind Adam
+building up pieces that comes from that literature that I'm just going to completely ignore
+and I'm just going to talk about it kind of more directly if you want to go if you go back and
+read the original papers about Adam they'll reference earlier methods like at a grad and RMS prop and things like
+this which if you read those papers you will see the connections to online learning kind
+of overt in terms of what's Happening Here I'm just going to kind of short circuit all
+that and talk about you know what what's what how these things work from a kind of basic point of view
+so um with that kind of commentary out of the way the idea behind adaptive methods is to
+say wait even after we did things like momentum
+we're still stuck with the fact that there is this huge dynamic range
+potentially between the singular values and so the big ones are going to limit
+how big we can make the learning rate and what our averaging terms are like in momentum
+um and then we have to live with it for the small ones
+does everyone see that kind of core tension that we've had from the beginning for gradient descent even these acceleration methods you're stuck
+with one learning rate and so the idea in adaptive methods is
+can we pick can we have
+different Adas
+four different modes
+right because if you could do that we could make everything converge super you know fast everyone understand the intuition like
+why do I have to have one learning rate let me have lots okay now unfortunately there's a huge
+underlying problem which is that when we talk about thinking from the SVD perspective and so on we're taking the
+perspective of an external Observer that has access to the whole training data all at once and can kind of look and
+knows what directions to look at and the algorithm itself never sees it
+right an algorithm that's running doesn't know what the modes are
+it just knows okay I have this data I have this batch of data it doesn't know what the relevant directions are
+so at first glance you might think okay that's a pretty fatal flaw
+right how am I supposed to have adaptive different learning rates for the
+different modes if I can't even know where the modes are so again the Deep learning Spirit comes
+into play which is you look where the light is and so you say well I don't know what
+the different modes are but I do know different parameters so let me use a different learning rate
+for each of the different parameters does everyone see the thing like I can
+definitely see that this is the first weight and this is the second wait and this is the third way now it might be that actually this underlying Direction
+which is three times the first minus two times the second plus 0.02 times the
+third and that's the relevant Direction I should be thinking about I can't see that but I can definitely see this is
+what this is one thing this is something different this is something different so let me just use
+so the drunk light bulb idea drunk lamp post
+says use
+different Adas or
+different ways not modes
+because that's what you can see so
+um how do you do this the idea is okay what do you want to do
+you want to do the idea then becomes what do I want to achieve by using different learning rates what I want to
+achieve is where the gradients are small I want to move
+with bigger steps because it's safe to do so the gradients are small where the gradients are very large I
+want to be more conservative in the step size I take Okay so
+idea
+gradients are small
+so what you need to do is you need to know when are gradients small and when are they big
+right like most basic thing your idea is to use them bigger data when gradients are small so
+you track size somehow
+so what do you do so again the algorithm is as follows
+you will add another state variable so we're going to average the gradients and
+we're also going to keep track of size okay so instead of just having the
+parameters we'll have two more things the average gradient and something which
+tracks size so algorithmically we'll still have a t
+plus one equaling one minus beta
+a t plus beta
+gradient evaluated at WT and we're going to try track the average
+size so I'll write v t plus one
+equals only the same averaging trick right because I want to track how big
+the sizes are and I want my sizes to be something that's reasonably stable
+right because you could always say how big is the gradient well I know how big it is I just look how big it is it's
+seven it's point two but that's not really what you want right you want to know is this
+particular gradient like always kind of small versus is this particular gradient
+always kind of big that's what I want to set my step steps because if I just used the actual
+current size of the gradient I would just move by a constant amount in every
+direction and I don't necessarily want that I want to be able to for example converge
+if I do that I will never converge did everyone see that
+like I I need some kind of thing that'll make me kind of smooth this out a bit
+the size so to smooth the size out I do the same trick
+but now you got to pick something that you track and there's many things you could track
+uh you could track the absolute value of the gradient but what people do is they
+just use uh the squares add together the squares so I just look at the gradient
+with respect to the first parameter the derivative respect the first parameter of the loss but again
+evaluated at WT and I just Square it
+I do the same thing all the way to whatever the biggest
+parameter is I have the last parameter I have is okay so this is like the square gradient
+the element y squared gradient why do I do this it's cheap to compute
+right it's kind of like tracking the standard deviation if you want like or the variance I'm distracting the
+variance having done this this is this is telling
+me how big things are this is telling me what my average gradient is I have to combine it together into actually taking
+a step an Adaptive step so once you think of it this way the
+Adaptive step rule practically writes itself and I'm going to describe it to you in like a simple form first
+but let's just look at the ith component don't have different steps in different directions right so look at ith
+component so the ith component of the updated weight is going to be the previous weight in the ith component
+I'm going to do minus some learnable parameter Ada
+and then I'm going to want to do a t plus 1
+in the ith component which is what the average gradient is but now I want something here
+that will make this thing get bigger when the sizes are small and smaller
+when sizes are big okay so how do I do that well what is the
+this thing is tracking the average square basically so I want to basically look at the
+square root of V2 Plus 1.
+I in spirit and I want to take a reciprocal
+okay that way I'm like normalizing by the average size
+standard deviation basically right but you look at this and every time you
+have a division you should always be nervous and so the first thing you do is you say okay I'm just going to add some
+Little Fudge Factor Epsilon here so that I don't divide and make this thing Giant in case these gradients are very small
+like Let It converge in Final End Game to just have it like sit somewhere okay
+and so this is so you can think of this as to prevent things from going crazy
+you have this plus Epsilon this is normalizing to the average size of the
+gradients and this is the typical step size
+this is the heart of Adam now there's a few additional
+considerations um that are there that I want to talk about so again if I wrote out all of
+Adam for you if you look at the code you might look at the code and go it is very confusing there's lots of stuff going on
+but if you understand this is the heart of what's Happening then you can understand the code kind of iteratively
+in terms of what it's doing like first level of understanding and then like the next level
+before I do anything more is this clear how this works in terms as an algorithm
+okay so now we track three things important to know so our memory has
+increased you have to track the weights
+the average gradients and the average sizes three things have
+to be tracked but fortunately only three things so a 3X increase in your memory requirements
+for running atom over running gradient descent
+sometimes this matters because this is memory that's not available for example for batches
+okay so here I want to make the first comment
+is what about these betas
+okay like what do we have to think about the betas so comment
+the beta Prime that's averaging the sizes has to be more averaging than
+the average you keep of the gradients themselves
+what you want is something that reflects the average size of the
+gradients on a bigger time scale then the actual averaging that determines the average gradient itself
+otherwise you'll have too much variability coming from this you want this to be like something that's more
+steady because you want the action of where you move to be largely determined by the
+gradient or the smooth gradient Okay so
+beta Prime is typically smaller than beta
+so V is more smoothed
+so this is a consideration in the in atom
+next thing is another level of detail that don't even want to write out the details out for
+once you've committed to this okay that the beta Prime is going to be smaller then you have an issue which
+already existed in gradient descent momentum but kind of comes to a head here
+which is if this is a very small number this thing has to be initialized
+somewhere okay and this thing is being initialized in some way so this thing is actually going
+to be ramping up to the average size very slowly so by itself like in the context of just
+gradient descent momentum if this is ramping up right as it is here it's like not a big
+problem but if this is ramping up it just means you're moving slowly at the beginning
+fine you can do things to accelerate that but it's okay does everyone see that like moving slowly won't cause bad
+things to happen it'll just slow you down you'll get the acceleration later after this is converged
+and make sure does everyone understand that okay here however
+if the v's are very small bad things are happening
+okay because this is too big like so danger right normalization of a
+appropriately during slow startup is yeah okay you can do it you cannot do it
+it's okay normalization of this during slow startup is essential
+okay so what do you do you basically just put this on the right local scale
+like you know how fast this is converging you know how big it can get and you can just like act knock this guy
+up in such a way that it's on the right scale so this thing doesn't become too giant so you make the bigger
+to prevent one over square root V from becoming too small for the purposes of
+this calculation so if you look at the formula in pi torch you will see something which is basically that
+so it's looking at the you know you know exactly how this geometric sum is converging
+so you can just use the finite geometric sum part to normalize this appropriately
+okay that's the other dimension part of of atoms
+deal
+foreign thing to do it's like nothing once you
+realize the scale you know how to fix it and it's done that's Adam
+so Adam is
+believed by many people today uh I think reasonably to be if you don't know what
+Optimizer to use and there isn't a previous paper that argued for a
+different one you should use Adam as the good default General starting
+optimizer practically people have found that it tends to to work quite well
+in practice in in large part because it buys you uh you know it gets convergence
+beef to you significantly faster in many cases and tends not to be that sensitive to the choice of the learning rate that
+you make um yeah foreign
+oh why you still need the learning rate because yeah it kind of does but you still need
+to have like a some overall scale of the learning rate to have it adopt
+this is the way it's set up right you you have to okay
+if you want to okay why do you know learning rate
+um how do you answer this question one way in many engineering or science contexts is to Simply say let me look at
+units okay uh
+what's happening is that this thing has kind of gradient to units
+okay it has units of like stuff on parameters but this has units of squared that
+okay do you see that this has squared units this is whatever units are on gradients
+gradient units you know can be translated by some connection to applying to parameters
+but especially when you divide by this you've now killed the units
+do you see that like there's whatever units are here square root V has the same units and now
+there's no units okay but this has units
+in spirit right it's a kind of thing so you better Translate
+you know what I'm saying like it's like a this is a very generic kind of science
+engineering intuition that you've probably all learned in your chemistry class or something right like way back
+but you just keep it in mind it's always there right so you kind of from that perspective something needs to kind of
+translate you need to set the right scale so there's still this kind of at a
+spirit level um but you expect to be less important because this thing will try to you know
+help you out in terms of getting things to the right scale
+um so more comments on on Adam uh so
+people actually found however that in many controlled careful experiments
+that they would see settings where SGD would actually converge to something
+especially with momentum would converge to something that had better generalization performance
+then Adam did So Adam would converge faster but in many cases SGD would work better
+so it's not like you always can say just use atom so to understand why
+you have to see that this drunk lamp post principle that we
+applied right the drunk near the Lamppost like
+you should have felt there that was risky right we know what's matter what matters
+is the actual modes but we're just looking at different etas effectively for different weights so we're wetted to
+a particular coordinate system in this adaptation and the possible match or mismatch
+between this coordinate system that we're wedded to and what you want to have happen can cause
+good or bad things to happen so we might actually like lose some of the implicit regularization
+that gradient descent originally was giving you because we might be converging too fast
+in junk directions right and the junk directions had small
+gradients so greater than was like yeah I'm not going to do anything and Adam is helpfully gaining them up for you
+right so you have to be aware the inductive bias of Adam and what it does
+can make a difference to what's going on um in particular in the context of
+Transformer architectures there is a variant of so notice everything here I've always talked about in the context
+of straight up um gradient descent right and I've taken the gradients with respect to the loss
+remember we talked about uh how Ridge regularization can also be interpreted as weight decay where I add a a term
+here that kind of decays this way now you might think okay fine but I could have
+just folded that into the gradient by putting uh into the walls you see that like I can just it didn't
+matter for a gradient descent but here that for sure matters because if I just do weight Decay here
+that's very different than having it show up inside these losses
+and get normalized in some goofy way and so there's a variant of atom called atom w
+that is often used in the context of Transformers it gives better inductive bias in many times in practice which
+basically says keep your weight Decay explicit out here instead of somehow hidden inside your loss because you
+don't want Adam mucking around with that adaptations that have to do with the weight decay
+so it's like all like deep learning considerations when it comes to Adaptive optimizers I am out of time and I'm
+slower as usual uh okay whatever I'm fine I'll make it up on on Monday in time for discussion just next week is
+going to be continent discussion so we'll get there um any questions come up and ask well I
+can answer briefly here then I'm going to have to move over to Cory 258.
