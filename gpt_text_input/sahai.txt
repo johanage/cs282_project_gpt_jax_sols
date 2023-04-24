@@ -1,0 +1,1798 @@
+so okay um well everyone welcome to uh 182. maybe I
+should go to the other another slide here and it's really nice to be back in person after a long time for me um I
+wasn't uh I didn't teach in spring in person so it's really great
+so just starting off like what is this course and how do we feel about it I
+thought I'd start with kind of acknowledging the most important thing
+which is that you know we're trying to study deep learning and like we don't know very much this is a picture of my
+son with um his neural networks for babies book um
+you know I identify very much with sort of you know his perspective uh on this material
+in terms of how I feel I understand it and how we all understand it right
+so um one of the things that we're going to talk about in this class that's really
+important is what do we do in the context of something that we don't
+really understand that well how do we kind of muddle through anyway
+so you know so like that's
+you can't hear the audio of him talking um you will feel like that many times
+and you know want to say bye bye to this material
+um but okay so like let's get into like some
+like how do I think about what the subject is
+okay so I assume by now every single person in
+this audience has seen lots of news articles has heard about seeing videos on YouTube
+of all the cool things that people have accomplished using deep learning I'm not going to waste your time showing you
+things that you can find on uh online and just looking on the news so how do we think about what it is so
+fundamentally uh when I think about the subject deep learning is the use of simulated
+analog circuit to do information processing where these analog circuits are defined
+by lots and lots of parameters and instead of hand tuning those
+parameters and figuring out what exact values you want to use you've set those parameters using an
+optimization algorithm and that optimization algorithm is driven by data
+and that's kind of like what you do in deep learning why do you call it d
+they're called Deep because the information start when it comes from the input flows through many many many
+many many Circuit elements before I get to the output this is like the circuit perspective on
+what deep learning is and it kind of reflects what you do now why are we doing all of this why are
+we building these circuits uh simulated and why are we you know having this optimization algorithms at various
+parameters of them the reason is we want the learn circuit learn circuit is a circuit after we set
+the parameters by the optimization algorithm to approximately
+capture whatever are the relevant patterns underlying the data
+so that we can use that circuit in interesting ways to solve problems involving new data
+new data for which that pattern is presumably relevant so that's what the subject is about
+and it's about so a lot of what we're going to talk about in the course is we're going to
+talk about different circuit architectures that are useful for different types of problems and that
+have different properties so a lot of the main part of the class will be going over then and then details about how do
+you deal with that circuit architecture what's involved now there are also general principles that apply to a
+different architecture and you can use different architectures for different problems all of that we'll go into later in the course but this is what the
+subject is about now there are many many different hypotheses out there for why you need
+depth in the circuit um there is the belief that this is for
+allowing representation learning there's some evidence for this there's also a belief that this allows for different
+kinds of functions to be represented more efficiently there's evidence for that here's the belief that no it's more like
+a telescope that where you have lots of different lenses uh to bring the appropriate things into
+Focus you can't say the intermediate lens has some appropriate representation it's like you're just trying to bring a
+pattern into Focus there's some evidence for that too so we don't really understand a lot of
+what's going on so I'm not going to try to claim a particular perspective here as we go through the course we will kind
+of engage with these mathematically but you know that's I don't want to claim that we know more than we do
+okay so what kind of class is this right
+um this is a specialized bus so what I mean by that in the Berkeley
+context roll
+this is a chart of the Berkeley X curriculum that inikapanu put in you can find it
+online on hcam's website so where is this class
+this class is here okay
+so the path that students are expected to sort of take to get here is
+starting the freshman year 16a 16b 70.
+learn probability and optimization take a general machine learning class and
+then you are here so
+why you know why do we do this why do you need all this right hopefully the
+description has helped you understand this a little bit why this is relevant
+so I'm going to talk a little bit more about the preparation kind of in some detail um so let's just think about the
+different topics Sub sub topics of preparation that are needed hopefully people can see
+um what I write here tell me if you can't
+so as I described the way that the subject works is kind of sitting at the
+heart of what's going on operationally is optimization
+did people see when I wrote optimization people on that side no okay maybe we can raise the screen up
+hope it'll automatically turn off where I don't care if it does or doesn't um
+so why you need to know optimization because that's how you train these
+things that's how you type these parameters you don't have an intuition and understanding of optimization
+you're gonna get lost in the optimization details and lose track of the deep learning detail so we're going
+to assume an understanding optimization where do you learn optimization in the Berkeley context now here I'm speaking
+mostly to Berkeley undergrads optimization ideas show up in
+a 15 B
+127. and a bit in 189.
+for The Graduate students in the audience who might have learned in other schools uh you know
+you can ask on the 282 a uh Ed uh if you're you know what details of your
+background we can we can address that what we need to know but you need to know this stuff to
+understand so now the next question that comes up is you know what if you don't or what if you don't understand it well
+enough for graduate students who have a lot of time to take more classes who can build
+up to it who don't need necessarily this material right now I would say take 127 227a
+and you'll be ready on when it comes to the optimization material if you don't have time for do that we're
+not going to exercise all of the detail uh level in 127 and 227a
+the most important stuff we're going to use is actually hit here but it's
+so we're going to try to keep things as Elementary as we can but there's times when we're
+you're we're going to do say something that you're not going to understand so you have to go fill in that Gap
+so when we think about optimization what do we like kind of in that mix
+we have like two components of it that are particularly important for us
+because they also help us understand um modeling especially in the case of
+linear algebra
+so linear algebra critical critical background again what are the classes
+that hit the relevant level of linear algebra
+and there's review here but this is not needed linear algebra here is if for us
+why do we need linear algebra it's not just because it's like the
+language we use it's also because it allows us the ability to visualize certain things and to invoke geometry
+so as we say the Big Challenge in the subject is we don't understand what's going on pretty much
+beyond that baby level book um I mean we do but not that much Beyond relative to where we need to be
+um so any two thing that helps us engage our intuition is very useful and linear
+algebra with its geometry is extremely used to help us engage our intuition
+the other thing you need on the optimization side is Vector calculus
+foreign calculus engaged with in the Berkeley curriculum
+math 53 weeks 16b
+and 127.
+um we're going to try to keep the vector calculus kind of in terms of how much we have to engage with it uh symbolically
+kind of manageable a lot of stuff the computer will do behind the scenes for you but you need to understand
+conceptually so this is kind of like in described
+this as the optimization grouping of things you need to know
+we need to know something else to get to understand the material and that's probability
+now what's interesting is that probability didn't show up anywhere in that description that I read to you
+about what kind of deep learning is right and that's really interesting right
+because it's when you're doing things probability is often playing a role in
+the background of helping us think about it so what do you need to know for probability ps70 is like a very basic it's not
+nearly enough what you need is
+probability in X 126 or
+that one that's the background Reuben actually found on
+so probability gives us a strategic language in which we can think about uncertainty and uncertainty that is
+in particular not out to get us and also it's useful to think about
+uncertainty that is out to get us but I don't know how much we'll get into that here and so we're going to need probability
+in the context of abstract toy models that help us kind of distill what's trying what's going on in practice when
+we're actually doing things there are times we're also going to invoke randomization and things like that but
+you're not you don't really need a lot of class level stuff to understand what you learn in courses to understand the
+idea of like shuffling things so operationally the probability use might be less
+um it also shows up in the computation of certain important things like expectations but we're going to assume you you know
+this
+you need to know the basics of machine learning generally
+why because we're building on it we're a specialized approach machine learning
+so one of the courses that hit the relevant ideas
+again in a in b
+189 or that 154.
+yeah 188 no
+um good question but no um
+me so if you mastered the material here
+that plus 188 might do it this is the facility of pot that we're going to count on
+but by itself it will and then finally you need to have some
+sense of if the only approach to information processing you've seen is by
+procedural program right where you have it then right that's kind of the basic thing
+that you do you're gonna feel a little bit um lost in terms of what's going on you
+have to have at least a basic exposure to analog information processing
+since you can pick up pretty fast um some people don't find the challenge some people do kind of really wrestle
+with kind of understanding how you can have information processed in an analog way this is definitely covered in
+week 16b or many of you have had in a physics class
+especially the concept of filtering the key thing is the idea of filter because in a way everything we're going to talk
+about is like a giant glorified convoluted filter
+right someone can make a meme right of Pokemon evolutions you start with like a
+basic RC filter and like later is a deep net um kind of it definitely grows out
+so this is the like background that we're gonna count so I'll talk later about how
+actually intellectually diverse the field of deep learning is but any one
+course can't fully teach it from the fall the diverse
+perspectives that one can understand it we're going to try to take advantage of our comparative advantage of sitting in
+a top research program and try to engage with it leveraging these tools
+there are alternative tinkering ways to engage with the subject which are also valid and provide great Insight that's
+not what this class is about we're going to try to help you this
+so there's this really great XKCD comic right about machine learning which I
+thought is this really really nice in describing how things feel at times so in this picture people can read it
+you know it says you know what it feels like if you have a huge stack of linear algebra
+which you like shove data into and you shake it until it works and
+this is you know to some extent true um of how it will feel we hope the
+linear algebra and things will also be supporting some kind of building of intuition but as I said at the beginning
+we just don't understand the stuff that well and we're going to be muddling through um anyway
+and so at times we're gonna feel
+and just match and that is this engineering or is this Alchemy okay
+in fact before teaching this class I actually went and I talked to lots of people in various big companies in deep
+learning groups and I said you know I'm teaching the class is there any particular thing you want you know
+that you would you think would be that benefit people I talked to other faculty as well and you will not believe the number of
+times people brought up this the subject feels like Alchemy so let's take knowledge it
+right um we're gonna try to convey stuff from a
+scientific engineering point of view but I want to you know kind of let's explore this parallel a little bit a
+little bit for fun but also just to understand I'm gonna erase this up
+um so here I'll write Alchemy
+here we'll put deep learning
+let's see if we can understand some of these parallels so
+Alchemy you are searching for
+the elixir of life
+something that will grant immortality what is the counterpart in deep learning
+it's called artificial general intelligence
+a search for a super intelligent artificial entity
+it's kind of like occupies the same kind of elixir of life kind of quest for
+motivating people what they want to work on Alchemy you search for the Philosopher's
+Stone
+you know a Mystic object that you can construct that will turn lead into gold in deep learning practice
+people look for ways to transmute
+unstructured data
+into dollars where there's like build deep Learning
+System question mark profit um
+an Alchemy people try to build try to do things that would let them communicate with the
+Dead
+uh people try to do exactly this thing foreign
+people want to predict the future
+in deep learning people try to do exactly the same thing
+in Alchemy people search for Rich patrons
+to fund their experiments
+while promising them various things in deep learning people do exactly the
+same thing so just like a bit of humor right but I
+want to say something in Praise of alchemy you might not have heard praise it all
+right people usually think of alchemy as oh you know horrible stuff that used to happen and how could people like Newton
+and so on get mixed up with all this right but I want to say something very much in
+praiseville what Alchemy did was it had an aesthetic
+the aesthetic was you draw on ideas from anywhere
+and you try to make stuff by doing actual experiments
+in an era when people human beings are always subject
+to the same core problem and that's a group thing and fashion
+that you think that what matters is making the other people happy
+and Alchemy early on by its Embrace of experimentation and
+empiricism actually paved the road for modern science
+by telling what matters is what actually happens in the world you can say that something was inspired
+by the sun had a battle with a dragon spirit and so you should mix these two
+things together but then you had to actually mix the two things together and
+do the experiment and deep learning shares that Spirit of open intellectual openness of drawing
+ideas from everywhere and not worrying about whether they make sense or not
+um which is actually quite powerful and so the question we have is that
+Alchemy led to chemistry and modern science
+and so what is going to happen here okay
+so we're going to take the attitude that you know it's fine
+and we're going to embrace a little bit of some of the out Alchemy aesthetic
+um which is we'll talk about Theory and we'll talk about general principles but we're also going to tell you the basic
+principle that you know if you want to make something work you probably should try what the other person did that kind of worked first and
+just see how that does if you don't understand why still try it
+right there's an element of um it might sometimes feel like Superstition in deep
+learning practice um and it's not entirely not superstition
+but when you try things out empirically that's okay
+right and so one of the shocking things right just again a comment they should all be
+aware of let's get a bit of humility people were building cathedrals before they understood f equals m a
+and sometimes deep learning feels like and again that
+so what I want to talk next is a little bit of Engagement with the history of
+the subject so here uh before I do that any sort of questions or comments we can have more
+of a discussion online but anyone have anything they think needs to be shared with the class on this
+people literally try to make Bots where they take the full set of texts
+and written information of their deceased relatives and generate a chat
+bot that lets them talk to the Dead I mean not joking
+this is actually what people often try to do um they also try to extend life and promise the extension of Life all that
+reason Alchemy did all that was that's what it takes to get people to pay for
+they're listed you know figure out poisons to kill your enemies right I mean it's but you know at some day people
+have to pay for things and so that that doesn't change very much over a thousand years um what drives people
+I guess love potions too I guess I don't know like I mean so I want to talk a little bit about
+like the history so I'm talking taking some of these slides from Sergey just to kind of acknowledge the history
+of the subject a little bit of my own twist on it so
+people think about you know what is the history of learning
+um people say cheering talked about in the 1950s 1950 of how you could use
+learning to get to intelligence um Clyde Shannon as well and a lot of people um Norbert weiner in cybernetics
+all talked about how learning could do this in 1943 you had mccullo and Pitts a
+model of the neuron as a way of trying to understand learning in the brain
+a lot of people will date uh machine learning and kind of neural Nets
+in particular to 1957 with rosenblatt's perceptron which you might have heard
+about in other other courses but it's also important to remember that at the same time you had LMS
+um least mean squared algorithms developed in the context of adaptive signal processing and control and this
+is actually a figure from a review survey paper by one of the authors of the original paper of the circuit kind
+of perspective on the first adaptive neuron that was done and so
+what what you're seeing what the subject is it sort of grew up around making circuit
+um that can learn and has a long long history um of doing this
+you know and it also goes through waves so there was a lot of excitement with these early circuits uh on on what on
+what they can do kind of and then in 1969 Minsky and papert published a book
+where they showed a counter example that certain kinds of circuits couldn't learn certain kinds of things and that caused
+a crash of enthusiasm but that crash of enthusiasm was
+actually a crash in kind of the popular or like one side of the field
+um in ee uh control theory and
+adaptive signal processing just kept going kept building on these ideas for a long time
+so those ideas kept being built upon uh and then
+you see the uh in 1986 you have you know back prop
+uh coming up in the context of neural Nets but actually back prop
+had been working in adaptive control and those areas for decades earlier
+so a lot of this field uh kind of backdrop comes from the idea of dynamic programming applied to you know using
+chain Rule and things like this to figure out how to compute gradients fast but you know people been working on it
+for a long time at the same time period let me just my slides need to be broken
+um you know people think about the Modern Wave of uh interest in deep learning
+kind of starting roughly 2006 but really having a huge burst in 2012.
+where you have Alex that sort of outperforming everything
+but a bit of a personal story for myself back you know around this time
+uh I'm dating myself actually you know um when I was a high school student and
+you know the for one of the first things I was doing kind of the research lab nearby was I was sitting around figuring
+how to you know do use neural Nets and back prop in the context of op-amp circuit to you know achieve certain
+goals so people were kind of you know very hot on the field but then it kind of crashed
+again right there was another Resurgence of neural Nets and neuromorphic Computing
+and things like this and what brought it down was that other techniques uh became
+on the compute of the day able to do better and those other techniques were actually
+um understandable so people like understandable things
+um part of this is cultural technology some of the culture cultural aspects of it that you know the areas of control
+theory and adaptive signal processing which we're developing a lot of you know the underlying ideas they were also
+defined by certain key applications that kind of motivated the field and in control was things like making sure
+airplanes fly and that led to a culture of safety that you should understand what's going
+on right and not just like oh well I don't know I don't know why I did that right that's
+not okay uh and so whenever there were techniques that were had provable
+guarantees and you could understand they were very attractive and kind of could supplant other ones adaptive signal
+processing grew up a lot around making sure that you know computer networks were able to and phone networks were
+able to communicate properly and the LMS algorithm that I mentioned was deployed to make sure that you could track
+communication on tables that were changing their properties and wireless communication channels and again people
+don't like it if stuff just doesn't work so but underneath
+you had you know these ideas and then you know at this time stuff
+deep networks and neural networks were come back why did they happen then
+and here it's it's important to recognize that in a way deep learning represents a
+intellectual Triumph of coming together of so many
+other things that allow it to happen so and I could list this on the board but
+there's like no point in sort of spending time talking about it in great detail so let's talk
+you had the continuous Improvement of underlying devices in Silicon
+right more what you think about when you hear Moore's Law and so you had things like finfets you
+know that our own Dean right uh Professor sujay King Lou right she was one of the pioneers of you know that
+we're kind of developed in the late 90s and really started to be able to drive advances in actual computers and
+architecture you know kind of around this time the computers were just getting faster and faster and faster you had advances
+in magnetic storage and memory technology that allowed you to store and keep all these large data sets
+you had improvements in computer architecture that constantly kept moving the ball forward and you had the advance of gpus
+right which are a particular kind of architecture but where why did gpus come about it wasn't the support deep
+learning right it was to support Pixar and video games
+right so it's computer Graphics uh that was driving many of the underlying you
+know markets for these things realizing that you know what linear algebra was really really useful for lots of things
+including adaptive signal processing including graphics and so you can make specialized Hardware DSP accelerators
+and uh gpus you had the rise of data centers and Associated networking technologies that
+made it possible to actually host these things and you had all of the advances in you
+might think it's been completely unrelated but we're incredibly seminal your advances in CMOS Imaging allowing
+you to make in Silicon imagers which then led to the Boom in digital cameras which then led to the boom of sharing
+photos which then led to the creation of large data sets online of things like
+Flickr um which then were curated to make these data sets which allowed the progress to
+happen in deep learning um all along the way while this is
+happening you had the underlying algorithmic advances that had been incubated and ways of thinking for
+decades in control and adaptive signal processing and then you know another
+Berkeley Connection in fuzzy logic which really brought ideas that were
+then grew into things like softmax that we'll talk about later um you know
+thinking about things in an analog way as opposed to a digital way moving beyond if that which kind of driving
+digital computation and the way you thought about programs
+so all of these things came together with the con with this acceleration that's coming from Moore's Law and
+effectively made it possible to make bigger and deeper networks and to train them
+I want to acknowledge something else here which is that I said it's actually all of eggs you know kind of has
+contributed to this you had contributions critical contributions from programming language
+and the idea of domain-specific languages and in domain-specific languages embedded in other languages
+um that then people put in the hard work to create Frameworks like Cafe which is the Berkeley thing which then later grew
+and evolved into things like torch by torch tensorflow and the light which made it possible to have
+ordinary skill folks copy and paste code and get deep
+learning models to work and then be able to tweak them so a course like this
+uh offered before the Advent of things like Cafe and even of course like 189
+offered before the Advent of things like Cafe and Pie torch we would have spent a lot of time kind of making sure that you
+all knew how to program these networks from scratch take a paper start with empty code
+nothing and like code it up subscribe that skill is no longer that important
+because of the power of these Frameworks so we're going to take advantage of that and not emphasize that
+so all of these things came together to make deep learning happen and behind it is also
+you know the spirit from Alchemy of try stuff get it to work you know
+it's cool don't allow people Alchemy let people who come from the trades right
+Crafts People to contribute and engage with the subject as opposed to being restricted to people you know who are
+very scholarly um so that's also a part of it now all that being said there's one more
+intellectual component that I'm going to talk about we're going to form the focus of the of the class
+is what happened around here
+in 2006 2012 was there was a shift
+in how people thought about the design of the circuits in
+uh for deep learning before there was a lot of emphasis on thinking
+about neural Nets as universal function approximate
+we're going to engage with that but thinking about them is kind of being able to approximate any function
+and what shifted was a focus to something that we call inductive bias
+which is that we want to learn particular kinds of functions well
+and that shift of starting to think more seriously about inductive bias is what
+allowed people to move from continents and keep going and we'll talk a lot more about
+that okay so I usually don't like talking about all this uh history stuff and why
+now but a lot of people like talking about it you can also talk about the brain side
+many people believe that deep learning owes a great deal of intellectual debt
+and inspiration to studies of the brain
+other people think not so much that studies of the brain that the brain
+is pretty complicated we don't understand it very well and what we can be inspired by aspects
+of it we can be inspired by lots of other things too so it's another source of expect of inspiration on par with
+um the Sun Spirit how to fight with the Dragon Spirit and so you should do this
+um but the important thing is we try stuff out so and there's lots that you take ideas from everyone
+okay so I'm out of time for today so before I close I'll set up the story of
+what we're going to do next so let me switch to my the website so you have a sense of what to expect
+one second [Music]
+[Music] my screens are like I lost all my screens
+where did it go oh wait whatever
+um so I'm just gonna I'll say it out loud next lecture what I'm going to do is I'm
+going to start engaging with some of the the core doctrine of deep
+learning which is take data set up a loss function optimize it
+understand what goes on and I will also start talking about the core trade-offs that one is navigated
+I'll try to set this up in a way that will be a brief review of material you've already seen in a machine
+learning class and then we're gonna challenge that in particular there is the idea of so if you want to go and
+read something go read about the bias variance trade-off understand how people think about it and
+then we're gonna tell you why that's only part of the story and you need to understand more
+it turns out this improved conceptual understanding will help um
+after we do that basically for a week we're going to kind of go in and kind of rethink you to the core underlying ideas
+in discussion however on Wednesday I hope you will actually start engaging
+with neural Nets starting in the first discussion I don't have a lot of build up of math before you can even start
+touching the subject hopefully you'll engage with pytorch so on your computers bring your computers a discussion make
+sure you have a working python installation Anaconda install General packages we'll
+post maybe some more details online and then you can start engaging with it we'll see if we can release the homework
+to you on Friday not promising anything but if we can tomorrow we'll give you a homework uh if you can't it'll be the
+next week it's all good um and after that we'll start talking about
+the following week we'll talk about a survey of different kind of problems that deep learning can work on different
+kind of give you a scope of the different kinds of architectures different kinds of problems and then we'll start going into it contents start
+talking about the details in every lecture once once that starts happening I will hope to have some Maybe
+um theoretical or conceptual interludes kind of break up the pace of boring stuff and with other boring stuff but
+different people find different things boring um so that you know keep everything engaged
+and uh we'll just keep going in the class uh online I will ask folks to
+participate in if there are things that you would like to see covered you know we might be able to take some requests
+of balancing the topics a bit but you know we can only teach you what we know
+so you might ask for something that we don't know how to teach it okay with that I will stop
+today we're going to start into the material as is typical um in courses we're going to start with
+a little bit of a review and recap to bring everyone onto the same page this will also give you a sense for some of
+you of kinds of ways that we look at things to see you know is this the right right
+class for you um administratively I just want to announce discussion sections are starting this
+week so discussion start this week
+again you can attend any section there is so but you know please don't
+overcrowd the rooms there's capacity constraints on every Rune so um typically what happens is the early
+afternoon slots are the ones that are extremely packed so if for your
+scheduled later slots in the day work then I recommend doing that you're more
+likely to how you know find a find a seat and not find yourself showing up to the room and then not having a not being
+able to actually attend a discussion okay we will also be releasing a
+homework pretty soon and we'll give you a week for it the first homework uh we think of this as more like the zeroth
+homework it's just designed to exercise begin exercising some of the ideas that you
+should already be familiar with and already know how to do um there'll be the first few homeworks will have some of these flavors to kind
+of bring everything back up to speed for people okay
+so um recall this is the class in deep
+neural Nets as I mentioned last time we don't understand everything or
+that much about how deep neural Nets work and so we're going to follow the philosophy you know when we can of let's
+unders show you what we can understand as well as you know different levels of understanding that we actually do have
+and a part of that remember is the the joke I told you about looking where the light is so classical understandings of
+ml are a bit of uh it's what we understand so it is
+important that you also understand that because we will make reference to it um as uh throughout the class
+um I just want to acknowledge though again that there's many Concepts and think
+phenomena which occur in deep learning for which we do not have crisp classical analogs and
+understanding for or ways of manifesting those phenomena In classical settings
+so that is what it is but you should at least understand the stuff we can
+understand so I'm going to today's it's going to be a bunch of ml review uh ask questions uh
+engage so let's just start with
+the standard optimization Paradigm optimization based
+paradigm
+or supervised learning foreign
+basic ingredients
+so okay this is the learning problem so we want to learn from what from data so
+we have training data
+which we can think of as pairs x i
+y i for a supervised learning problem means we have these y eyes where
+the X I's you can think of as inputs they're also referred to as covariates
+um especially in the literature that is badly influenced by stat
+and Y i's are labels for outputs
+and we have some finite number of uh data of data we might have an infinite
+number so but let's think of the finite case so this index I is going to range
+from you know one to some n where n is the size of the
+training set
+we're talking about the optimization based Paradigm for supervised learning so this is the data there's the thing we
+want to learn and so we have we call that the like the model
+which is some function that takes inputs in and should be
+generating things like labels so but it has parameters associated with it
+these are all the things we have to set and so
+that's the basic uh story of what you're faced with
+you have some model you want to learn its parameters set good values from its
+parameters given data uh still
+just it's good to Recall why are we doing this we want to
+do this so we get the underlying pattern right remember the name of the game in machine learning is to recover from data
+the underlying pattern and be able to use it so how we do that in the standard
+optimization Paradigm is we do training
+via empirical risk minimization or something like it
+so we want to choose this is why it's the optimization based Paradigm so we choose
+a Theta hat that we can learn from data that minimizes something
+so we have to choose something that we want to minimize
+and for picking the thing that we want to minimize we actually have so you can think of it this way like what are your
+design choices that's what one of the reasons we're thinking about this I'm going to keep in mind like when you're doing machine learning what are the
+things that are under your control um and what are the things that are not or are less under your control
+so typically you think of the data as being only a little bit under your control or not that under control you
+have a selection of which data you want to choose you know how you get the data but then you just get it of course the model is under your
+control right you get to pick what model you're going to use um and that's an architectural design choice that you have but then you have
+to do this training and you have to choose so you're gonna you're gonna do optimization based learning so you're
+going to do an argument but you have to choose what are you going to minimize
+right so what you choose to minimize for example classic setting is you say well
+I want to minimize the average loss foreign
+the label that I actually had from my data
+and what I would predict using my model on that relevant input
+okay so this thing
+is a loss that compares why
+to some prediction of Y and returns a positive real number
+returns or returns a real number
+so this could be some high dimensional object this could be you know it could be a real number it could be a
+vector it could be many different things right lots of choices for what these are but the loss always returns a real
+number because you want this whole thing this average thing to be something real that you can take a minimum up like if
+your loss returned a complex number then you'd be kind of like what does it mean
+to minimize a complex number right is one
+smaller or bigger than J like it's the real numbers you know right not even
+less so that's like the standard part and hopefully this is very familiar to
+everyone just want to make sure for those who maybe have took a machine learning class a while ago like you know bring everything back up
+so this is what we're gonna do right but
+what are we trying to do how do we understand what we're trying to do so
+a true goal right the goal isn't to
+minimize this function okay that's like very important to
+remember the goal isn't minimizing the function the goal is something else the goal is generalization right the goal is
+to have good performance in the real world on actual inputs x that you expect to
+see okay true goal is
+real world performance
+so the problem is that you have
+uh you need to get some way of accessing the real world right because you can do this and
+you need to be able to sell how well are you actually doing so here it's important to keep in mind
+two different things that are proxies for this struggle okay this is the
+distinction which may or may not have been emphasized to you in your previous machine learning class but it's important to keep straight
+so one is to have a mathematical proxy for this thing
+or this true goal something you can measure and so the way that you have make a
+mathematical proxy is you make an assumption you make an assumption that there exists
+a distrib an underlying probability distribution in real life there's the real world it
+is what it is right who knows how the real world works right but for the sake of our conceptual
+understanding we assume a probability distribution
+some p x y and we want is
+can people see over right here want a low expected
+you can change this we can fiddle with a fiddle with this right because it's like just the basic vanilla story expectation
+over X and Y of this loss
+okay
+this is like the basic story um for most of you I hope
+you are looking at this my statement of the basic story and you're saying wait there's stuff
+missing from this basic story and if you're feeling that way good we will
+start bringing in some of those things that you're hopefully feeling or missing um and for those who are not thinking
+there's anything missing or unfamiliar um it's got a little bit of a warning
+maybe you want to refresh um stuff okay
+so any questions on this basic picture
+yeah
+okay I'll try to write a little bit bigger um
+Okay so I'm gonna just move this board and just bring the other board
+and I'll keep annotating things there okay so the first complication that you
+have to deal with he's right you can think it in any order
+right I'm just introducing them in a particular order uh first complication
+is we have no access
+to p x y in this sense we don't trust it
+we made this assumption as what are you trying to do mathematically right you want to do well on average on
+stuff we haven't seen you assume that there's average makes some sense and that there is uh
+some underlying distribution but we don't know it so how do we how do we deal with this
+problem the way we deal with this problem is we collect a set of data
+that we keep from the algorithm during the time when it's being trained and we use that to see how well do we do
+on that data so we wanna our goal is of course to do well in the real world
+but our proxy is to hold back a set of data so solution to this standard solution is
+to collect no we can just think of it as tests that
+I mean there's a different held back data
+if you collect this test set of held back data so let's just call it these pairs
+X test comma I y test comma I
+equals 1 to n test and then
+we come up with a proxy for
+this object or alternatively if you want to think of it this object with itself a
+mathematical proxy we come up with a proxy for seeing how well we do in the real world on cnx
+okay you can think of it either way and what that proxy is is you say
+you look at test error
+which is the average over all these test points of how well
+do you do
+okay any questions about this kind of thing hopefully this
+is very familiar to everybody you know why do you believe this you believe this because you think like why
+do you believe this makes any sense you don't tell me why do you believe this makes any sense
+okay so yeah the the answer was because they believe that however we collected
+this test set it is uh somewhat faithful representation of what we expect to see
+in the real world and so we then expect that the we hope
+that the real world follows the kinds of things that probability distributions do and so you hope that averaging and
+sampling gives you some uh con uh some predictive power on what will actually happen
+right so you're you're leaning that way so what's happening here is you're seeing that this mathematical proxy is
+serving also as a kind of um philosophical underpinning for what we're doing
+right so we say well an alternative way is that if in fact it were true that there was a distribution
+then it would be that this would be a faithful representation you know if if n test was large enough of what we get so
+at least it works in the case where we hope things could work and outside of that well you got to do
+something right which is the standard you know well I don't know what to do I know how
+to do this so I'll just do this right um approach that we use in deep learning
+okay good so this is like the um the first you know basic complications
+so we do this we can use this principle over and over again as you've seen in
+your machine learning class use dispensable over and over again whenever you find yourself in this kind of situation
+so the second complication
+so we have this loss
+so the loss L true I mean I'll label it right
+not we care about actually care about
+is incompatible
+with our optimizer
+Okay so example of this the classic one is
+you want to do this this requires something to go around and
+try to calculate what this argument is that's some algorithm they'll have to do this work
+that algorithm will only work if certain things happen and it might be that the loss you care
+about doesn't let it do what it needs to do so for example the classic example is
+you actually care about some loss that's not differentiable because it's what's practically relevant
+for your problem but your minimizer is going to be using derivatives
+and so it will say can't work
+right now here is where we follow like a very important aesthetic kind of principle or
+like I don't know cultural principle in deep learning is that
+having a problem that reflects what you care about but you cannot solve at all
+is far inferior to having a problem that you can solve approximately that might
+be related to the thing you care about okay something
+imperfect is better than a speck of something ideal
+okay because this is an engineering subject and stuff needs to work otherwise it's useless
+okay so this problem is a real problem come
+from that perspective of course it's much much deeper than that but this is the most basic thing
+so how do we solve this problem standard solution
+you say well I can't deal with this loss so I'll use a surrogate loss
+I'll train
+that I can work with thank you
+so
+we're going to do is instead of doing this with just some loss that you might care about we'll use a training loss
+now yeah you have an example of like a true loss function for a specific problem and then trading loss function
+sure the question was what's an example of a true loss function and a training loss function so the classic example
+so classic example now I'm going to twist things a little bit
+is why is discrete
+so let's say
+cat dog you want to classify things into cats
+and dogs and the loss you care about is the you don't want to mistake a cat for
+a dog or a dog for a cat okay
+I'm being lost but this loss has the problem of
+uh first it it's like first thing it has this type
+error right that I have these y's are like from this discrete alphabet
+okay it's totally fine you you know exactly what I mean by this right it means lost cat is zero lost cat dog is
+one like it's there's nothing ambiguous about what I'm writing here but the problem is that you know I can't take a
+derivative of cat right it's just the wrong type right so I predict something cat like
+it's like what's the derivative a derivative If This Were a little different how would the answer change the doesn't make any
+sense right it's discrete so this is an example plastic example and a surrogate loss in this case might
+be
+because many things philosophically associated this might involve changing the types also is you say well let me
+move y right to be like a real number where
+or training data foreign
+will get mapped to -1 and a dog will get mapped to plus one
+and then I'm going to actually ask the thing to my function to predict not
+minus one plus one is what I want to do but to predict a score so I should change the type of the thing
+I'm gonna my functional predict which will be a real valued score now I can adjust the real valued score and I'll
+choose for my loss for training I'll just use squared error
+okay so squared error says you know hit the
+target and don't be too far away but and closer is better than further
+okay that clear now most of you might not we're thinking of this example
+might have chosen something different here but it's important to understand from
+the perspective of solving this complication at the most basic level squared error also does the job
+biggest differentiable it's nice everything works okay
+any questions okay good let's keep going so there's a
+general principle here that we're going to be following is we're working with computers and we're working with a
+fundamentally continuous world view right in a general machine learning
+class you also get exposed to some more discrete perspectives for example when
+you think about uh decision trees and the like um but in a deep learning class it is
+all continuous right we just only have a continuous perspective on everything so it's all
+continuous math derivatives Vector spaces vectors things like this that's
+all we care about so when you try to translate problems whatever they are you quickly want to
+say whatever you might have started with let's quickly get the vectors real numbers things like this whatever it is
+translated into this world because that's where you're you have building blocks you can put together
+okay so of course you know you have many other choices of losses that you've seen
+for example you know in in your background you have you should have seen the following things
+you should know
+so squared error should be familiar to you as a loss function other losses you should know are for
+example for binary classification
+you should know logistic loss should no hinge loss
+for multi-class classification
+cross entropy loss these are names of things that you probably should have seen
+and all of these loss functions have some nice properties which
+we will not be leaning on um too much we'll definitely lean on the
+fact that they're nicely differentiable but in your machine learning class you probably also heard reference to leaning
+on for example their convexity and how they play nice with convexity in our
+class we will have less call for leaning on convexity
+except at one point we will reference it for practical purposes but here
+um we'll stick with this and remember what's convexity convexity is how many
+nice things you have of squared error can you get for something else without it being squared error like the
+philosophical way you should think about it um squared error is like the center of
+our understanding everything else is like generalizations of nice properties of
+squared error why because squared error plays nicely with the geometry of real numbers because the side euclidean norms and so we have intuition about it and
+linear algebraic perspectives on it okay so squared error will like is the center of our intuition
+now important thing again review
+we have a true loss that we actually care about we have a surrogate loss L train that we can work with because the
+other one just doesn't didn't work at all it's like it wouldn't move um now
+it comes time to thinking about for example how you're doing for a test error
+right which you can think of as here or here right which loss function do we use when we
+think about test error raise your hand and answer
+we have two loss functions on the table right we have true and we have train
+when we're evaluating test error which one do we use
+maybe I'll just take votes how many people vote for train
+okay I will vote for true
+how many people aren't sure Okay so
+can someone who voted for True um raise your hand if you want to willing to explain to the rest of the
+class while you voted for drill come on
+we're going to be in this room for like a semester so you should become less shy
+okay good so let me repeat that the answer was that uh your the purpose of
+evaluating test error is to get a sense of how well you might do on real world
+data it is an evaluation that you're doing on a specific model that's already
+been optimized no optimization is going to be happening on Test air
+because no it's only trying to reflect how well you expect to do in practice because there's no optimization that's
+going to be done on it there's no reason to worry about the fact that the uh you
+know doesn't have compatibility with our optimizer and so in this setting it's better to be
+closer to what you actually care about and to the extent that you're lost true that you think you can express it
+reflect what you care about you might as well evaluate that okay I think that captures your the
+expansion of your answer uh that's correct right philosophically it's important to
+remember what why you're doing what you're doing
+okay so I'm going to write another object down and can anyone I'm gonna can
+someone comment on this object so I'm here I'll write down through
+aside it's an aside
+number of training points foreign
+what I wrote is the same as this except I'm evaluating it on the training set
+okay this object is not this object
+because of this word here in fact you know you'd have to like
+is that clear to everybody different first ever understand this object is different than an object any
+questions about that
+this says true I'll write it big
+right and this says train here so I've written this guy down
+so anyone want to comment on
+the philosophical status of that object and why you might want to look at it or
+not look at it or what role it might play
+so yeah um
+yeah it's like trying to see but what does that mean
+why would I want to look at it or what's like what's its purpose
+it's the loss you think you care about optimizing in the sense it's the loss you would like to minimize in the real
+world as applied to your training data after you use that training data to optimize
+your other loss the approx the surrogate loss so why would you want to look at
+this what context might it come up yeah um
+okay good so I'm going to say that out loud because it was being recorded so I want to make sure things are recorded
+um so the comment was we want to use this to understand whether or not
+actually optimizing our training losses doing anything reasonable with respect
+to the thing we actually care about um and see how well are we actually doing because if there was a
+growth I'm gonna add some more words if there was a grotesque mismatch between what you told this thing to optimize and
+how you were doing on the thing you were hoping you were kind of moving towards um then
+you know maybe something's wrong okay so from that perspective the value of
+this object is kind of practically speaking for everyone who's going to be working on things is debugging
+right is is everything sort of sane does it make any sense at all
+um any other comments that people have want to make on I saw their many hands raised on this object
+yeah um
+okay good so I think there's a an important Point uh that was mentioned so
+I'm gonna I'll mention here so
+I'm going to tweak what you said for the recording um so the there's a comment of hey maybe
+we want to be careful about working with this object or looking at it uh too much
+okay and the point there is that you want this to be
+a faithful measurement of how things might work in practice but if you looked at this guy and said
+oh wait okay I should have changed this right and then you go back and you say let me look at this again then you might
+be running an optimization Loop involving you as the optimizer in which
+you're actually looking at this held back data and so this data isn't being held back anymore
+right and because it isn't being held back um you might not trust how well things will
+work in practice so here is a good time for a joke or uh a story
+so I'm going to describe to you um something which is I believe illegal
+um but is an interesting scam to understand the concept of overfitting so you have this great idea
+you know you want to trick people into giving you their money okay and so you say I have a really
+foolproof system you can like dress it up all you want right
+um and this thing is you know guaranteed to predict to you to you how well the stock market
+does right and so if you said that to somebody
+um mostly uh they would say uh yeah I'm not giving you my money go away right so
+then you say no no no like I'm gonna actually give you evidence that my thing works and so you have this really great idea
+um the scam wouldn't work today but it's the story days from an old earlier time um
+you send people in the mail a note that says I know you have no reason to trust me so I'm gonna tell you
+right now my prediction for the price for whether apple is going up or down tomorrow
+and you write in there here's my prediction okay and then the next day send them another
+letter right it says here's my next prediction the last prediction next prediction here's what actually happened
+here's my next prediction and so somebody's sitting there and they're getting these letters right and they're like you know I see the prediction I
+check there first they throw them away I was like oh wow this is working okay
+so I'm gonna like call and you say you know but you know the more letters I send you
+you know the price goes up right to get them to you know call up
+the money right and then they like oh yeah here put me down they give you the money right
+so can everyone see the story I've described you the story from the perspective of the person receiving the
+letter um How do you how do you make this scam work if all
+you have is you know a hamster and a wheel like making predictions
+yeah um
+yeah it's gonna go down and if it's really big eventually there's gonna be
+like one person uh that you nailed every prediction did everyone hear that so basically what
+you do is you send this letter different versions of it to different people right and then by dumb luck
+right you're gonna get these predictions right for somebody then you happily take
+their money and move to Cayman Islands you know like right this is the this is the like a scam right this scam
+hopefully helps you understand why overfitting is a problem and why you
+can't trust it if you can keep looking at things okay it's the same concept
+okay so yes it's a very important point that was raised that one must be careful
+about evaluating this thing um there's no such care on this guy though
+because you're already using this data to evaluate how well you're doing um in the sense of your optimization
+algorithm is looking at it all the time so whether you choose to take other views of it is cost free
+uh it doesn't doesn't hurt you in any way but this one it's really looking at this data that's the problem now there's lots
+of interesting research on challenging and questioning the extent to which this is true there's deep
+intellectual connections to ideas in what's called differential privacy on this but we're not going to talk about
+that in this class um it's really cool stuff though but but it's not really that relevant for
+today's deep learning so I'm not going to do it okay so hopefully everyone is clear on
+this uh this particular complication
+now let's get to the
+third complication
+okay everyone remembers the basic story
+foreign
+so now you do all this you you get a nice uh
+a nice loss function that's surrogate loss that you have you hold back some data and then you go ahead and run
+and what happens is that
+you see one of two things happening okay I'll write it in its classic form
+is you run your Optimizer with your surrogate loss and
+we get I'll put them in quotes crazy
+values for data hat
+you're on the optimizer you're on the optimizer go ahead goes ahead it doesn't argument it's reaching a minimum it's clearly
+reaching a minimum and you look at the values of your parameters and they're like 10 to the 14th
+10 of the 22. 7 you know like a whole bunch of values and they're like all over the map and
+they're crazy okay so then you say okay
+you did that and then you say well okay I got some crazy values but maybe they're still okay right
+so but then and or
+really bad test performance
+so this is uh another
+kind of perspective on the phenomenon of overfitting
+that's not the scam perspective it's like complementary they're related but
+it's different okay something like the conditioning perspective on overfitting
+really talking more about this as we go this is a very important and
+subtle thing that influences a lot of our thinking so
+what do we do
+foreign yeah
+in the back yeah so solution a classic solution
+so what that means is you do something like this
+instead of picking the argument you did before so remember before this pen is going to die
+see if there's another one
+sampling pens to see which ones are better it's really bad right if you control
+your pens then at the end all the pens die at the same time right
+so punch it instead throw the pens away
+exercise think about the relationship of that to regularization
+um Theta hat
+foreign
+okay so this is what you did before and you add an explicit regularizer
+on it it's like a penalty term so it's a classic example
+like Ridge
+so it's good to step back for a minute and see
+um what you've just done here uh
+you want things to work you tried it without it and it didn't work
+so you say well what went wrong with this complication the problem is that I got these crazy values that were
+really big and I think really big is cuckoo so I
+don't want it to be really big how do I tell an Optimizer not to make something really big I say well it's going to cost you to
+make things big right so please don't unless you really need to
+so you add this term which says I'm going to charge you to make it big
+so don't make it big and you say let's do that instead
+so but remember
+what you actually care about is still how well you'll do on something with no regularizer at all
+good to remember we're kind of we're moving further away from the initial perspective of well I want to do well at
+this so let me use the training data and try to do as well as I can on that and hope
+that works in practice that doesn't work so then you do this
+okay hopefully everyone has seen this right if you haven't you probably should drop the class
+because we'll be leaning on this quite a bit okay
+but any questions about this this idea of doing explicit
+regularization yeah how how can we choose the appropriate amount
+great question so notice I'll make this down notice
+great we added
+another parameter
+in our that we have to that we have sitting around how do we choose it foreign
+so I'll mark it down this way right
+you ever notice that it's a great observation it's exactly the next thing I want to talk about um
+so what would be the
+straightforward naive way of setting that parameter that new parameter that
+we added
+yeah in the back okay great the naive approach is to say
+hey I have this new parameter that I added so
+I wish I had another color um
+right is to say instead let me do theta ha equals
+you'll hopefully can understand what I mean by ARG men think of it as a python argument that returns many things
+right I just take the first one right stuff
+just add it to the argument right just optimize over that too okay does everyone see how that's the
+naive straightforward thing you might want to do I have a parameter how do I do all the parameters I have my Optimizer tell me the answer I just run
+it okay so the first does everyone understand why this would be something
+that it is natural to try I think it's a good idea but it's natural not nothing
+that'll work but that's it's a natural thing to try anyone have a question about that why
+it's natural okay so
+the natural thing to try can anyone tell me what happens if you do this
+right so one is I could just give you negative Infinity for this and say that's really fun right I just
+make the parameters go cuckoo I pick negative infinity and I think hey reward right and I just go nuts
+okay very important kind of thing so you could say okay okay not negative
+Infinity it should be a loss okay like should be
+greater than equal to zero what happens now it says zero it says why because like
+you're penalizing me for something how can I be happier like I'll remember get rid of the penalty
+that I'm happier then I can pick crazy values and I'm super happy again okay so
+this naive approach doesn't work so what do we do
+so Part B of the solution
+is you actually have to split your parameters into two sets of
+parameters
+foreign normal parameters
+and Hyper parameters
+okay so you want to this is like a general principle actually like sometimes you
+have a parameter that you think is a normal parameter but it behaves like a hyper parameter okay
+um this is a little qualitative and learned by experience but
+what's the hyper parameter okay the practitioner's definition of a hyper
+parameter is philosophical definition of hyper parameter it's a parameter that if you
+let the optimizer just work with it it would go crazy so you have to segregate it out
+this is the practitioners practical definition of what a hyper parameter is
+okay so
+in many systems in practice other people have already listed to you these are hyper parameters and so if that someone
+else tells you the desire parameter is probably hyper parameter okay so this is another very important
+aesthetic aside for deep learning machine learning in general but deep learning comes from a general engineering principle
+when you don't understand something and you know you don't understand something and you are pragmatic
+okay you are also going to be superstitious
+because you don't know what's going on you don't want bad stuff to happen so you know what you'll hit your bets
+right General Life advice right for uncertain situations right consistency
+isn't what you're going for all the time when you have to actually like live
+right or get stuff done different from a scientific perspective where you want things to break and go oh
+yeah that good right but your this contact you don't understand what's going on you know you don't understand what's going on
+so what is a kind of basic level pragmatic Superstition when it comes to
+deep learning that is when you're building on the work of somebody else right and they set a bunch of parameters
+to something and you don't understand why they sent them that thing probably you want to try setting the
+same thing right as a start feel free to change and adjust but maybe
+they were onto something maybe they weren't but you don't know you know they don't understand you know you don't understand so try it first
+okay practical thinking applies here too what's that parameter someone else's
+probably cyber parameter might not be feel free to question but good guess to start with
+so you have these you split your parameters in normal parameters and Hyper parameters and then what you do is you do uh
+an optimization where you kind of use held out data to set your hyperparameter
+so classic examples of hyper parameters are of course the Lambda from Ridge regression also things that might be
+fundamentally discreet in nature that you can't find a good way of continuing making continuous in a proxy way like
+model order uh there's many many hyper parameters there's learning rates and other things
+that you have to deal with as well so what you do is
+hold out additional data foreign
+hold back some validation data
+right and use that
+to optimize
+hyper parameters
+foreign so what does that mean it means that
+you do things in two steps you find your normal parameters by doing
+this kind of optimization where you hold the hyper parameter is constant then you use the resulting Theta hat
+which is tagged to those hyper parameters to check how well do you do on your held
+out validation set which will be a calculation like this and then you optimize that
+so you don't look at both sets of data at the same time in the optimization
+this tends to work it doesn't have to work
+um I in Fall 20 when I get when I taught machine learning I had examples to warn people that look you can have
+counterparts of overfitting to your validation set vis-a-vis hyper parameters and there's certain situations where you you can't this
+approach won't work but it's the standard approach
+now when you do this should be very familiar to everybody right when you do hyper
+parameter optimization using the validation set you might be using a different kind of optimizer
+than you used for the argument you're doing for finding your parameters so
+typically in the context of deep learning this thing is always going to be some variation of gradient descent is
+what we use to do this kind of setting but for hyper parameter setting we you might be doing a Brute Force grid search
+for example or uh searches based invoking ideas related to
+things like multiram Bandits or other techniques of you know zeroth order
+optimization algorithms that will help you do that you can also use for some hyper parameter searches gradient based
+approaches when it comes to using the held out data in fact when we talk in our this class about meta
+learning approaches you can think of some of them in that way okay but it's really important to understand the basics and then how to
+play around with them later
+so um very much related to this issue of hyper parameters
+is the idea that okay I'll move to the I can't I'll close
+this it's fine any questions first on how you do hyper
+parameter tuning um in principle yeah also like reduce the complexity of our
+model instead of doing a regular regularization ah good question so the question was if
+we had this complication of getting crazy values um we can add an explicit regularizer
+during training but you can also do uh complexity reduction of your model
+right make your model less complex okay we will talk a lot more about this but I will like say the basic thing
+the context of a standard machine learning class um making your model simpler in the face
+of overfitting is good general advice
+that um will often translate into good performance in practice
+and so it's a part of the standard uh treatment in a machine learning class
+it also has the advantage of being philosophically well grounded right you're trying to learn too much
+from your data so you're getting gibberish don't do that
+be appropriately humble and learn what you can don't try to learn too much
+so go for a simpler model excellent important good to keep in your minds
+however when it comes to deep learning practice empirically people have found that
+following the strategy of trying to go for a simpler model isn't the best way to go
+okay so in the context of a deep learning class
+that's not necessarily going to be your go-to advice
+the reasons for this are subtle and deep and things we are only beginning to fully understand but empirical practice
+definitely says this empirical practice instead tends to be
+oh my model isn't working well let me
+adjust some other things to make it work better okay however there's versions of this
+that are important so but we'll get to them later so you're
+right alt solution
+simplify model so that's the example of you know reduce model order
+in which case model order become a hyper parameter so you still end up doing a hyper parameter search over model order
+but it would be something you think about um yeah in deep learning we don't tend
+to do that
+other questions on this basic yeah
+uh the question was what does model order mean uh by model order I'm referring to the idea of how complicated
+is your model and sometimes that can be like there's a clear number so the paradigmatic example of this is from
+machine learning class it says I would like to fit a polynomial to my data
+um what is the degree of that polynomial the degree of that polynomial is represents the model order
+um another version of it could be I would like to fit a Fourier series to my model
+how many Fourier coefficients am I going to keep that's model order in general model order reflects some
+number might be a vector right actually which captures how many degrees of freedom
+your model is supposed to be capturing is usually tied indirectly to the number of parameters
+in your model okay sometimes you have such a natural
+choice of model order so in the context of deep learning um your counterparts like model order
+right there's things like which are treated like model order in many times hyper parameter search for example the
+depth of a model right the number of hidden layers could be viewed as a hyper parameter you could
+add more more layers and you can treat that as hyper parameter which is basically of the model order flavor
+okay so this is hopefully good I'm gonna
+move to the next one hopefully it's all like so first
+I guess maybe people might feel self-conscious about it so I won't ask but just do yourself think is everything
+you're seeing good review like you're a c you've seen these ideas you might not have seen what talked about but the
+review if so good you're tracking the way the class is supposed to be going if it's like I have
+not seen these things I've not seen them talked about this way then warning
+might not be the place for you
+if you find yourself in the latter position you should be taking 180.
+Okay so
+that
+I'll call this a version of the previous one but it's like a further complication it's important to think about
+um we talked about hyper parameters before so I'm going to talk about kind of more explicitly right is the
+optimizer foreign
+might have its own hyper parameters
+example learning rate
+generally optimizers might have their own tunable knobs and in practice as a
+someone trying to do deep learning you're going to have to have the discrete choice of which Optimizer to
+use okay which is kind of you can think of it as a discrete hyper parameter choice
+for your thing so again you might think wait this is
+getting more and more kooky right like we started off saying we want to minimize this loss
+um why because if I don't if I can't do well on the data I've seen philosophically if I can't do well on
+the data I see why would I do with it well on data I can't see it's kind of weird right or alternatively all I have
+data I see I want to do well on data I can't see well I could try to do well on the data IC you see a two subtly different
+perspectives okay one is well it's a proxy and the
+other is all I can do is work with this data so I'll work with this data right that's the looking where the light
+is perspective both valid has ways of thinking but
+you might think in this perspective this optimization oriented perspective what
+the optimizer is is like a nuisance detail it's just designed to optimize this
+thing for me please do a good job optimizing this thing for me why do I care about which Optimizer to use well
+maybe certain optimizers like certain problems and so that's you know you need to use the
+right one for the right kind of problem that's the classic perspective um what you'll see in the context of
+deep learning is that we will we will soon be moving away from that perspective and start thinking about the
+role of the optimizer a little bit more a little bit more differently in terms
+of what the optimizer might be doing so but right now let's just think about
+uh you know these issues with the optimizers so here's like a good time to review
+uh you know the most basic Optimizer that we use
+so most basic kind of the root
+is gradient descent
+foreign
+so what kind of optimization is gradient descent gradient descent is a an
+iterative optimization approach where you make improvements and you make
+them locally so what's the idea behind gradient descent
+so you're going to iterate so you're going to change the parameters you're going to change them a little bit at a time
+foreign
+the parameters a little bit at a time all you care about is how does your loss behave in the neighborhood of the
+parameters you're in if you're going to move it a little bit you care about what's happening locally
+foreign iteration step I look at Theta I for iterating Theta we
+take iteration so as the maybe I'll use T for time because it's kind of like related to time so I'll call it t
+Theta t and the basic idea
+is you say Theta hat if you think of it as t plus one well it's called we'll drop the hats
+right is just going to be the data you had before
+plus some step size
+also called learning rate
+and what direction do you want to move in so the idea is you're trying to minimize
+so you want to move look you're going to do in a greedy kind of way so you're going to move downhill
+so the gradient with respect to the parameter Theta of the loss
+whatever loss you're minimizing which is like hidden behind things but
+the loss your trading loss you're minimizing
+that tells you gradient points up so you want to move in the direction of
+the negative gradient now so here
+L train Theta is for example
+Over N sum
+I've written this before so I'll just write it sloppily
+plus whatever regularizer you have regularizer is a part of this
+so when I say this is like a local neighborhood of the loss what I mean is
+that we're basically approximating what we have with the spherical
+neighborhood you know around this parameter and we're hoping that the first order Taylor
+expansion of the loss is a reasonable way to look at the loss
+so we're saying let's look at this and let me put this function up on top right
+so I'm going to look at this as Theta t plus some Delta
+Theta and I'm going to say this thing is basically
+by Taylor expansion gonna look like this
+right with this um linear operator so I take the derivative of a scalar with respect to a
+vector and we treat the parameters as a vector so this should give me a linear operator that takes
+vectors and return scalars right it's a derivative so it should take a Delta and return to me a change
+so this is like a row
+this thing acts on Delta there all right this is the approximation we're using
+now this thing is a row right so if I want to move in a
+direction which maximizes the change of this I should match it right if I want to take a it's like
+koshy Schwartz right I take a vector I want to take the inner product of that Vector with something
+right such that I maximize it and I'm constraining how big the vector should be it should be exactly that size but a
+line to the vector I start with right and that's where you get this idea so the transpose of this row is called
+the gradient right and so this is what how gradient
+descent is working people are totally familiar to people
+how gradient descent works so if I look at this the question becomes
+what is the role of this Ada the step size
+so here it's useful to think about this to say that
+there's a reason I chose T here for time to emphasize something so the operation of the optimizer
+basically is a dynamical system right it's a Dynamics
+it starts off somewhere there's force acting on it basically and it moves
+is that clear to people so this is a discrete time dynamic system
+foreign
+medical system the basic considerations apply which is the sort of MSB thing you can
+ask about a dynamical system is is this thing stable or unstable like as it evolves what happens
+right and so this Ada
+controls stability of this
+system right
+edit too large Dynamics become unstable
+it oscillates away
+now this is non-linear right your model so in your loss right is this so I'm
+sorry I'll make a comment here just an F Theta sitting here right so this app can
+be non-linear the loss itself can be non-linear so this entire thing is
+non-linear it's first order approximation is also non-linear and so you get all the things that can happen
+with nonlinear Dynamics and instability and nonlinear Dynamics so in linear Dynamics you know instability is always
+Divergence by you know exploding away to Infinity exponentially fast
+right that's how linear Dynamics diverge they could diverge oscillatory but still
+exponentially away to Infinity in nonlinear Dynamics you get other phenomena that are also unstable right
+you can also have chaotic paths you can also have where things will not converge you can also have limit Cycles where
+things will like go around and follow some trajectory that has nothing to do with what you want
+um lots of things can happen all of which are traditionally viewed as bad
+minor comment if you use logistic loss or cross-entropy loss in many cases you
+also get the dynamic system is actually on the desired path
+um going to Infinity but it's going to Infinity in a controlled way on many cases because the true Optimum lies at
+infinity and is interpretable that's like a minor point you may or may not have seen that in your machine
+learning class probably didn't but it's sometimes relevant for us in
+deep learning so we have to keep that in mind but here
+it is too large Dynamics go unstable so what about just Ada is too small it's good to keep that in mind
+it is too small practically speaking from the perspective of deep learning is
+it takes too long foreign
+so here I use T to reflect time but I one very important point I want to
+make before I I close lecture we'll continue with review right which is in the context of deep learning there's two
+different senses of time that you need to be aware of one sense of time is kind of an abstract
+view of the operation of your algorithm which is like iteration counts it can be viewed into like we'll I haven't talked
+about stochastic gradient descent but like how much data you've ingested and gone through like you know epic stuff like this
+and that's definitely an important sense of time that's useful for understanding deep learning algorithm but there's also
+another sense of time which is really practically significant and that's called wall clock time
+okay wall clock time is how long has it taken by the clock on the wall
+so when we give you homework there will be times and you'll be like okay I'm running this it's running
+it's running it's running it's running sometimes we'll put a
+progress bar or some kind of update sometimes he wants like it's running you go okay shooting some water come back
+it's running it's running so that's wall clock time okay and in many practical
+settings walk lock time is super duper important because if you're running it for example for
+example on a compute cluster that's like your electricity bill right if you're using it on a cloud
+system like you're racking up expenses right and so when people say things like
+oh training uh the modern diffusion models for generation is expensive it means like walk walk time on processors
+like that's a bill right of a thousand ten thousand a hundred
+thousand a million 10 million dollars right so wall clock time is the
+different but is also important so when you make these iterations too small
+the step side is too small it takes a lot of iterations but also takes a lot of wall clock time
+so we need to worry about these things so that's the final thing I wanted to
+say there we will continue moving forward uh through this material
+basic review material as we go next time
+I have office hours now you can ask questions come up and ask questions um on stuff on lecture then we'll move
+left off last time so just a matter of a couple of comments of things that you
+should see um you should have seen homework zero 0 has gone out it's just a shorter homework designed to get you
+kind of into the swing of things make sure you know how to use uh you know review some ideas
+also make sure you know how to use pytorch and things like that
+so that's the goal you've experienced the first discussion section so I want to make a comment about a discussion
+section so remember for some of you are graduate students and you are might not be used
+to the idea maybe in your original school there wasn't a discussion section so discussion sections uh in this course
+are uh cover mandatory material like the material covered in discussion is
+required for the course so it's basically a chance for you to understand the material in a more
+interactive way with specific problems in front of you and where you can get
+help from course staff and work in groups so we noticed in in the
+attendance at the discussion sections from graduate students in many sections was quite low so want to encourage grad
+students to you know do try to come to discussion it is important uh for undergrads the discussion sections
+are very valuable we're not taking attendance but in our experience people who attend discussions regularly and
+participate actively do far better in the course on exams so we do want to
+encourage you to do that come to discussion it'll happen every week
+um so yeah we will release a homework one soon
+ideally today or tomorrow I kind of get back onto the Friday on the our regular
+Friday due date cycle and homework one will also have
+substantial review given that the electors are also first few lectures are
+are largely review okay so we're going to continue where we left off last time so
+last time we talked about the idea is amazing it's still on the board um that you know when we're doing these
+optimizations to figure out how to set all the parameters in our model so that
+we can generalize well uh the Optimizer might have its own
+hyper parameters like a learning rate this gives us a kind of chance to talk about the idea of learning rate and what
+happens so that the idea of gradient descent
+optimization so here I'll just you know make Mark things as that are vectors as vectors we have lots of parameters so
+think of them as a big Vector we evolved the parameters based on
+training loss so we look at the training loss and we compute its gradient with respect
+to the parameters and then we take a small step in the direction opposite the gradient
+because we want to reduce the loss so this is uh you know basic gradient descent and
+if you look at this this is coming from we mentioned last time it's coming from the perspective that we're going to look
+at the training uh loss locally so we think of the training loss as a
+function of where we are but we want to understand where it would be if we were to take a
+small step and so by doing a Taylor expansion view of the loss we see what the dependence
+is you know on the parameters and so we can then figure out what
+direction to move in okay to maximum you want to make this as small as possible means we match these two together
+so uh this is the you know and we commented
+there that you know because this is fundamentally a dynamic system that this is evolving with time T which is an
+internal computational time we have to worry about the stability of it and in general if the learning rate
+is too large the Dynamics will go unstable but if the learning rate is too small it'll take too long to converge so
+that's the guess we ended last time kind of in this discussion so
+we closed with the idea of thinking about okay so we care about getting this learning rate right so that we converge and we mentioned the
+idea of wall clock time the idea that it's really important in these problems that things actually
+um work not with some abstract iterative time but with actual time on the clock right because that's dollars
+um of compute and so in doing that
+I want that's like an excuse to talk for us to talk about uh stochastic grains there's another review thing we have to
+do so you look at this uh training laws and
+the training loss has a big sum in it
+right because you're summing up over all the training examples you have of this loss
+so you know you can use when you compute this derivative right this derivative you know will
+nicely it'll play nicely with the sum right you can just bring it inside the sum but you still have to deal with the
+fact that you have a lot of terms here uh to to work with
+so Computing this gradient here
+uh as you know requires Computing uh this loss typically and it can become
+expensive if you have n large so what can you do about this so the standard
+approach uh that one has to think about uh you know
+making this part more friendly with respect to wall clock
+is to say excuse to cast the gradient descent
+SGD and the idea of SGD is to say
+instead of using n all the Turning data just randomly sample it
+foreign
+just use and batch typically much smaller
+than n random samples
+so when you use end batch what you'll use is an approximation of the training loss and hence an approximation of this
+gradient where instead of where everywhere you had an N you instead use n batch so this n becomes
+an end batch this becomes an end batch
+and then these eyes become you know a Rand you know
+x i these y i x i pairs become a randomly drawn n batch number of
+training points ideally kind of our mind how we think about it
+so when you do that you're replacing
+something which is an average of a lot of things with an average of a smaller number of things and so you expect that
+this will be an unbiased estimate of that quantity right because just the
+randomly drawn a subset has been selected yeah
+multiple times in the same Apple okay great so I'll talk about that in a
+moment so the question was uh what is going on here so I'll say it this way
+wait you have uh n training points so how do those training points get hit um
+if you're randomly drawing from them so here we'll talk about that in a moment kind of at the next level of details
+let's understand the basic level of detail so the basic idea here is you make a if you were to do a random
+draw you get an estimate of an app so the quantity you're interested in is an average
+um and if you take a random draw of points instead of the entire set of points you will get an estimate of that average
+that estimate will be on itself on average if you were to go over all
+possible things you could have drawn it would be the right thing um but it will have some variability associated with it because the fact
+you're taking a small number of samples and not a large number so
+before we talk about kind of the next level of detail let's understand philosophically and make sure we recall
+for everybody philosophically why is this okay why is this reasonable to do so
+there's many answers here and one answer is the standard uh deep learning answer
+which is I can't afford to look at all the points I can afford to do this so
+I'll do this okay this is like a totally legit answer but we can go a little bit further in
+our understanding and so a little bit further comes a depth of understanding comes from the
+idea that look when we're going to be moving this data
+there might be different regimes of where we are and when we start off we have no reason
+to believe that where exactly we start off is going to be a good place so probably in this thing there's lots
+of these points that are all going to be telling us to move in a similar Direction so why do I have to exactly compute that
+direction when I'm going to have to take a step in a certain direction maybe a small number of points will be definitely enough to
+tell me what general direction to move it so I don't need Precision beyond what is
+required for me to take my step appropriately so it's like a that's a that's a particular intuition that's a
+pretty reasonable it's good to keep that intuition in mind um as you think about
+um you know like we talked about this hyper parameter which is learning rate which is how you might think about how this learning rate might change during
+our training so one the default answers you pick one learning rate you stick to it um which is also not that bad but
+sometimes you might want to think about how that learning rate might change during training and so think of what's
+called a learning rate schedule so understanding the intuition of what might what's going on is helpful to
+think about help you understand what's going on what might be going on with the Learning grade schedule
+so that's a you know a reason why this you might
+believe uh this will work it's actually kind of interesting uh that there is alternative perspectives which most of
+you might not have seen uh in a standard machine learning classes why I'm not going to dwell on it here so but for
+those who are interested you can uh you might be interested in
+looking up the area it's called online learning which is learning from data that is revealed to you sequentially one after
+the other and there's very interesting um beautiful analysis of online learning
+is so much surprising which also argues for another reason why these kind of
+approaches looking at only a small set of data still work okay I'm not going to dwell on that here
+uh it's not to say that online learning isn't relevant for deep learning it
+actually is quite a pit but not at this current stage of uh coarseness of
+description that we're doing and also it's not something that I expect everyone to have seen Yeah question
+uh does that also imply to Divergence of convergence okay that's a great question so I'll
+repeat it the question is if you have a step size that you know will converge
+for a regular gradient descent does that mean that that same step size will also
+behave well for stochastic gradient descent okay so it's a really good question so uh
+the general answer is no okay um that's uh not necessarily the case uh
+the reasons why are a little bit uh subtle but I can give you the base the basic idea so you can think about two
+things first thing is uh you know if it is too large then the
+Dynamics go unstable um when it comes to going unstable like
+actually like exploding uh then yeah it because the averaging is the same size
+and the expectation is the same way uh you expect that the same thing will roughly work for in terms of stopping
+you from going exploding however what you actually need to have happen is you need your model to train
+and converge to something that's good okay so uh when you do that and this is
+actually pretty subtle and delicate uh
+I'm going to give you first the conventional answer that probably most of you have seen so I'll pull you
+afterwards see who has seen this but if you have so
+the conventional answer goes like this look
+if you need this thing to converge okay uh what does that mean what does
+convergence mean it means that this thing stops moving time keeps going but this is no longer moving or not moving
+by very much okay everyone that's what convergence is so what would make it move
+this no that's the last thing so that's not making a move was making a move is this part
+so standard kind of optimization thinking with the actual gradient says
+look when you're at a stationary point which uh an Optimum definitely is at the
+stationary point the derivatives are zero right there's no more variation no more little little movement won't change
+anything uh substantially so the derivatives are zero and so that's why you converge because you're approaching
+that point and so this thing is approaching zero and so this which is
+where you were plus something which is approaching zero means that this thing is staying still
+got it okay now that works for gradient descent
+but let's think about stochastic gradient descent in stochastic gradient descent you are not using all the
+training points you're using a subset of training points so the classics picture you should have
+for this is something like this you want to at least squares fit
+a straight line to a bunch of points that's what your least squares fit looks
+like right like a straight line but notice something your losses are a
+bunch of sums of squares right every individual term is a bunch of sums of squares sums are squares and so at the optimum value
+this although the overall gradient of the
+loss is zero the corresponding component that corresponds to this point is not zero
+does everyone see that because this is not this point isn't fully happy
+right this point would prefer this line to move up the overall gradient is zero because of
+a balance between these points so some points are tug of war like that that's like the key
+thing in deep learning and all neural net uh in all gradient-based learning generally
+um what you have is a tug of war between points some points are pulling parameters one way and other points are
+pulling parameters the other way classical perspective and so the final answer you get is the
+balance point when everyone is balanced so if you were to have you're actually to
+be at this Optimum thing and you were to run not gradient descent
+but stochastic gradient descent what would happen what would happen is that a small number
+of points whichever ones you randomly picked will likely have some imbalance in their uh pulling in their tug of war
+does ever understand that like because everyone together balances so a subset only kind of balances
+and so what will happen is that for SGD this term
+will not at Optimum point
+under the classic perspective will not go to zero and so what will happen is that if this
+learning rate is anything which is itself not decaying this thing will only kind of converge
+it'll like converge something sort of look like it's converging something and then it'll do a little dance Wiggle
+wiggle wiggle wiggle wiggle wiggle wiggle wiggle wiggle wiggle wiggle keep wiggling right because of this stochastic variation that's happening
+from this GD right
+did everyone see that and so under a classical treatment um which I hope people have heard about
+um of SGD and its convergence uh you would have for SGD to have actual
+convergence it's not sufficient for Ada to Simply Be small enough it actually at the end has to be diminishing
+to actually get convergence okay question yeah
+okay that's a good question the question was do we typically have end batch the
+number of points we pull uh change with every iteration or we keep it the same
+um
+okay good good so let me let me answer that question that's a good question so
+uh first does n batch typically change uh during training and the answer is no
+you usually pick something and stick with it why do you pick the thing you pick typically you pick the thing that
+is the biggest batch you can sustain given the parallelism and memory of your
+architecture so you want to make sure everything fits in memory and you don't get cache misses and other kind of crazy nonsense
+happening so you pick a batch size that'll fit and then you use that because that will be the fastest because
+what you care about again from the deep learning motivation which is not a theoretical motivation it's like I want
+my wall clock time to not be too big okay so you go for the batch sizes that
+will Max will make your wallet clock time the best okay now your question
+your question was if you just picked a batch size let's say seven
+okay seven things
+okay great that's good that's okay good I wonder if that's exactly the distinction I want to make so um you pick this batch size but then every time
+you take a step you draw a fresh samples so it's always that's why it's shaking
+around is because you get a differently imbalanced tug of war in a small group
+small groups will never balance they'll always be imbalanced
+did that answer all your questions okay good um
+so this is the classic story and I want to ask um kind of a poll how many people have
+seen this classic description of why SGD requires uh diminishing step size
+for convergence raise your hand small number how many people have not
+seen this description of why SGD requires a diminishing step size for convergence
+so for people who have not seen STD requires a diminishing step size for convergence they wouldn't want to
+volunteer for weather so first of all how many people have heard that you should have a
+diminishing step size for SGD okay so there's an overlap between these categories so for people who have heard
+that you should have a diminishing step size for SGD anyone want to volunteer for what
+explanation you have heard for for this I want to know where my class is
+for the explanations
+if we give the same Stepside a very random
+Fighters never go to the the optimum point if you want to be
+and you will never be there so it's unclear to me so I'm not going to repeat that but it's unclear to me
+why the fact that the gradient becomes small will make you do a Wandering what was the what's that what's that bridge
+because if you go through large steps and you will
+cross over the table so that's why you're not too big so the
+question is whether you've talked talk about why you would want this to go keep because the steps has to keep becoming small smaller and smaller and smaller
+that's what I want to know who's heard an explanation for that just because I don't understand where my classes yeah
+okay foreign
+some people have heard is when you're far away uh you can afford to take a big
+step but when you're close you don't want to miss it or go unstable so you go
+for a smaller step that is that kind of what you're saying okay uh have other people heard that explanation
+okay anyone with a different explanation for what is going on that you want to yeah
+it's these acts towards the center and um the explanation for the diminishing uh
+is that as we go through like you can you interpret the error you you basically interpret the stochastic
+Matrix as adding noise or adding some error that people said and so you want to diminish that so that that error
+switched to zero to approach okay so that explanation is the same as the one I said
+right that the stochasticity of the small batch is what's causing you to wiggle and so you have to suppress that
+by making this get small if you want this thing to actually converge so good good I want to make sure that people also understand it um
+yeah once you once you make a distinction it's good for people to remember make a distinction between oscillatory Behavior
+of bouncing back and forth and random walk behavior of being shaken about these are actually different
+both occur in the context of under the analysis of gradient descent both are combated with things that might look
+similar but they're different behaviors
+uh yeah okay so the question was is there a relationship between the understanding of the step size and some
+appropriate eigenvalues and the answer is yes in the analysis of classic standard gradient descent this uh this
+this threshold between stability and stability is exactly tied to eigenvalue analysis but in the context of
+stochastic grade descent it is more subtle okay because you have to think about eigenvalues a certain random matrices
+and how they behave but there's still a relationship um so there's a second explanation which
+I was thinking maybe some of you have seen of kind of another like analogy which is
+also good to know uh suppose I wanted you to compute the average of 10 000 numbers
+okay but you would be showing these numbers one at a time okay
+how would you compute the average of 10 000 numbers being shown them one at a
+time
+yeah the answer is you can update the average right so you keep the you keep this is like the you know you have very
+little limited amount of memory you keep the average and then you get a new point and you know what point it was like
+which like this is the 37 000th point you're told that um then you can use that to update the
+average okay and if you do that if you write out those equations which is a good exercise if you haven't done it already and
+sometimes done in some classes you'll see that the amount that you move the average with every new Point becomes
+smaller and smaller and smaller that when you have two points there's a second point it moves the average quite
+a bit but when you've already seen 999 points the thousandth Point moves the
+average only a little bit so that's also a reason kind of
+inspirationally for why this uh step size of getting small so this is a
+useful side thing to make an aside comment that is useful in the context of deep learning
+whenever you find yourself feeling lost or confused or
+like wondering what is going on okay what you should do in the context of
+machine learning disclose your eyes it's like you know like on a on a ride or
+something close your eyes and say repeat to yourself it's all just fancy averaging it's all
+just fancy averaging okay because actually that's kind of what's
+going on all the time so everything that happens that whenever learning works it's all just fancy
+averaging and low pass filtering okay that's literally it's some like
+disguised version of this with all kinds of other sophistication so
+if you find yourself confused about anything you can say okay let me see if
+I can see which way averaging is some familiar Landmark that I understand very well and like make the connection
+between what's going on here and some kind of averaging and that might help you Orient yourself
+for what's going on okay so
+sdd is like fancy averaging um but you know it nicely works so I
+told you that I was first going to talk about this in the um classical point of view
+so now I'm going to give you a preview of something that can happen
+we'll talk about it we'll keep coming back to it in the context of deep learning
+so in deep learning sometimes what you see isn't like this
+picture at all um
+instead what can happen is that your gradients will go down because
+every single one of your points will start to become happy
+it won't be that your training points uh are
+all unhappy and in a visible tug of war where some are okay I'm this unhappy but
+you're that unhappy so okay we can't move the parameter it's like everyone's like I'm good I'm good I'm good I'm good
+okay which is a behavior which is different than what happens in classical settings
+but it will it will happen in deep learning settings all the time and so in those settings what will
+happen and I can't draw a good picture of it for you yet I mean here right we understand this a little bit but not
+sufficiently for me to draw it in a very short term what will happen is that
+your end batch points will all be reasonably happy as you keep going in
+training and then this gradient will become small and in those cases you will
+see that even SGD with a constant step size will converge
+so in practice for many deep learning applications despite the fact that you've been taught and we talked a
+little bit about the classical story of making sure your step size is diminishing the learning rate schedules
+that we will sometimes use will end with a constant learning rate
+we will not have a diminishing learning rate and it'll still work so I wanted to warn you of this
+discrepancy between what you've seen in your machine learning classes and your optimization classes and what you might
+start seeing here okay with all that now I can come back
+to that next level of detail that was asked for earlier so the way I described it was the kind
+of conceptually easier way which is every time you take a step you draw n
+batch random training points and use them however remember what we care about is
+wall clock time and this can become painful sometimes
+with respect to wall clock time because your data set might not fit even in you
+know not your GPU memory but they might not even fit in your regular memory and so doing a random draw and then doing
+disk seeks to different points to get your your
+data is too painful okay so what is often done is a different
+strategy where you say you know what sampling with replacement and sampling
+without replacement for a large number of points is kind of the same thing
+so let's just sample without without replacement so what you do practically speaking is
+you take all your data points and you shuffle them
+Shuffle is kind of really really important shuffle them randomly and then just look at them and batch at
+a time so when this kind of approach is done there
+are some specialized terminology uh in the Deep Learning Community um used to refer to things
+so here people at the beginning were very very concerned about whether or not
+you've actually seen all the data and so they would refer to the times that you've actually gone through this
+entire batch of data into all the data you have as an epic so you go through the entire data
+you know in the shuffled way that's a netbook and then you do it again now here uh
+you can in principle uh and if you want to avoid certain kinds of subtle
+bugs that sometimes happen you might want to do this you might want to reshuffle your data between epics
+foreign just to prevent having some pattern
+repeat and bother you um but many people are like that's too
+annoying and so these won't just shuffle your data once and just keep keep using it again and again
+the balance between avoiding certain subtle weird bugs that can happen and wall clock time and implementation
+complexity Yeah question
+um will sampling with replacement yield better results uh the answer is no typically not because what will happen
+is relative to each so if n batch is sufficiently small
+then for every one of these steps that you're taking the difference between sampling with
+replacement and without replacement is almost nothing
+so it turns out not to make a big difference at all
+again this is just to give you the bias in this course and in a lot of
+deep learning research unless we State otherwise we'll be uh two cases where
+you have a lot of data like lots you know thousands Plus
+when your data sets are very small then you know different levels of care might
+be required because then you really then you do see differences between these things
+ah good question the question is when I write n batch is much smaller than n what what should this be the answer is
+nbat should be as big as works for you in deep learning practice and batch should be as big as works for you with
+your Hardware um fast
+okay and that will depend on the problem it'll depend on your Hardware um
+that's what it is so n will usually be like much bigger but you have no hope of getting there so this is something that
+you can hope to get to when you go to get there now there's an entire other part of the subject that we are not
+gonna do more than maybe touch on here and there I'm hint at which is
+when but you can think of as the classical CS
+point of view on deep learning which would be look
+you have massive quantities of data you have to Marshal not just you have to
+deal with the details of the computer architecture that you have and the memory and networking systems that you
+have and the distributed storage that you have in Real World Systems to actually get these things to work in an
+accelerated way when they're very big okay so this is like a something that is usually referred to as ml systems
+extremely important in practice um to deal with wall clock time and when
+you the large companies that exist uh all have teams of very highly paid
+people who figure out how to manage those systems and to get them to work
+and the algorithmic design sometimes takes the considerations of those
+systems into account because if you can't scale it and run it on large enough amounts of data it won't
+give you the right performance one wall clock time and dollars so you have to choose an architecture that does that
+entire level of consideration we are not going to be talking that much about for one simple reason we have no way
+right now that we understand how to give you homework about it
+to figure out ways of giving you homework but hints in that direction we might start putting some of it in but we
+don't know how to do it so we're not going to spend time on it okay so this is like a longer than I
+expected um review of SGD any any questions on that people have
+any remaining questions on basics of SGD
+Okay so now you understand the
+what you think is the basic perspective on why things work uh kind of the way that
+people normally understand it um we are going to challenge it a little bit um oh in in a little while but for now
+let's just be happy that we've kind of caught up on where we are uh where you were from your
+um ML Class on the big picture what I want to do now is to like just
+remind people a little bit about just neural Nets themselves since this is a
+class on deep neural Nets and you haven't really talked about neural Nets yet um
+so what's a neural net foreign
+perspectives and they're people who come at it from a biologically inspired point of view we already said before it's some
+kind of analog circuit that data we put feed data in it processes an analog way you get analog outputs and you interpret
+them that's for sure true but the question is like how do we think about that and what's the point
+um so I like to think of it not in a
+biologically inspired way but instead um keeping with the general Spirit of
+deep learning of you do what you know how to do it says look
+we know how to optimize things using gradient descent and stochastic gradient descent
+what kind of uh computational thing makes it easy for us to use gradient
+descent and stochastic gradient descent whatever that is let's use that
+okay so
+you know so I'm I'm going to assume that everyone has seen neural Nets before this
+continues to be review okay I'm just going to give you a slightly different perspective on it so
+you know that you can compute derivatives using
+gradient descent music Sorry using the chain rule and you know that computers can do the
+chain rule for you and so computers can do automatic differentiation
+so for us a neural net is anything that plays nice with automatic differentiation
+Okay so it's uh computation graph
+start okay analog circuit
+plays nice with automatic differentiation
+so automatic differentiation is sometimes referred to in this context as backdrop
+which I'm assuming everyone has seen it's a required Topic in the machine learning class at Berkeley
+um I believe it's a required Topic in most machine learning classes uh around the world if you haven't seen this
+and you're in uh 282a make a post on the Ed for 282a and we
+can point you to resources for it so
+why is this great because you can express your computation whatever you want to do as
+an analog circuit you can write it in a programming language as a description of that circuit and then automatic
+differentiation will happily compute all the derivatives you ever want or need and so you can then execute this
+approach to doing optimization and that's what you're going to do so this is kind of very high level
+so let's think about what do we want from the circuit
+so here the traditional perspective on these circuits
+um which is well I think most people have probably seen but I will emphasize here
+is that the what you want is expressivity
+right it should be rich enough with the parameters that you have in the circuit to express the kinds of patterns you
+want to learn
+foreign
+ly when people thought about this expressivity and they thought about the
+patterns of Interest uh people said wait I don't actually
+know what the pattern of interest is I can't hand craft a circuit to do what I want
+the whole point is I'm trying to learn it so how do I know that this something is going to be expressive enough to
+express the patterns of Interest and so one of the early approaches that people had to think about this was to in
+a way borrow from uh are already existing Rich tradition
+in both mathematics and the early theory of computation
+which is to say you know how I know something is expect can express the patterns of interest if it can express
+any pattern then definitely the one of interest is also expressible
+everyone see that logic there so it's the same thing that makes people appreciate Universal computation it's
+like how do I know this computer is powerful enough to do the thing that I want when I don't yet know how to give
+those instructions well it can do anything that's expressible in you know certain
+kinds of computational you know classes so great
+if it can express any decidable thing hey that's probably going to explain capture the class I care about so good
+okay similarly and much more apropos
+for uh deep learning you have the idea of approximation Theory which has been
+around it's like okay I want to solve these differential equations well I
+don't have necessarily a closed form solution for these differential equations what can I do well I want to
+express them in some form by which I can do the computation to compute coefficients that will give me approximations to solution to these
+differential equations so let me use Fourier series why is Fourier series okay because it's to give me enough
+terms it's a universal approximator for functions again there's lots of you know what kind of functions did you know
+so that style or you know if I have a polynomial
+right give me a high enough degree polynomial I can express any function right with a high enough degree
+polynomial so this kind of style of thinking is what's driving traditional views of uh the expressivity that's
+needed here um so patterns of Interest so for example
+quote Universal function approximation
+so for Universal function approximators you're used to thinking about presumably
+everyone has seen things like Fourier series and uh polynomials as a way of generating
+any function that you care about approximately any function you care about however to understand
+neural Nets there's actually a simpler to understand category
+um that is kind of conveys the idea more crisply and instantly
+so let me think about a specific kind of domain to visualize so let's visualize
+functions from R to R 1D functions
+that's the homework a discussion had you do okay okay and in the discussion you saw
+that look if I have a 1D function I can draw it on the board it's like the only kind
+of function I can draw on the board right because one is the independent and one is the dependent axis and then I run
+out of axes on the board okay so asym function
+any function how can I approximate this so if you ask if you if I asked you okay
+give me a polynomial of some appropriate order degree that will approximate this you'll be like yes I believe this thing
+exists um give me a computer and I can grind it out I asked you okay give me Fourier series with some number of terms
+a Fourier series that will approximate this function you'll be like yes I know this exists give me a computer and I'll
+grind it out right but for one category you can just draw it and that is piecewise linear
+right piecewise linear functions approximate all functions right
+you know that so you can say uh if I have another color
+let's see if it works
+right I can
+I can just put line segments down
+oops
+and approximate this function and you know that
+piecewise linear functions
+given enough pieces
+foreign approximate arbitrarily well
+okay any questions on this hopefully this is very familiar this is like way back when you studied things
+so the question becomes how can we think about piecewise linear
+functions uh in a way that we can express them using a circuit
+because if you can express a piecewise linear function using a circuit
+that we can then have automatic differentiation play nice with that
+means we can opt optimize piecewise linear functions so on discussion right so let's just make sure that we we
+all understand it so
+first before we do that just a comment I'm using piecewise linear here
+you could say that wait actually I don't even need piecewise linear to approximate I can approximate using uh
+piecewise constant right yeah you know like I'll I'll lose
+something I'll put a lot more that's why I do like Riemann sums right like piecewise constant right so
+I can use piecewise constant um it's an interesting exercise for you to
+think why are we think talking about piecewise linear and not piecewise constant constant simpler
+um and as we kind of go through the exercise of making a a circuit for for this we'll see
+you know maybe why because remember we want to express the functions of
+Interest in a way that we can express using a circuit
+that plays nice with automatic differentiation so that we can use gradient descent
+style optimization to set those parameters right it does us no good if we break
+anything along the way okay because we need stuff to work
+Okay so I will cover this
+so one way of thinking about how can you get uh piecewise
+linear functions to be expressed is to say hey
+what can I think about piecewise linear functions as being made up well they're made of
+here it's like a little bit of a Twist of how you have to think about it so one way of thinking about piecewise linear
+functions that you might have is that they're made of little pieces okay little segments that are linear
+that have a beginning and an end uh but there's another way of thinking
+about piecewise the neurofunctions so you can think about piecewise linear functions
+are can be constructed
+from elbows with Moon quotes elbow functions
+and what's an elbow function something that looks like this
+it just goes and bends right so it looks like this or it looks
+like this or it looks like just like one
+example here's a second example here's a third example
+right elbow functions and a constant
+thank you you want to move the whole thing up or down so does everyone see that
+because you can think of a piecewise linear function you can think in one day I think generalizes in higher Dimensions
+too you can think of it this way is start somewhere
+and then you change your slope keep going change your slope how do you change your slope changing your slope is
+the same as adding an elbow that reflects the change in the slope right and you keep going change the
+slope again add another elbow change change so piecewise linear
+functions are constructed out of these elbows so now the question is how can you
+express this l so great this means that
+if you have an input X and you want an output
+F Theta of x right it means as a computation graph as
+a circuit I can put some which has a constant
+okay and a bunch of things that are elbows
+where this is thumb circuit that reflects an elbow
+does everyone see that this is a way of thinking about it so now how do I make an elbow
+well I can make an elbow by saying
+go look at one of these boxes
+so turns out you can make an elbow by taking
+uh an input multiplying it by some w
+adding some B and then take the result
+and put it into a non-linear box which is just
+maxed of 0 and whatever its input is
+this thing is called a relu
+rectified linear unit which is inspired by diodes
+that's two Inspirations actually
+it's inspired by a diode because it looks like
+zero for below zero and then one
+so they align a line of slope one after zero so that's the kind of diode inspiration
+and if you want you can think of this piecewise linear stuff is also inspired by the classical analysis of Bodhi plots
+right piecewise linear understandings of things
+so either way it was amply present in the intellectual space for
+you know how do you build these guys Okay so
+first thing that's really important for everyone to understand is
+why is it that this combination can actually make
+uh these elbows okay so let's just quickly make sure
+everyone's on the same page so first let me just kind of touch base and see if everyone's like you saw this in
+discussion we already were doing this in discussion using the computer um
+and hopefully you'll find the discussion worksheet quite informative in terms of the um the notebook part we can watch
+how as you train the these piecewise linear things move around and the elbows
+move and and adjust the first element is check
+how many people in their ML Class have seen
+this kind of a description of why you get uh basically a linear approximator
+linear piecewise linear approximation out of this non-linearity value has anyone seen this
+okay so let me a couple people uh
+in your ml classes that you saw neural Nets what non-linearities did you see
+raise your hand and say something so I can I can't make out the different things
+someone raise your hand yeah sigmoid okay what other nonlinearities
+you see tanh hyperbolic tangent um what other
+just those you didn't see this one it's not this one too
+okay what you saw sigmoid first and then 10h you say there's also this guy yeah yeah yeah yeah that's often how it's
+taught um different reasons um sociological cultural historical
+um but uh I personally think this is the easiest way to understand what's going
+on so I will like stick with this because why should a sigmoid result in a universal function approximator you can
+grind it out right here it's like obvious ly near like it's it's all good right
+um derivatives are here are easier too um so okay so you look at this and you say
+why does this work so let's look at what this function looks like
+so maybe I'll think of this entire thing because it's parameterized as two parameters right so I'll think of this
+as f w b of x
+two parameters so this is the circuit View
+we can write it out as like math symbolic math
+S zero comma B plus
+w x
+which is the same if you don't like the max can use IFS
+okay
+so what is this this is the same as
+w x is greater than equal to
+minus B and now
+you have to think about if W is greater than or equal to zero okay
+equals if W is greater than zero
+right why because I need to by bringing the W or the other side I gotta check which way the inequality goes right
+and if W is less than zero
+right then this whole thing is
+um e
+X is less than equal to
+minus B over
+w okay so first thing we notice is that
+actually and this you'll often see in the context of deep learning which is why I'm doing
+it this way is that we kind of got it a little bit
+like we can't the way that we've got it set up right now
+we can't get this guy number two does everyone see that
+because we can't get anything to Output that's less than zero okay so I need to get this flexibility
+back of being able to do this so I can get this flexibility back by looking at my circuit architecture and
+doing a modification and saying so notice does everyone see that like you try to understand something you see
+can I do everything I can do yes no not quite what am I missing I'm missing the
+ability to get negative things out how do I bring them back well I can
+multiply by a bunch of numbers here
+if I allow myself a bunch of parameters to multiply by at the end then I can multiply by a negative
+thing and come come down does everyone see that okay good so now you have this and you
+have this and you see that look the point of the elbow that you get like
+where do you transition this elbow point is
+minus B over W for that particular one
+it's the slope you get on the other uh on the other side well
+this is the case where you have a slope that's less than zero
+right so this is w and this is w
+two different cases so if you have a negative W you'll get this kind of behavior positive W you get this kind of
+behavior either way the elbow will be at minus B over w
+wonderful so now you understand this basic case and you understand
+um what's happening here in terms of you add something on the outside so
+this is kind of the prototypical uh multi-layer perceptron architecture
+is kind of grows out of this okay because what do you have here is
+the way this is viewed is using neural net language you say okay
+this thing is the it's called The Hidden layer
+that's the output the things that are coming out of these boxes are the output of the Hidden layer
+and this is the output layer
+and this is just pure there's no non-linearity here it's just athyne right there's a shift and a bunch of
+multiplications so this is called the linear unit or linear layer
+is the hidden layer with relus
+yeah
+why the number of them will the product make any functions yeah so the question
+is that what do we know so you know for 1D functions that if you add more and
+more pieces you can approximate functions as well as you want um if those functions are for example on
+a compact set so the inputs are always in a certain domain if the inputs are always in a
+certain domain a large enough number of these will approximate as well as you want which means for the perspective of neural Nets that when you call when you
+increase this it's called increasing the width of the network this is usually called the width of the network
+so it says for by making a one hidden layer as wide as you want you can
+achieve Universal function approximation
+okay that's a great question so I'll repeat that question for everyone the question is is the class on deep
+networks if you get Universal function approximation by making one thing wider
+why do you need to make things deeper that question is like the subject and
+topic of the entire course right is what like why do you need to
+think about the architecture and in fact historically
+um so you know you might have heard about this uh
+intellectual disciplines um go through as engineering disciplines often go through Cycles
+of uh enthusiasm try to make things work some kind of things start working and
+then like people get super excited by them and then things Crash and Burn
+right and then like they say okay maybe we should go do something else for a while and then they comes back
+so I've lost count but the historically
+the first golden age of neural Nets was kind of in the 50s and 60s
+and people were really interested I mean kind of grew out of an existing base of analog computation analog circuits
+they're like oh cool we can do these and we can make patterns and lots of work happened and then there was a paper that
+so before they tried to do things without the hidden layer for reasons of computation Simplicity
+and then they showed that without the hidden layer you couldn't achieve certain things like it's not not
+possible you didn't have Universal function approximator and then people crashed and burned like okay stop this
+is like too hard let's like go do other things for a while then um arguably in the
+um late 70s 80s there was another Resurgence um in uh
+in neural Nets in the interest in neural Nets um and in that Resurgence the idea of
+universal function approximation really captivated people they're like oh wow this is amazing we can make it work
+using wide networks people tried playing around with depth too but you know didn't really know how to do it and it
+was a lot of fixation on the universal functional approximation part and things worked and you got in
+advances and some people didn't really care about the function approximation part just care about making things work
+um but then again uh other Technologies became better using
+at giving the given the technological capabilities
+computationally at the time and then neural Nets again fell out of favor by
+the I'd say mid 90s um because other things were much better
+at being able to work and also had provable guarantees associated with them and would work better
+then you had the Resurgence of interest in neural Nets which occurred
+um I mean definitely you know was a complete breakthrough in 2012. right in
+the modern era of interest in deep networks kind of follows from that and one of the things that happened was
+actually the shift of the fixation on
+expressivity towards something else and so people shifted from really caring
+about Universal function approximation to also caring about the fact that
+um so the other goal goal number two
+right besides expressivity is learnability
+can you train it
+or the patterns of interests
+does it actually learn the things you wanted to learn so it's not enough for it to be able to express what you want
+to express it has to learn the things you wanted to learn and that's different
+just because something can universally Express anything doesn't mean it'll learn the things you wanted to learn given data
+given especially given the data that you have okay so but before that I want to make
+sure we're on the same page for certain terminology I'm going to like Express that terminology so when we talk about this hidden layer
+written out this way I will just edit this in place okay for Simplicity
+when you combine this with this the usual way we think about it is
+as follows we replicate the pattern I just we had over here that was very natural in terms
+of how you draw it so you say Okay each of these is
+getting multiplied by some weight
+so we're going to choose a way of doing it so usually we'll use two indices
+um I forgot what exact order we use in
+I'll just for now use the order where I'll describe the layer number first and then the particular entry the
+w21 w22 w2d
+b 2 0 or 1. right is it only one of them
+so this would be w11 W one two
+W One D multiplication and then we add stuff
+for reasons that come from circuits these are called biases
+B1 two the
+d and then
+we run it into the non-linearity which has no parameters you want to keep
+our parameters visible
+and by convention our non-linearity has no parameters
+the output of the nonlinearity defines the output of the player in this case this is the convention so these guys are
+referred to as weights if they multiply things and if they're added on they're referred
+to as biases okay the weight makes sense right bias
+is a circuit term for biasing circuits
+okay so far so good any questions on this
+picture besides the big question of like why do we do things that are deeper which Ruger will build towards
+it's for activity like uh comparative engineer model because there's not
+there's no parameters okay excellent question let me repeat
+the question for everyone the question was okay if you think about expressivity as
+coming from I'm going to re-paraphrase your question if you think about expressivity is coming from knobs to
+twiddle um it seems that expressivity should be tied to parameters
+and sure we have all these weights which are knobs to Total we have all these
+biases which are not object twiddle we have more weights and more biases to not to twiddle but without these relus here
+without this non-linearity here the addition if I just replace these with identity Maps then all I would have is
+basically all the biases would just multiplied through these weights and add
+to a universal bias and all these weights would just be like would go together and everything I would
+get is just a single affine function I get one universal weight and one universal bias that's it and I would
+only be able to express redundantly using all these parameters
+um the stat of affine functions on one Dimensions but with the addition of the
+relus I get all piecewise linear functions notice even in this most
+natural representation there is some redundancy like this W here
+and this B are choosing where that elbow is right does everyone see that
+these two are choosing the elbow but this W and this W together
+are choosing what the final slope is that gets added in here we did that originally because we wanted
+to make sure we got the negative ones in right but it is redundant you see that
+because between the three of them there's only two actual degrees of freedom that are being manipulated
+where's the elbow and what's the slope like where's the corner right
+so just counting parameters here isn't telling you what the true flexibility is
+of what you're getting so the question of you know like why do you need the relus well
+you can see from first principles why you need the relatives it turns out that
+generically the addition of an appropriate non-linearity here
+anything that's like sufficiently non-linear injected here will still give you Universal function approximation
+so it's you need the non-linearity to get the ability to express anything
+um so yeah again there's theoretical papers that talk about this about exactly what
+this is how it connects to like Concepts like bandwidth and so on but for us it's just from first principles we can see it
+but the important thing is you can't just naively view the parameter count
+the overt parameter count as the actual degrees of freedom even in this example
+there's redundancy yeah
+okay great question whenever we use the word something is a universal function approximator we're always mean the same
+way you think about Fourier series as being Universal function approximator which is as you take the limit of number
+of terms in the Fourier series to Infinity you can approach anything as close as you'd like right same thing applies for neural Nets
+when everyone says that this neural architecture is a universal function approximator of this means as you take the width depth other things to Infinity
+it can approximate any function as close as you like
+great question the question is if it turns out that there's theories saying that you can use other non-linearities
+and still have Universal function approximation why do you use a particular non-linearities in practice
+does it matter and the answer is it matters for different reasons okay first
+reason is what makes your life easy
+relu is extraordinarily easy to differentiate
+right because you just check what's the derivative right on this side it's zero
+on this side it's w with respect to X One respect to B like you can just take these derivatives super easily right
+so it's really really easy to run derivatives through relus so that's like a reason to have relatives
+that's like a practical perspective um as we go we will talk about other
+perspectives of desirable properties of non-linearities for which value will
+also be nice so relu has an another just since you asked the question relu has another very
+nice property which is often useful to us is that it's non-saturating
+right if you think about a sigmoid or a tan H or something they like flatten out
+a relu doesn't just keeps going so the fact that it it doesn't flatten
+Out means that when its derivative will be zero is just in one place other place
+it looks like is linear so that is often useful um uh in the context of larger systems
+now everything here is about not expressivity it's about this other part
+learnability because that's what we're going to talk about we spend a lot of time thinking about this
+how can these things actually learn the things you want and one of the preconditions of learning the things you
+want is that it should be able to converge to something useful in a reasonable amount of time
+so the fact that things are non-saturating is in part related to the fact that the gradients won't just go to
+zero and not move very much
+okay so um with that I'm actually out of time for today
+um we'll pick up where we left off and kind of hopefully you understand this I can just do one more thing sorry I
+should draw one picture since I said it this guy right this is the same as this guy
+circuit wise right so it's just a super simple
+the end we out relationship
+okay now we have questions about stuff on the board right here and then we'll walk over Cory 258. Let's go to Cory 258
+Cory 258 for Office Hours. Cory 258 OH. 
