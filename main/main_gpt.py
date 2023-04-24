@@ -1,6 +1,12 @@
 # a main that is supposed to be identical in nature as main.py for the min/nano-GPT implementation
-from mingpt_pytorch.model import CausalSelfAttention, Block, GPT
-from mingpt_pytorch.utils import CfgNode
+
+import sys
+import os
+cwd = os.getcwd()
+dir_proj = cwd + "/.."
+sys.path.append(dir_proj)
+from cs282_project_gpt_jax.mingpt_pytorch.model import CausalSelfAttention, Block, GPT
+from cs282_project_gpt_jax.mingpt_pytorch.utils import CfgNode
 
 BATCH_SIZE = 4
 config = {

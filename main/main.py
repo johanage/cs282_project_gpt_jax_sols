@@ -3,8 +3,12 @@ import jax
 from flax.core import freeze, unfreeze
 from flax import linen as nn
 
-
-from model import GPT
+import sys
+import os
+cwd = os.getcwd()
+dir_proj = cwd + "/.."
+sys.path.append(dir_proj)
+from cs282_project_gpt_jax.model import GPT
 
 BATCH_SIZE = 4
 config = {
@@ -36,5 +40,5 @@ y = model.apply(params, x, rngs = {'dropout' : dropout_key})
 #print(f"Output shape: {y.shape}")
 
 print(f"input: {x}")
-x_2 = model.generate(params, x, 5, 1, rngs = {'dropout' : dropout_key})
+x_2 = model.generate(params, x, 5, random_key = dropout_key) #{'dropout' : dropout_key})
 print(f"output: {x_2}")
