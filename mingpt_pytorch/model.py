@@ -13,8 +13,12 @@ import math
 import torch
 import torch.nn as nn
 from torch.nn import functional as F
-
-from mingpt_pytorch.utils import CfgNode as CN
+import sys
+import os
+cwd = os.getcwd()
+dir_proj = cwd + "/.."
+sys.path.append(dir_proj)
+from cs282_project_gpt_jax.mingpt_pytorch.utils import CfgNode as CN
 
 # -----------------------------------------------------------------------------
 
