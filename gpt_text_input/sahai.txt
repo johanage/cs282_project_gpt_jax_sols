@@ -1796,3 +1796,2123 @@ circuit wise right so it's just a super simple
 the end we out relationship
 okay now we have questions about stuff on the board right here and then we'll walk over Cory 258. Let's go to Cory 258
 Cory 258 for Office Hours. Cory 258 OH. 
+homework zero is essentially all review stuff um for should be for most people
+homework one is a mixture of some things which are review and some things which
+will be new for most if not all of you um so uh just yeah keep that in mind
+so to understand what's going on in homework one this lecture is pretty important we'll be introducing some ideas and ways of thinking that are
+interfeatured heavily in homework one the discussion uh tomorrow and um the
+you know a little bit of discussion we have on Wednesday um that will also help you kind of get
+understand the material we talked about in lecture today and you know get ready for what you need to do for the homework
+so you remember last time we introduced uh these relu networks uh
+you know with a single fully connected layer and we said okay let's build this
+thing up to understand piecewise uh linear functions right as a universal approximator from the traditional
+perspective of hey what do we need from uh a model that we want to fit to data we
+have to build Express the patterns of their interest so one of the ways of thinking about it is can you express all patterns and piecewise linear is kind of
+an approximation to all functions so great and one of the things that we commented on
+at the end was if you looked at the parameterization we had I'm not going to write it up again maybe I'll get to it
+near the end of the class but if you look at the parameterization we had we had a set of weights at the beginning
+and then we had another set of weights after the first hidden layer and we saw that in terms of what is being expressed
+those two weights are kind of not exact not actually redundant but they're sort
+of redundant right that both of them adjust the slope of the line of this of the line segment
+if you remember that so this issue of you should be in the
+back of your mind should be thinking of well okay when you in genetic in general when you're going to parametrize the
+network you might get these kinds of little bits of redundancy um how does that show up in terms of
+what you actually learn how does that influence learning because again if you remember from last
+time we talked about how what really defines the current age of deep learning the kind of
+Advance was the withdrawal of focus from you know being able to approximate all
+functions and starting to think about well does this network trained on actual
+data using the learning algorithms the training algorithms that we have does it actually learn patterns of Interest
+right so this can it actually learn the thing that you care about
+and so what we're going to be talking about today is we're going to start introducing some tools and some ways of
+thinking that are building towards uh an understanding of what actually about an
+architecture in the Co in the context of things like gradient descent what actually makes it favor certain kinds of
+things in terms of what it actually learns okay so that's the the topic uh
+of today so if you think about it
+we're going to do is we're going to use regularization as the way to understand
+that because regular regularization is you add a penalty term the traditional approach you add a penalty term and
+the goal the penalty term is pragmatically I didn't use the penalty term it learned some gibberish or
+something I didn't like or I think let me make better so I'm going to add a penalty term to shape the optimization
+so it learns something more to my liking the pragmatic view of regularization make it work better on the kinds of
+problems that I actually have so let's think about so what regularization is doing is shaping what does something actually learn so first thing I want to
+make sure everyone understands this everyone understands how adding a regular explicit regularizer a cost term
+in the optimization doesn't change the expressive power of your network does everyone understand this
+okay it's really important like it doesn't change whatever functions you could represent before you can still represent them all
+you're changing is how the Optima with the optimization is favoring okay so that's why we're going to use
+regularization to kind of try to get at this this concept so let's think about it we have a
+a loss function
+for your parameters data which is this we wrote this last time
+this is some overall the training data
+sub training loss
+some label associated with the is data point and your parametric function that you're
+learning F Theta evaluated at the trading input x i
+so this is the standard loss without the regularizer and you can add
+to all of this a regularizer if you want
+so to understand all these things uh it's all very general and abstract and
+hard to wrap your head around it's really important that you
+understand at least one such model well at an
+intuitive level and the standard one we're going to use because the one we understand the best
+is you know least squares with Ridge regularization
+I'll put paradomatic
+in large part because it's the only one we understand that well um is least squares
+the ridge so what's least squares with Ridge these squares the problem looks like this
+I have some Matrix X I have some weights W that I want to learn and I want to
+approximately have this equal to a set of labels why so remember think if this is a big Matrix
+n rows corresponding to the end data points
+D columns corresponding to features in your training data this is a
+D dimensional Vector because you have to learn weights for all of the features and this is a
+column that has n
+uh labels in it for the end data points okay okay so least squares means I want to
+approximately solve this equation like I have I want to understand what
+are the weights that generate those y's which I do by optimizing the cost
+of the ridge right optimize cost
+and I'm going to drop uh one over n just for not having to track
+that thing I'll bring it back when I need it for when it's important but right now I'm going to just for Simplicity eliminate it
+so I look at the
+the error of my prediction squared
+this is an N Vector all right look at this length squared usual two Norm
+and I have a penalty term that says please don't make these weights go get too big
+also tuner so far should be completely familiar to
+everybody and this has a solution in closed form
+which is I'll write it in its classic form
+X transpose X Plus Lambda times the identity
+inverse X transpose y
+so just to understand this Matrix that we're inverting here this is a d by D Matrix
+is this good for everyone good so
+we're going to make sure we understand this better and we're going to understand this in some different ways
+those ways are represented on the homework so everything I'm going to do kind of fast in lecture you will have to
+do kind of dotting the eyes and crossing the t's in the homework to make sure that you understand it but
+like let's make sure that everyone understands this the basic story what's going on
+okay so to understand um what's going on here
+let's first uh there's like different perspectives we can take to understand what's going on
+I'm going to start with uh just how does gradient descent work on this
+because we're going to use gradient descent as our Optimizer so let's think about this is the closed form solution great one shot
+you get this how would gradient descent solve this problem
+so first let's think about just for straight ordinary least squares consider
+this the OLS loss
+this is the ridge term for us right
+let's break it up into two terms so let's start with for OLS
+what's how far do we move it's what's the gradient so
+again this is a straightforward calculation
+we move ETA
+ingredient so I didn't put a one-half sometimes we put a one-half here so I didn't put a one-half so I'm going to keep the two
+um I'm going to take the gradient to Ada
+X transpose y minus
+x w so whatever the iterate is so the teeth iterate
+foreign descent right how do you do that again
+this is that you've already been playing around this stuff in the homework you take this thing you can take its gradient you write it out as a quadratic
+form take the derivative this will pop out um but it's good to understand what it
+means just to we're all on the same page this is the residual
+right this is how much is left like we have a current way of doing the prediction that gets us this we want to get all the
+way to Y we aren't there so there's something left this is the residual and this is like a
+an adjustment a bending of the residual to go in the right direction
+any questions on this make sure everyone's on the same page it all should be review
+um now let's do it
+or Ridge foreign
+if you look at this loss we have the same loss we have before except we added another term
+so we're going to move in this direction
+with another thing is that clear to everybody right just
+linearity of derivatives so you're going to have
+so I'm just going to group the terms together I'll pull the Ada out because I don't have it
+yeah um I think I can pull the 28 out two Ada
+and now I'll get this guy
+which is the contribution of the residual
+and I'll get from the derivative of this
+so what do I get from the derivative of this I'll get a minus
+Lambda
+WT okay
+so I want to make a comment here on this thing just uh because it's a bunch of
+stuff to review so we might as well get this comment done right here
+if you look at this is the kind of how how you move right so
+you you have two things you move you move in the direction here of the gradient
+you know kind of negative gradient move this direction and then you have this other thing
+which basically what how do we interpret this thing what this thing says is hey
+you know what however you are whatever Direction you're pointing it currently
+like move closer to the origin
+right like come in does everyone see that so let's think about it actually iterate right so let's
+look at the iteration so for for this one let's write it as uh the iteration so WT
+plus one the next weight I'm going to take this term so what is
+WT plus one WT plus one is the old WT
+Plus the thing that comes from the uh gradient descent right but now there's a
+WT sitting here with a minus Lambda there so I can pull that
+term over 1 minus 2
+ETA Lambda and then here I get the gradient term that's just the OLS standard gradient
+term
+okay just like a comment on how gradient descent works for the context of rig is that clear to everybody what I did if
+it's not ask just algebra but I'm skipping steps
+the Richter I mean the regulation term are we subtracting ah okay so
+what I'm writing here is the direction we're moving okay it's not the gradient and the
+direction we're moving is what I'm writing okay so this is the negative gradient so if you look at the negative gradient
+for Ridge you have a minus Lambda w
+so when you combine that with the full iteration that you get a 2 ETA because I didn't
+have the one half right two Ada Lambda and instead of just having the WT from
+last time you have 1 minus two Ada Lambda so you should think about when the
+learning rate is small enough right and the regularization term is small enough which it better be for
+things to work well this thing
+this thing here this is basically uh bringing the weight
+it's a stable thing pulling the weight in you see that it's like pulling the weight towards the origin
+so if you didn't have any more stuff coming from this
+okay what this would do if this was Zero this would as time iterates would make
+the weights Decay to zero exponentially fast I think as a geometric does
+everyone see that so this term is called weight decay
+so in deep learning context sometimes you'll see as an optim instead of talking about things in terms of oh I
+have a rich term or something like that they'll say I'm going to use this Optimizer and I'll have this for my
+weight Decay parameter and what they're talking about is basically controlling this thing in the
+optimization it was an important piece of terminology you should know connect to something
+it's not mysterious in any way it's just um something which comes out of very
+naturally inspired by gradient descent for Ridge
+okay yeah
+it's a good question right so if you make your um Lambda become too big relative to
+your learning rate right it's kind of interesting right because if you think about it
+when Lambda is really big you're saying please please make these weights really
+small right but just grinding through the math
+right you see that well there might be a negative interaction with the learning
+rate if the learning rate is too big um with a Lambda that's too large in the
+context of weight decay I mean if this is where you're coming from in many in many
+um libraries you actually have direct control over this in This this term
+but as a comment um many people have gotten confused
+about why something is working the way it is in practice because what they've done is they've added a
+a regularizer explicitly that's a ridge type to their loss
+and also enabled weight decay and sometimes you on the computer you
+can get it to say to have more of this effect than you might have intended because you've got an aspart twice
+so it's important to keep this straight and one of the interesting things we'll talk about later um
+when we when you get we start talking in the direction of Transformers is we'll talk about optimizers that try to like be careful
+about how they're doing this effect okay this is like just a bit of excuse
+to review and to bring this up as a piece of notation
+okay so this is a perspective uh that we can have
+on just classic Ridge I want to do another perspective because
+we're going to use this all the time as a way of thinking and in your machine learning class this may or may not have
+been brought up so I want to make sure everyone is on the same page with this
+so whenever you see a problem that is largely defined using euclidean
+Norms two norms and the neuralgia break things that are going on
+then uh one tool very powerful tool in Your
+Arsenal is to say can I understand better what's going on
+by looking in some different coordinate systems this is always a good idea generally but in the case of two Norms
+you have a rich arsenal of ways of getting coordinate systems so it's always good to see can I understand
+what's happening in a different coordinate system to see more clearly what's going on so in two Norm your go-to tool is the
+SVD
+and we have homework to make sure you review this um
+okay so the singular value decomposition is super useful so we're going to do is we're going to look at what we're doing here and we're
+going to look at it with the lens of the SVD so here
+there's a perspective that's important to keep in mind what we're going to be doing is taking the perspective of an
+outside Observer nothing we're doing is going to be impacting what the algorithm is doing or
+anything we're just going to look at it from the perspective of an outside Observer watching what's happening who
+has access to the SVD the outside Observer has the SBD
+so the outside Observer says hey you know what I know that X
+this n rows D columns Matrix
+is actually equal to U Sigma
+V transpose SPD so again let's make sure we understand the types of everything what size is X
+remember I'll write label right here x n D and so for our purposes we're going to
+use the full SVD foreign
+because it'll help us keep some things more straight so in the full SVD
+what is the size of you how big is you
+someone just like raise your hand and try that out or just shout it out and buy it right yeah exactly this is n
+by n what's the
+size of the V transpose d by D
+and what's the size and shape of uh Sigma how many how many how many columns
+D columns right and and
+wrote same shape as X in the philosophy so we do this and now remember SVD has a
+cool property that these guys
+are unitary right orthonormal columns
+sometimes called orthogonal matrices also you just use when you might have complex
+and rows so they're really useful because they
+represent coordinate systems that are like rotations that don't change any angles
+or any lengths so if what you're talking about doesn't care about rotations rotation type
+things relation reflection type things you're free to switch to those coordinate systems and nothing will change so that's really cool because here you
+have two norms this is a two Norm on what size vector
+right an n-dimensional vector and this is a two Norm on a d dimensional Vector
+both of these you know will play nicely with this
+so if you use the SVD to understand what's going on a little bit better then
+you know what happens so we have many different ways of doing
+this I will take a particular perspective that's going to be like in shorthand
+so I take the problem that I have right in terms of what's approximately equal to what so I can see you know what's
+going on on as I change coordinate so I take this perspective and I say okay so I have U Sigma
+V transpose w is approximately equal to y
+this is the same problem because I'm looking when I say approximately equal to I mean hey in two
+Norm the difference should be you know good so I can free I can rotate everything
+it's the same problem right so I can take this and I can say
+hey I can change coordinates on W
+um to be such that I look at a new W which is V transpose w and that's fine because all I care about
+is penalizing its length and this doesn't change its length so this is also cool
+so I do this and then I get Sigma W transpose and hey you know what
+this is just a y this is the rotation of the Y I'll just call this a new y
+tilde and now I have the
+approximate problem which is sigma
+W tilde is approximately equal to y but this is a really nice problem right
+because let me expand out Sigma
+let's think of the situation in which um for now for illustration purposes
+let's think of n as being bigger than d so I can draw things into some right
+shape right so this is going to be
+Matrix like that okay
+so now I can ask what are the w
+what are the W's I'm going to get okay so for the case
+so now it depends on how I actually how I solve this problem if I solve this problem using OLS
+right in which I'm not going to have a rich term a penalty term at all so the
+OLS solution is just going to say
+I'm going to use Python indexing to look at the ith component of w tilde
+this is just going to be 1 over Sigma I
+for the ith component of Y tilde
+I is less than or equal to n and zero
+otherwise
+did everyone see that
+important to understand now so here I'm going to pause to survey the audience um
+for how many people is looking at OLS through SVD coordinates something that
+you have seen before if you've seen it before raise your hand it's okay to raise your hand if you've
+seen it before yeah okay if you haven't seen this before raise your hand
+okay it's like a little over half I haven't seen it so it's super useful and
+cool to you you think of it this way because what happened at a high level is
+by looking at things in SVD coordinates what was a complicated Vector problem
+as essentially decomposed into a sequence of scalar problems
+right and each of these scalar problems is easy to understand what's going on
+okay so this is very useful because complicated what's happening in some vectors how things might be rotating or
+moving around you can't wrap your head around I mean yeah
+ah so I'm looking at the case where okay when I said I less than equal to n
+but N I meant like how are many of these are not zero the instant you get zeros it's just you say zero because think
+about it if you have a zero what's going to happen you have a a row that says 0
+times a bunch of stuff is approximately equal to something please adjust the stuff you're like well
+I can't right there's nothing I can do about that stuff so right it's like it's not there
+so the N is bigger then it's a tall Matrix and so the sigmas run down the diagonal
+and so you'll run out of places to go before you run out of rows hence this shape
+does that answer your question yeah
+ah and here refers to the original problem how many data points do I have okay
+so this is the OLS solution what's the red solution
+so for this it's useful I'm going to talk fast you
+need to work this out for yourself if it is not clear to you okay
+so so for Ridge
+you have an optimization that looks like this okay which means after you have made this
+change of coordinates you have an optimization where everything that is replaced in the following way for Ridge
+this becomes y becomes a white tilde X becomes a
+sigma W becomes a w tilde okay
+foreign problem
+every time you have a euclidean norm squared it's just a sum does everyone
+see that's just a sum so this is just a bunch of sums
+now let's think about it you want to minimize this you're penalizing the length of of w
+tilde are you gonna change this part at all
+no obviously not right these these W's out here are doing no work for you at
+all they don't help you reduce your residual in any way and they cost you lent
+right so you're not going to set them to anything other than zero so this part is just unchanged
+okay now you have n terms in which
+you have it's you have n different optimization problems they're just summed up
+so you might as well consider them and decoupled optimization problems like there's no interaction between them
+okay because this is diagonal so it's like solving a scalar Ridge
+problem because you're solving a scalar Ridge problem the solution you can just grind
+out the algebra it looks like this
+let's write out the answer
+so this is just like scalar optimization right it gives you this
+so this is uh so again you can see it
+here
+so maybe this is a good if you haven't done this before I strongly encourage you to do this exercise
+in the interest of time I don't want to do it because I have more things I want to talk about but um
+remember we said the entire problem just transformed to having a sigma anywhere you had an x a w tilde anywhere you had
+a w and a y tilde anywhere you had a y so this optimization answer also
+transforms in the same way W tilde equals Sigma
+transpose Sigma plus Lambda times the identity inverse
+Sigma transpose y tilde right just reading off the the
+transformation Sigma transpose Sigma is just a diagonal matrix filled with
+sigmai squared plus Lambda times the identity is
+plus Lambda inverse of a diagonal matrix is a
+diagonal matrix with the reciprocals all the way down
+Sigma transpose is just going to pick out Sigma I times y i tilt
+right so you can also do it just by formula it's good to be able to go back and forth between these different perspectives yeah
+I'm not sure metrics
+if you see the entries of the stigma large metrics the last term should be Sigma d
+okay so this is shorthand okay
+uh so you're right sorry my mistake my mistake sorry sorry sorry thank you
+thank you you've attempt to point out before I did not catch it when you did
+sorry is that way if you have this is this is what it looks like if
+if n is less than d then it looks like this
+if n is greater than D then it looks like this
+oh segment D you're right you're right
+thank you yeah so one of these two so I was talking
+about this case so this is not n but d thank you for correcting me
+good sorry ever understand
+what's going on yeah
+oh yeah yeah there's no otherwise case all right this case doesn't happen thank you I'm just doing this so that
+you can understand um the reason I'm doing it writing it this way is I really also very much care
+about the case which is uh this case
+so I want to acknowledge the otherwise case just forget to get it on the board thanks
+Okay so the SVD perspective is interesting and nice so I want to dwell a little bit
+about what's Happening Here okay
+so let's write out this aside
+sorry like what it is sorry let me just write it this way
+foreign correctly
+there you go okay or basically yeah it's the idea here is that your training data
+is some dimensional okay
+that so whatever that dimensionality is is going to cause you to have some
+number of singular values so whatever that number is is this
+right that I that you care about here okay so it's important to understand what
+this is doing right now if you look at it this way
+right a perspective on just this closed form solution says look if x transpose X
+is too close to being invertible not invertible is this close to a
+singular Matrix then inverting it would be bad adding a Lambda I pushes it away from
+being singular and prevents this from causing giant things to happen that's kind of at the high level of
+looking at the level of matrices but when you look at it in at this kind of more refined level you can actually
+understand this object better right so you say you use the classic
+um kind of analysis that one does for example in analyzing body plots in circuits for responses where you say
+look Lambda is going to be something
+different than Sigma I squared it's either going to be intuitively much
+smaller than Sigma I squared or much bigger than Sigma I squared so
+understand what happens in those two regimes okay so this thing
+so let me get an aside here right if you add two numbers together
+and one of them is much bigger than the other how does addition behave
+right think about it you take your numbers and you add them what is one billion plus 0.02
+a billion right right when you take two numbers they're
+very different in size and you add them bigger the bigger one survives and the other one's gone
+right this is like just how addition works so if
+Lambda is much bigger
+than Sigma I squared right then
+this thing is approximately equal to Sigma I
+divided by Lambda if Lambda is much bigger than Sigma I squared
+alternatively you can think of it as if Lambda is much bigger than Sigma I
+squared then Lambda divided by Sigma I is much bigger
+than sigmai you can think of it that way too either way you get this
+if on the other hand Lambda is much smaller than Sigma I squared then this
+sum is basically just Sigma squared in that case Sigma squared will cancel
+with the sigma and you'll just get a 1 over Sigma I if Lambda is much smaller than Sigma I
+squared and smoothly going in between so looking back here
+what it says is Rich regression for those directions
+that are well represented in the training data meaning what meaning that their singular
+value that you have is substantially large relative to the ridge regularizing
+parameter Lambda for those directions effectively you get the OLS solution
+so if a direction is well represented in the training data so um for those who come from a background in controller
+system ID if the input the trading data is sufficiently exciting those modes
+the regularization will do nothing it'll just allow it to preserve straight through yeah
+uh have like the smallest simple value
+okay good that is an excellent question I will um repeat it uh with a Twist to make it
+parse a little bit better so the question is Hey look
+if I look at this interpretation of what's going on with the ridge regularization what it's
+saying is that I'm going to set those weights to be in the transform remember this is all happening from the
+perspective of the Observer right gradient descent is grinding away doing its thing it can't see this The Observer
+outside says I'm looking at this Matrix in the in the right
+coordinate system I'm going to look at what's happening in this other coordinate system so from that other coordinate systems perspective the
+observer's perspective that outside Observer is saying look wages but basically said
+uh some of the weights in the core transform
+coordinates to what they would have been for ordinary least squares and is going to put others
+close to zero right because Lambda is much uh bigger
+so this is going to become those are going to shrunk down to zero by contrast those weights it's for
+example Sigma a was Tiny OLS would be blowing them up so everywhere OLS would be blowing those
+weights up to be big giant numbers with an appropriate Lambda Ridge is going to set them closer to
+zero this is the perspective of the outside Observer and there's some smooth thing happening in between
+okay for the intermediate weights that are closed up um there are so whose Sigma squared is close to Lambda
+now did you answering your question in practice it is being found in many many many
+kinds of applications that when you have natural data of any kind giving you some kind of Matrix uh of features or data
+that those things tend to have a wide dynamic range of singular values right that you don't tend to have
+singular values that are all kind of hanging around in one place you tend to have a in many problems you didn't have
+a wide dynamic range of singular values so this becomes useful in dealing with this wide dynamic range of singular
+values okay now you could say dance to raise your question you could
+say if that's the perspective of the outside Observer why can't we take advantage of that
+outside Observer perspective algorithmically and algorithmically say for example let
+me take the SVD explicitly algorithmically before I tried solving anything
+and let me use the SVD to do dimensional reduction where I will dimensionally reduce by
+projecting my data into a low dimensional space precisely that low
+dimensional space which corresponds to the high singular values in X so I only take those directions where you actually
+have sufficient representation of you know signal in the input to actually
+excite any mode of a linear model and I'll only fit that that's explicit
+dimensional reduction by using the SPD what this is saying is that in fact the
+two solutions will behave somewhat close to each other but
+here for Ridge you never had to take an SVD
+to get that benefit no computational cost was required to like compute an SVD of a giant thing it
+wasn't needed what happens is it just happens for you automatically by doing gradient descent with weight decay
+you're already getting that benefit okay so algorithmically in terms of
+practice it's important to know when you need to do something and when you don't need to do it so
+it's kind of interesting that way that you might have started off saying look I better do dimensional reduction you say
+well let me first just try Ridge and ridge is worked it's like oh that was cool right you
+could save some work in terms of doing it um but yeah it's good to sometimes explicitly in deep learning we will do
+things that are counterparts of dimensional reduction followed by uh you know fitting but here
+I'm just trying to show you you don't necessarily have to do that yeah
+okay great so this is now now you're getting you're getting into where we want to be right
+so the question is have any of my commentary changed the
+expressivity of the model okay and
+the model is still what the model was right so in our case that we have a linear model for which says you're
+allowed to use any linear combination of the features that you see right
+these features might be non-linear whatever there's some features right any linear combination of them is fair for
+you to use that's the expressivity of the model however what this is saying is sure your
+model has that expressivity right you could do that but if you choose to fit the data using
+gradient descent with a weight Decay term you're not actually going to use that full expressivity
+if they're Dimensions which are not well represented in the training data you're not going to set them to anything
+and you're basically going to take the default whatever the default is in this case
+it's linear model default is zero in other models the defaulters might not be zero you'll get whatever the default is
+in terms of how you predict along variations in that direction is that clear
+yeah in the back
+so ah good question the question is if you did explicit dimensionality reduction versus doing this uh soft one
+using Ridge which gives you more accurate results the answer is you can construct examples that go either way
+but the point is a little bit close to each other you know they're not going to be hugely different
+Yeah question in the front
+great yes how can you under I can interpret this result so we interpret it this way so interpreting this
+I'll just move this over it's fine everyone remembers what's on that board
+Okay so I'm going to draw some functions
+should think about this axis as being on a log scale okay
+I drew two functions there okay one was a step it went straight
+and then step down and went somewhere and the other is like a smoothed version of the step
+you see that these two functions so what this is saying when I talk about this
+difference whenever you say something is much bigger than or much smaller than in terms of addition
+you should think of that as being bigger and smaller on log scale
+because log is like order of magnitude scale so when I said think of a billion plus 0.2 right these two are numbers
+that are different on a log scale so what it's saying is that uh
+this function is this smooth one is behaving roughly like this step
+right on a when viewed on log scale so it's going to keep for this and this is determined by
+log scale sigmai squared and this is Lambda
+okay six selecting which are the singular values which are going to get to contribute to the
+Learned parameter weights and which are the ones that are not
+does that help you understand the what I'm saying in terms of what this means
+yeah log scale Sigma I squared same as log scale Sigma
+log doesn't matter
+okay great question so the question is um I'm talking about everything in the
+context of two Norm what if we were thinking about one Norm or zero Norm or you know fourth Norm or something like
+that would the results be different so remember what I said about the joke about the drunk man looking for his keys
+at the very beginning we understand the geometry in two Norm much better linear algebraically so
+we're going to use that to build our basic understanding there is when hopes
+and believes that there should be parallel stories that occur for other Norms one Norm has some other
+interesting things and zero Norm has other interesting things that it does that
+aren't captured by what's happening in two Norm it is people's belief that if you look at some other Norms similar type story
+should be happening but we don't fully understand that and it certainly wouldn't be as easy to understand and
+describe as here but the key thing is that
+so understand what regular how regularization is functioning that's what I'm trying to help you understand here is that you can think about
+regularization as um okay you think about deep learning as
+cooking right and you can think about you have no understanding of cooking you just have a set of spices and things that you
+add okay and you're like it doesn't taste good right let me look on the
+internet it says add I don't understand what this thing is okay I'll take them and add it okay
+and I have no idea why I'm adding this right I don't even know what this thing is really except that you know some
+parameter in Python right and I don't know how much of it to add or what it means to add more of it or less
+of it right it says teaspoon tablespoon if any of you cooked like and mistaken like a teaspoon for a tablespoon you're
+like this can happen if you don't know what you're doing right and sure you can
+approach things that way um and sometimes you'll find yourself having no choice but to approach things
+that way but what I'm trying to do is to give for some of the cases a little bit of intuition for what might actually be
+happening so you can understand and then you're going to try to take that intuition to other domains and sometimes
+it'll carry over successfully and sometimes it won't sometimes we understand how to mathematically make
+that shift and sometimes they don't um for those who want to understand
+these things a very powerful set of tools for which you can kind of build on your optimization understanding is to
+say look we're talking about gradient descent in two Norm um and doing things this way if you want
+to go to other norms and to understand what's happening there's like techniques called Mirror descent and so on that try to bring some of the geometric ideas
+um over into other Norms but again for deep learning practice that tends not to
+be that important so we're going to stick to two and arm style intuitions
+it's a good question though great question okay so you understand now
+what's happening we have to so behind this thing we had great descent written out which I should
+bring back
+okay
+and we described as one perspective as look at gradient descent another perspective is look at things in terms
+of the SVD you can combine these perspectives and look at gradient descent in terms of the SVD
+and if you do that you'll notice something
+what's the transformation right wherever you have an X it becomes a sigma Matrix
+y becomes a white Hilda X becomes a sigma this becomes a w tilde again remember
+this is the perspective of the Observer so let's write this out just this term
+out I'll write it here just a little section
+which I have some space just to keep everything in one place before I shift to something different
+so I'm going to write this out after this transformation okay
+that's the only key term that matters to Ada
+Sigma transpose y tilde
+minus Sigma W delta T
+right so when you look at it at first it just seems like okay how is that any more insightful than what you're seeing
+here right it does you know this is some Matrix but
+remember these are diagonal matrices okay so this is a diagonal matrix
+this is the diagonal matrix so you under you see something else interesting happening
+which is that gradient descent in SVD coordinates is just operating coordinate by
+coordinate there's no interaction between these coordinates at all just like the optimization problem
+decoupled into a bunch of separate optimization problems even gradient descent in SVD coordinates is just
+moving along these individual coordinates by themselves there's no interactions does everyone
+see that so
+what's happening is that
+look at this Sigma transpose out here
+this is thing so let's look at in terms of the ith coordinate okay so the ith coordinate is moving like
+this to Ada Sigma I
+y tilde I minus Sigma I
+w t i
+so that's what's happening
+so what's happening is that for those Sigma I's
+that are big in your data you're going to move more
+do you see that this is like
+an important point we're going to build on okay this is your step that you take in
+the greatest remember you have two parts you have a wake Decay part the weight Decay part doesn't care
+about what the sigmas are you ever see that just 1 minus 2 ETA Lambda like whatever right has to do with the Lambda
+it's how fast Lambda is basically telling how fast am I going to try to bring these weights to zero collapse
+them to zero it's like the gravitational pull of zero is what this is doing okay
+this is the thing trying to get to be a good fit forgetting to be a good fit
+what's happening is it's gonna move more in directions with large Sigma
+directions with small Sigma move very little because they get multiplied by these sigmas times you know Sigma
+squared what you kind of expect to see here
+right the final solution basically doesn't go very far in directions which have small sigmas but here you can see
+it kind of in the Dynamics itself the Dynamics move in directions of large Sigma first and foremost small Sigma
+directions move a little bit and the gravitational pull s them to zero and doesn't let them
+Escape which is what makes this thing happen and gravity basically has very little
+effect here and so you just get a good fit because they move very fast
+okay so
+this fact is super important
+because what it says is that the actual evolution of gradient descent when run
+on machine learning problems will move first and foremost in directions that
+have large singular values that's where it's going to try to fit
+which comes back this back to this kind of dimensional reduction right in a way that it's not just the case that the
+Subspace represented by large singular values is where you're going to fit
+it's also that within that nested sequence of subspaces all which are relevant you're going to first fit
+in those directions which are uh the biggest singular values and then
+you'll fit the next one and the next one so the next ones yeah
+ah you're saying that if this thing is small it might counteract that
+sure but when this thing is small it means you've already fit that direction right so interesting what happens when
+you haven't fit it yet when you haven't fitted yet this Sigma is going to say move fit to it fast it
+is going to tell you hey go slow right that's your learning rate and the sigma is going to say no keep moving you
+know like and so you can see also that your Ada the learning rate is controlled
+by how big these sigmas are you can't let any of these Dimensions go
+unstable because like intuitions that you get
+from the map okay so with that there's two things I want
+to do one I'm gonna just do um yeah so let's see
+so now I'm going to do two little perspectives so there's regularization that's explicit
+right explicit regularization like I add a ridge term something like this but there's also other ways to get
+regularizing effects and what I what I'm telling you already so is
+uh from what you're seeing here for example even if
+you did not have the ridge term at all so no more weight decay you have no
+weight decay this effect is still present okay does everyone see this
+gradient descent just gradient descent running on squared loss no regularizer
+will Thor and try to fit the directions that have
+large singular values first the directions that have small singular values
+it will creep along okay you see that suppose one of those singular values was
+very tiny right like 0.01 you're afraid that OLS will give you one
+divided by 0.01 a giant number that's not well represented do you see that
+that we're afraid of because right but gradient descent we'll say okay I'm
+going to take teeny tiny steps in that direction right so there's something really big
+it's trying to get to and it will converge there eventually if there wasn't a regularizer
+but it's gonna move very slowly in that direction
+meanwhile another direction it'll move very fast so this is something which is also
+interesting so you could have a problem and if you run gradient descent for 500 steps you
+might never see the effect of this threatened blow up
+like it'll blow up eventually in 10 million steps model
+uh excellent yes in fact this is true more steps of gradient descent can
+sometimes give you a worse model and you might think wait what okay I started off saying that we're going to
+try to solve problems by doing optimization gradient descent was a way to do optimization and optimization was
+the thing we cared about but now looking at the details we say that wait a minute
+by not running that many steps of gradient descent for example we can avoid having something bad
+actually bite us okay and so this is called early
+stopping we'll talk more about early stopping later but I want to mention it here as part of this General story
+but the important thing is that your mind should now be we're trying to expand your mind okay so what it means is that
+there's many ways to get a regularizing effect so in that case you're getting the
+regularizing effect of of saying I don't want to have these directions that have
+small singular values explode in my learned weights but you're getting that effect without ever using an actual
+regularizer we're just getting it from gradient descent itself and using it for a small finite number of steps
+now I will show you two more ways to get this get this kind of effect
+both of which are representatives of things that are very important oh man okay
+so I'm like running slow so I'll just give you these they're in the homework um so you can grind them out
+cool trick one okay
+so one of the ways
+that you can that's very very important in deep learning is something called
+Data augmentation
+so data augmentation says that you have some actual data and you run the actual data through your
+optimization to learn something and you don't get an answer you like so what you do is instead of using the
+data you have you augment it in some way to get it to behave the end result behaves better
+so there's many real world ways of doing data augmentation but this is the easiest one so here's the thing I have a least
+squares problem
+w foreign
+I get a bad answer right like I get things blowing up like OLS oh you're an OLS and it blows up
+I would like to get something smaller the weights become smaller how can I do it without actually adding
+a ridge regularizer one trick is I can say I'll add a bunch of fake data points
+so I'll add a bunch of fake data points in which the covariates the inputs just look like square root of Lambda times
+the identity and the output is just a bunch of zeros
+so these are all thick fake points
+but all these fake points are doing intuitively is they're saying please set the first parameter to be
+something close to zero please set the second parameter to be something close to zero please set the third parameter
+to be something close to zero you see how that that's what they're doing
+so a bunch of fake equations exercise for you
+you can just use the OLS Formula
+on this problem which is X transpose what happens when you take X transpose
+act here and invert it you will see the answer is the ridge solution
+foreign regularization the regularizing effect
+without adding any explicit regularizer running the optimization to completion
+and instead just having big data points this is an example of something which is
+very very useful in practice okay what's the other
+cool trick maybe I'll
+so this trick is well recognized the following trick is less well recognized
+so how can you discover this trick first you can discover this trick by saying
+whenever you're thinking about linear problems you know think about the SVD
+so one thing you know about the SVD is if you take a matrix or take its transpose it tends to behave the same
+way vis-a-vis the SPD right so it's kind of duality
+so other trick is let's add fake features
+so I have my problem X
+w approximately equal to
+y I will add a bunch of fake features
+so a bunch of fake features were effectively every single uh data point
+gets its own feature
+you see that like every data point gets its own feature so you're the nth feature you're the second feature like
+so on if I do this
+what'll happen if I give every data point its own little knob that can be
+used to tweak it I can definitely fit why do you see that even if originally I
+couldn't now I have a wide Matrix a wide Matrix
+times some Vector equaling a short thing is always solvable
+so now I can solve this I can solve this and then I can just take the W that comes out
+how do I solve it I solve it use infinitely many solutions so I'll pick the Min Norm solution
+exercise again this is on your homework Min Norm
+is rich solution
+so
+this is something data augmentation is something you will do all the time explicitly and you're you'll know you're
+doing it in the context of a deep learning problem because you'll have to add these fake
+data points yourself like you'll figure out a way of adding them
+big features is a perspective that
+uh people have only come to understand very recently in that sometimes when you make your
+model bigger and bigger you might think you're doing something very intelligent of adding cool features
+but you might just be doing this because think about it all that you care
+about it's like a little bit fast all you care about here I put a square root Lambda times the identity all that you
+need here is this thing behaves in second moment sense like an identity
+right what does that mean it means these things are approximately orthogonal to each other or basically orthogical to each other
+but in a high enough dimensional space random junk will be approximately orthogonal to itself
+and that can do it too so again regularization by features
+also regularizes
+ah that is a question which has a longer answer than the four minutes I have left in lecture okay
+um right now I see you understand it mathematically the intuitions for this are like there's different levels of
+intuition we'll talk about some of it next time but I want to make sure I get to one more thing
+okay so one more thing lastly
+we've talked about this linear model in some detail using the SVD and so on
+how does this relate to non-linear models and the understanding of gradient descent solve the Deep networks and the
+like like how do you make the connection
+so the way you connect to the neural Nets is to use the perspective which
+comes from your choice of where you get it from uh there's people who've studied analog
+circuits know this as small signal models for analog circuits right a small signal
+model for analog circuit says look at an analog circuit and to try to understand
+what it's doing understand what it does to a small perturbation of
+something else okay take a very small signal and put it in
+how do you understand a small signal model in analog circuits you take the original model and you linearize it
+around an operating point and you see how does this model behave
+original thing is non-linear there's non-linear circuit elements but in the neighborhood of a certain point it's
+going to behave locally linearly because it has derivatives now
+from the perspective neural Nets your complicated neural net model
+F Theta right of input X
+is basically you remember during gradient descent what you're doing is you're trying
+you're setting Theta you're going to set data by making small changes to the weights
+so the small signal is at the level of the weights the weights are going to
+change in small ways so you can take the entire model and you can think of it this way
+F theta plus Delta Theta is approximately equal to
+f as I'll call it f Theta not F Theta naught of x Plus
+the derivative of that function with respect to Theta some big grow
+evaluated at Theta naught acting on Delta Theta
+see that just depending A first order approximation to the function that we're learning
+why is this okay because I'm just going to be taking gradient Steps From the small steps so I only care what happens
+in the neighborhood if I take this model then this
+namely the derivative of the function with respect to all of my parameters
+this is like a generalized linear model
+there are a bunch of features derivative features here I can evaluate these for all of my data
+points and what's going to happen is that we
+can try to understand what's going to happen optimization by looking at how this thing behaves linearly because this
+is something where it happened to start I can take this and just take this linear part this
+this cons this constant part that doesn't change as I change Delta Theta and just fold it into the Y's
+it affects residuals not directions so what happens is that the singular
+value decomposition of this object not the features you see
+but they're derivatives the derivative of all the with respect to all the parameters
+this guy and it's singular values determine the actual directions that your model will
+want to move it in gradient descent so if this thing has a high singular
+value in some Direction that's what you're going to try to fit at least locally for one step or a few
+steps of gradient descent until this thing stops being representative anymore then you have to go to a new new
+operating point so
+this object turns out to be really interesting and so in the homework you have a problem which asks you to work
+this guy out and compute its singular values and compute the so just as you have singular
+vectors what's a singular Vector singular Vector represents the direction
+that you would move it right so
+in the same way the singular vectors corresponding to the derivative of this guy on the training data represents
+synthetic features that represent the directions you'll move in you'll move in the direction of
+that synthetic feature those synthetic features can be visualized and the ones corresponding to
+large singular values are the directions you're going to fit first that's this is the best tool we know
+right now to understand a little bit about what's called the inductive bias of a neural net what are the directions
+it'll actually learn in so you need to understand this
+the okay I'm now out of time by a few couple minutes over so I will stop next
+time I'll pick up I'll talk more about it but this should give you enough to start on the homework
+um on this part so you should be able to I I can answer
+more questions about this online in Ed since we didn't get as far as I would have liked would you guys you guys had a
+good question so um that's why we didn't get as far as liked okay I have office hours now but they're
+not going to be here they're going to be in 258 Cory uh because there's another
+class in here immediately after us
+okay let's start so uh I want to start with an
+announcement we posted this on Ed but I want to make sure everyone hears it because of the class size shift the
+campus rooms we got for the midterm are on Tuesday March 21st
+from 7 to 9 pm initially we thought we were going to get Wednesday March 22nd 8
+to 10 but this is the time we actually have so this is the time we're going to have the midterm exam
+so sorry about the slight change there the other announcement is you've gone
+through homework zero and you're probably working hard on homework one uh
+so we noticed that that the
+attendance at the homework party was not as high as we expected so either people
+are you know finding it perfectly plausible and easy to do in groups that
+you already have which is great um or there might be some issue with the
+timings of the homework parties or something so what we're going to try to do is um we're gonna we're gonna pull we'll announce it but
+we're adding a might shift add slash change
+a homework party to not be in the evening so we'll have
+one that the time we could get it's probably like 9 to 11 A.M on Tuesday on
+Thursdays so announcement will come out for this to hopefully give people if they can't
+make the um seven to nine PM slot that we were able to get earlier this is a more of a
+daytime slot so we'll try to have another one for you guys we might remove
+one of the others to keep things efficient um so that's one thing we noticed
+um the other thing we noticed is that the
+uh the activity that we're seeing uh
+on Ed on some of the questions is uh I mean it's it's all good but it's a
+little lower than we had expected for some of them in terms of the kinds of questions that people are asking so we
+want to make sure that you know if you read a question and you try with your friends you know your study group to to
+work on it to do it and you find yourself you know stuck
+on something or you don't understand something it is okay to ask we don't want people to do the I glance at the
+question I don't understand something that I ask and then five minutes later I say oh I already got it like that's kind of annoying for everyone else you know
+but like just and if you really have a question and you want to ask something please do ask you know we we are we can
+support the questions that we get um final kind of uh announcement is uh I
+mentioned this last time I'll say it again in case some people are missed last lecture uh
+the discussions are meant to be quite useful to you in terms of understanding what's going on so if you haven't gone
+to a discussion you know please do it's it's important uh for understanding
+um we have staff there to support you and your understanding of the material so do take advantage of those
+um okay so that's the kind of logistics type announcements that I wanted to make
+uh did get some questions and feedback from people that like and I felt the
+last lecture I kind of went really fast at the end on things so I'm gonna like slow down and kind of cover it so as a
+result I'm Gonna Change what I'm gonna do today a little bit instead of kind of what I initially announced that we might
+launch into kind of a broader survey of like architectures and things we'll push that to Monday and today we're going to
+kind of Zoom keep going kind of at the level of preliminaries to make sure you understand those
+um I'm by in doing this I'm counting on the idea that most of you the idea that
+neural Nets are useful and can be used for lots of different problems is not something I need to tell you
+however you you're one of the people who really hasn't looked at this at all and doesn't know and you're really really
+curious you do come to office hours and I can you know say something about it but otherwise we're going to kind of talk about the survey of architectures
+and things like that on on Monday instead of instead of today
+today my goal is to recap the story and also introduce some language I realized I didn't say in lecture on inductive
+bias I want to then talk about the thing I just I mentioned if I posted something
+on the Ed for the lecture kind of talk about this two views of learn features so engage with what you're doing in the
+homework um one of the views we'll engage with doing the homework but the other one will engage with something that you've seen in discussion
+and then I want to go in to talk about initializations a little bit and talk
+about optimizers Beyond stochastic gradient descent which is the one that we've talked about so far I'm just going
+to think it's like preliminaries that are good for you to know when engaging with the rest of the class
+um okay good and so uh at the beginning here you know
+definitely I want to make sure everyone understands everything so
+broad I want everyone to understand everything but at the beginning I want to make sure that these things are familiar to people
+foreign [Applause]
+nice so what's our big picture strategy to
+understand neural Nets right the one that we're going to follow and people generally follow is as I mentioned
+before we look where the light is so we understand something and then we try to leverage that to understand something we
+don't understand so when understand simple linear models
+foreign
+think about nonlinear models
+and the tool that I mentioned last time to do that at the end was
+how
+we try to think about local linearization
+that's how you bridge between linear and non-linear things um why do we do this do we believe this
+will explain everything the answer is no we have evidence to say that there are things that are missing in a picture of
+what happens in nonlinear models by only looking at local linear linear models this much has been established there are
+phenomena we cannot explain this way but we know how to do this and we don't know how to understand some of those things
+except empirically so you should know how we can Leverage The
+intuitions we that we can back up and then as we go we'll introduce others
+so when I say simple linear models in the context of machine learning the simplest one that anchors most of
+our understanding is just least squares so I mentioned this before let's talk
+about it again I'll use notation that looks like this there's some weights you want to learn there's
+some data points and you want to match something so again let's just Mark the types of
+everything this is all hopefully review there's D features
+there's D weights that you need to learn we have n data points I arrange them in rows for the actual covariates and this
+is n long and so we mentioned last time that we
+have ordinarily squares
+we try to learn these weights by Computing the ARG min
+of Y minus X W squared
+and for Ridge
+we add a regularizing term
+so we have the original loss term and we add a regularizing term
+so in discussion you saw uh
+so in homework you are asked to kind of grind through and think about lots of different perspectives on this
+um but in discussion you saw also that this perspective can and versus this
+perspective can be understood as from a probabilistic backstory as this is a
+maximum likelihood estimator and this is a map estimator
+right where the difference between the two is that in the maximum likelihood estimator you have no prior on the rates
+W and here you put a gaussian prior on the wage w okay that you saw in discussion
+and so you remember how that works is you look at when I say in the get in the
+probabilistic backstory you say the reason these two aren't exactly the same is that there's some noise in my
+observations that noise is distributed IID gaussian for
+and then I want when I say a maximum likely estimator I said I want to pick the estimate for w which corresponds to
+the most likely noise estimate that would have given rise to my observations right and then because the gaussian has
+these densities that are you know spherically symmetric you get this because y minus x w is the hypothesized
+noise right so just again to connect the discussion a little bit between what we said in lecture
+and the reason you get this additional term when you have math is that if you
+look at Bayes rule you have to multiply the conditional by the prior right in the numerator and you get a denominator
+term which doesn't matter for the arc Max and this is coming from the prior right How likely is the W ah what's the
+probability of the w okay so this is hopefully you know um both review
+connecting to discussion I should understand it this the probabilistic interpretations of machine learning I
+believe are standard in most machine learning courses so this should be review
+um now last time this is where I'm gonna like slow down because I think some
+people didn't understand what I was doing um you have formulas to solve these
+so for this right you have the OLS Formula which is
+so you can have W hat I'll mark it OLS to tell you
+ordinary least squares can just be computed explicitly as
+transpose X inverse X transpose y
+now for Ridge and the homework has you also engaging with this so it's fine I'll take a
+different tack to you know hopefully exercise some other skills for you
+Bridge
+the formula that we talked about was
+X transpose X Plus Lambda I inverse
+X transpose y but um you thaw in I think this wasn't in
+discussion but it's on the homework um there's a second formula
+which goes like this
+foreign
+formulas for the solution to Rich Okay so
+equivalently these two are equivalent formulas
+so uh now I'm going to ask people
+this question so you this shows up on the homework right uh
+how many people I'm gonna restrict attention to people who took um 109 at Berkeley
+how many people who took 189 at Berkeley saw both formulas
+okay how many people who took where United Berkeley did not see both formulas okay so probably if you didn't see both
+formulas um and running at Berkeley it was like you saw this one and you didn't
+see this one um okay so how people now I'm going to restrict attention to people who had a
+machine learning course elsewhere uh did a machine learning course elsewhere
+how many of you have seen both formulas
+a couple of you and how many of you yeah elsewhere only saw this one
+okay so it's a sizable fraction of people who did haven't seen on this
+formula so it's probably worth thinking about it a little bit um
+so first let's just um get the types of everything
+um we talked about it last time but I'm gonna like do it for both cases again um this Matrix
+here what's its size how big is it someone just call it out
+client this is n by n d d by D right
+it has to be because this is D dimensional right so it better have a d different rows and
+so because it has an inverse it better have D columns okay um Y is n-dimensional and so X transpose
+Bridges between those two Dimensions here okay here
+what's the size of XX transpose plus Lambda I n by n
+Okay so
+this is sometimes we call the normal form the standard normal formula for
+Ridge normal also because this is these are called sometimes the solutions of normal equations
+right and this is like in that same style is alternatively this has a few
+different names uh in terms of How It's called one is called the Dual perspective on the solution to Ridge
+um the other perspective on this is this is called kernel Ridge regression
+okay so this is also called kernel Ridge
+okay so at this point I want to do so yeah so
+it can be thought of as coming from that perspective it's a solution that
+it's still giving you a solution to this right but this can be viewed as how what
+solution you'd get you took a dual point of view to solving it
+yeah so uh if you look at but let's just I
+want to make sure that again just because it's good to review some things um
+so again I'll ask again for a survey how many people have seen this thing called kernel rate regression
+raise your hand okay um
+so maybe I'll step back and ask a question uh
+I believe that kernel approaches to doing machine
+learning are standard in all basic ml courses
+um so for those of you who haven't seen this can you raise your hand and tell me how you saw
+um kernel approaches introduced to you or yeah
+good yeah I
+okay so you thought via the kernel approach to the svm now here elsewhere yeah it's totally
+fine I mean that's often it was the kernel approaches to the svm that really um transformed the field in terms of
+people's um use of uh of Kernel approaches um in practice
+um and so it's from a practical perspective it's very natural to think of uh to teach kernel svm gross is a lot
+more complicated than this in terms of the derivations um but
+it's harder to teach that but practically speaking it's more useful
+um anyone else uh everyone else who saw kernel methods
+um without seeing this see it acronym methods introduced directly in the
+context of the svm yeah okay
+um in my experience people people who've gone through that treatment often um I'd say with 50
+probability or higher um get lost in the weeds of uh what's going on and
+sometimes the big picture gets a little bit lost so I think it is worth kind of for your general knowledge to talk a
+little bit about this to make sure that everyone's on the same page um
+Okay so why is this called the kernel Ridge
+formula why does it have this um like why is this what's the what's the connection
+so for this I want to First make sure
+that you can see how these formulas reveal something different about what's
+going on so they're equivalent in this formula
+you see that look what I see here is the modification of
+OLS the connection to OLS is very tight here right you can see it's basically OLS
+except you have this Lambda I which is like changing how you um weight different things right
+so what does this formula reveal about the nature of the ridge solution that is
+not visible here so
+I want you to observe I want I want to ask you a question when you do this multiplication
+what is the type of the object that you get back
+a vector right it's a column Vector with uh how big is it
+to end right it's an n-dimensional column okay
+Matrix Vector multiplication gives a linear combination of The Columns of
+this object right that's what Matrix Vector multiplication means
+so what are The Columns of X transpose
+the data points okay so this tells you something
+reveal something that isn't obvious when you look at this which is that the final weight that you
+learn is a linear combination of the data points
+right do you see that okay
+so that's interesting and something which should not be surprising to you and we'll talk in a
+moment about thinking about how gradient descent works and how stochastic gradient descent works
+okay but it's useful to you to have the ability to understand what's going on
+from different perspectives okay it's very important to understand from
+things from different perspectives so okay it's clear this now reveals to you that
+the rich weight you learn is a linear combination of data points
+okay good so why is it called kernel Ridge
+so to understand why it's called kernel Ridge we can interpret different objects so first
+so we know the interesting thing about this okay good
+this guy XX transpose let's just start going over here
+what is XX transpose what's its size
+n by n yeah good
+it's a matrix what does it have in the ijth position
+what what's inside this thing yeah it has inner products between
+inputs right it's the Matrix of inner products
+so it's this aspect of it which is why it's called kernel Ridge
+from the perspective of practical use right because when you learned about kernel approaches to machine learning
+the general philosophy you learned is anywhere you have a matrix of inner
+products measuring you think of that as a similarity measure between inputs
+and you say instead of dropping in a matrix of inner products euclidean inner products drop in any other similarity
+measure that you want that satisfies positive definitions whatever right um and just use that
+right so by having the formula in the form that makes this fact that this
+inner products are at the heart of what's going on surf you know kind of pull to the surface you can see exactly
+how to do that right here x transpose X is not a matrix
+of inner products so this formula does not show you how this might have anything to do with similarities between points whereas this
+one does okay so that's one connection to Kernel methods is that clear to everybody
+next thing why is this called a why is the screener called kernel Ridge
+it's like a five minute review so it's because on test points
+the thing you need to compute is of course W hat
+Ridge transpose
+right this is the thing you have to compute right or alternatively this is the same as
+saying X transpose W hat Ridge
+right because it doesn't matter the order which I do it so when you do this on test points and
+you substitute in the formula this one what you see is you get
+foreign so
+first what is this object what kind of a thing is it
+right what kind of vector throw a vector so this is the row Vector
+what are its entries
+what's this first entry yeah so X transplus remember consists of
+all the different data points so this is the dot product with all the training points
+foreign
+that's another reason it's connected to the idea of kernels right how do you use kernel methods you take a test point you
+say how is this related to all of my training points how close is it how similar is it to all of my training
+points I will use that to wait something right
+so that's why that's why this is called
+kernel Ridge
+excellent excellent question right the question is does the same argument go
+through for the mid-norm solution the answer is yes that effect so maybe we'll just jump immediately to thinking about
+that in a way this thing's spirit is actually like the Min Norm solution this looks
+like the more Pandoras to do inverse in this shape right so everything we're saying is yeah is connected
+so now in the homework we ask you to show that this and like implicitly that
+this and this are the same thing right it's one one part of the implicitly in the homework
+so I'm gonna ask you guys to spend a little bit of
+time on a piece of paper I would like you to show
+that these two are the same except I'm going to tell you a particular tool to
+do it right that's probably not the one that you thought of using on the homework
+so I'm going to say exercise in class exercise
+use the SVD of x to show that
+thank you
+okay everyone understand the question this thing
+and this thing are the same thing they give the same answer
+use the SVD to see it now why am I telling you to do this because actually when you
+look at these formulas you should uh you should be troubled or potentially
+troubled by some things right so let me first tell you what you might be troubled by
+if these two formulas are equivalent they behave the same for all Lambda
+right which means they behave the same for Lambda going to infinity or zero also
+is everyone's see that okay now either
+in this case you're thinking of D because the least squares problem D you're thinking of as being smaller than
+n right so n by n is bigger than d by D
+everyone see that okay so hopefully people are beginning
+to feel a little not in your stomach mathematically okay so this D by D
+object is like happy and probably full rank right adding a Lambda I makes it more so
+all good this n by n object is probably not full rank
+right does everyone see that and so adding a Lambda I makes it
+happily full rank right but when Lambda goes to zero
+this guy is approaching a singular Matrix and you're inverting it
+so why is it that this thing blowing up
+doesn't cause these two to become different you see that not numerically but kind of
+just even mathematically do you see that okay I want to make sure everyone unders like
+as you navigate deep learning and machine learning you're gonna need all of your different
+intuitions kind of to be in play because you don't understand what's going on so you need all of your senses
+to be active and one of those senses that should be developed is your mathematical sense
+right your mathematical Intuition or you know Spider Sense like ah I sense danger
+you know right and then you have to think you know is this Danger real or
+not or something and that will help you understand what's going on so in this case
+like if you do it this way you will not get as lost in a sea of
+algebra and you'll understand why this is safe okay so like yeah take a couple take
+three minutes and try to do it
+foreign
+foreign
+foreign
+foreign
+foreign
+go check in how are people doing so raise your hand if you're done
+okay um raise your hand if you're making progress but not done
+um raise your hand if you're stuck okay so I'll give you a couple on one one minute one more minute to people
+foreign
+foreign
+I'll just bring everyone back together okay so hopefully you uh are anyone
+still working people are mostly done okay good
+um what you've seen right is that
+as you kind of just use this fact and use this what these
+objects are like right so what happens is that when you apply the SVD
+you just change the SVD coordinates so all the coordinate Transformations just fly out of the
+inverses and everything together and then you get everything just all the things will cancel out right and you get
+a story that's essentially entirely in terms of Sigma and you look at inside here you have a
+sigma transpose Sigma and here you'll have you know a sigma transpose and you
+look here and you have a sigma Sigma transpose and then you have a sigma transpose over here
+but Sigma transpose Sigma and sigma Sigma transpose essentially are just different size things that look
+identical inside you have however whatever the rank of X is K you have
+that many things on the diagonal and you have zeros everywhere else and so what ends up happening is that
+when you add a Lambda I to it you just get a Lambda I Lambda added to all the
+diagonal and we take its inverse you get identical things for both of them just different sizes
+right then the key is that
+the only thing that ever comes out of this
+right is what happens to why hitting
+those uh singular directions that are actually represented in x
+right so X so
+the singular Vector is V are the ones that correspond to non-zero singular values are the ones that span
+the column space of X transpose or the row space of x
+and that's where your data points are and that's the only thing that ever actually moves through this thing so
+anything that's happening elsewhere doesn't matter so even if this thing is hypothetically blowing up
+as Lambda is going to zero the directions in which it's blowing up never make it through X transpose
+which is why that's safe and why these equivalent sold okay
+so hopefully you got um something out of doing this exercise to
+understand why these are equivalent also this should confirm to you that when in
+doubt use the SVD to understand what's going on this should be a lesson that
+has been hammered into you from earlier classes but you know that's why because
+we don't know we know how to understand it it makes things we can understand what's going on so it's useful here too
+any questions on this little exercise and why this is equivalent and so on
+okay so I think in the next homework we will put something in to further deepen
+your understanding of this object um
+so in the Galaxy I'll just mention it briefly
+in the gaussian setting if you look at this this thing right this is like map estimation
+for things that are gaussian with a gaussian prior on W and gaussian noise in your observation and X something just
+some data points wherever they are um it's an interesting fact that for
+gaussians the map estimate is also where the mean is
+so you can look at a conditional mean this is hopefully a fact so if you look at a conditional gaussian a gaussian is
+maximized at its mean right so gaussian density is maxed at the mean
+which means that map is the same as estimated mean to same as mean squared error estimation
+so it turns out and you'll be asked to do it on the homework is you can view this as actually just an
+MSC estimate using a standard MSC estimate formula for gaussians again different
+perspectives are good to have to understand what's going on
+okay so hopefully all this is a little bit clearer to people understanding
+Ridge understanding what's going on so just one comment here
+is if you do this you can also view the
+Ridge formula in sort of outer product form so if you just grind through this
+calculation right I don't know if everyone did this uh
+Ridge
+foreign
+product form I don't know how many people when you were cheering this is equal went all the way to something like
+this for both sides yeah one person okay it's a couple people yeah you can just this
+is like another nice way to see what's going on shows you why this is a linear combination of the things expressed in
+the Subspace of this and how the singular values show up in doing
+this good so now
+I want to say a little bit of what I was saying
+before except it'll be a little slower so
+there's a term that we use which is inductive bias this is a term from
+philosophy and what it means is that we're doing learning and we want to see what kinds
+of things will be actually learned like what is our bias what kind of what kind of patterns do we actually learn and
+what I told you before is that uh is not enough to think about you can
+learn any pattern you can express any pattern using your neural net you want to know what are the actual patterns
+you'll actually learn from data so that's where the idea of index that's where the term inductive bias comes so
+last time we talked about how gradient descent has an inductive bias
+let me just close that off by itself gradient descent has an
+implicit inductive bias that is not
+misaligned to Ridge so if you just look at gradient descent for OLS we did this last time but I want
+to make sure when I went fast so I want to make sure that everyone understands it let's look at OLS right what you have is
+the update the next time for your weights that you're learning is the
+weights you learned last time plus I'll just use two because I didn't
+put a half to Ada X transpose
+y minus X w t the residual
+so remember we said that one of the nice things about the ridge formula is that it shows
+you that the Learned weight is a linear combination of the inputs
+looky here the update to the weight is a linear
+combination of the inputs so if you start at 0 for example and
+always add only linear combinations of your data points where are you going to be some linear
+combination of your data points right so that's nice to observe I didn't talk
+about it last time but you can hopefully see that here
+so we said that if you look at this in SVD coordinates
+so just this is gradient descent for OLS if you do stochastic gradient descent where you
+only use a batch what changes what changes is this
+and this right your back is smaller so you look at the residuals only on a smaller set
+of data points and you only look at those data points inputs but otherwise the formula is identical
+so useful fact SGD also only moves in the Subspace
+not just gradient descent SGD also only Moves In This Subspace
+okay so but going back to gradient descent because there we can think about the SVD but we said in SVD coordinates
+and we said it last time but I want to let you guys ask questions about it so let's look at the ith position
+in SVD coordinates this is equal to
+the scalar is a scalar now I look at the ith coordinate
+in SVD in SVD coordinates um to Ada and now everywhere you have an X
+transpose you're going to have a sigma transpose this diagonal which means you can just pull out the relevant Sigma
+Sigma I and then the scalar residual in this coordinate
+so this will be talked about in the discussion because it's super important I make sure everyone understands it
+and you get this kind of thing which
+I can also combine these terms
+one minus two Ada
+Sigma I squared
+foreign
+that formula down and I wrote it out as a recursion in a in a form that made the relevant eigenvalue of the Dynamics very
+clear okay so last time I talked about this but I want to make sure that everyone
+understands it because I think some people didn't get it um
+in SVD coordinates you can see that what's happening is uh every single singular direction is
+doing its own thing there's no there's no coupling at all um if you're doing full gradient descent
+everything is converging to where it should go and all of them have their own evolution is that clear to everybody first of what
+the implications of this are we wrote that last time I want to make sure everyone gets it clear
+okay now our learning rate Ada step size is some
+number so look at this
+suppose Ada is small some small thing
+for what kind of singular value is this quantity
+close to one one minus two ETA times Sigma I squared
+when is this close to one when Sigma I squared is close to zero is
+that good everyone's good with that okay if so what's the other interesting thing
+this could be like so this thing has to be stable so it's somewhere in the you know unit circle
+everything is real so you don't have to worry about real numbers okay so there's two interesting places
+the boundary close to one that's when Sigma I squared is small
+um what's the other interesting thing this could be like zero right because zero is super fast
+right this is this thing is like something which will Decay as you exponentiate it so it discovers the
+speed of convergence cleared everybody like if you look at this the evolution of this kind of thing
+there's some mathematotic value you'll tend to
+and then you'll go to it like that right and how fast you go
+the time constant associated with this is tied to this guy right so you go like this
+and you'll go faster and faster the closer this thing is to the whole thing is to one what does that mean it means
+that large Sigma I squareds will converge faster
+and so hopefully you know this other fact that if you have exponentials
+uh from the perspective of different exponentials
+one of them has already completely converged by the time the other is like moving
+right it can use it asymptotically right exponentials like converge much faster than each other if they're going to
+converge different rates so what this tells you is that when you do gradient descent the inductive bias
+of gradient descent itself is during the training path to First fit the largest singular
+directions so you first fit to the Subspace of the largest then the next then the next then
+the next then the next so it's as though you are smoothly doing
+an ordered fit to subspaces
+you see that so gradient descent as it goes is selecting so if you think about the
+Subspace the Subspace is telling you the implicit complexity of that model how many degrees of freedom are there
+like how many how complicated is that model if you're fitting a Subspace with one vector you're fitting like a single
+Direction so gradient descent has an implicit bias
+right an induct implicit inductive bias that says the path of gradient descent
+will walk through a sequence of subspaces a simple model then in a more complicated model then
+the next more complicated model then the next more complicated model then the next more complicated model and it'll
+keep doing this as you go this is if you just do OLS
+now notice here in the ridge formula
+what Lambda is doing is also effectively cutting off subspaces
+so it's also doing that so you adjust the Lambda you're smoothly saying well I want a model of this complexity and not
+larger is that clear to everybody
+this is important to understand so gradient descent because of this
+behavior of exponentials and time constants also does something like uh
+offering youth as gradient descent is running a choice of models of increasing complexity as you go
+an alternate view of this is to say when Sigma I is very very small
+right this thing is very very close to one and when this thing is very very close
+to one you can think about the whole thing as being like an integrator
+and just integrating this guy adding it up at a very small slope
+and so why very why very small slope because here's the sigma I in here so Sigma is small this thing has a very
+small slope and it's as though this is just one so you're just moving very very slowly
+like this at some point you'll see the exponential curving and asymptoting
+but after a very long time if you're moving very slowly so this is why
+great so we give you a homework problem where we say gradient descent doesn't go nuts
+right and there we wanted you to do it using coarser tools but this is like a more refined view that shows you
+gradient descent doesn't go nuts directions that are not very well represented as the
+learning rate is small enough we'll basically not even show up in your model
+okay any questions on this yeah
+excellent questions the question was when in practice will you ever use the closed form Solutions and when will you
+use gradient descent and you know just track and stop early whenever you need it depends on context
+to zeroth order like the basic thing in when using deep learning models you will
+not use the closed form solution of Ridge you'll always train everything using
+gradient descent okay that's like the zeroth order View but
+it turns out in some settings you want to use the
+formula because it's a heck of a lot faster if things aren't too big to use it
+the number of steps if you if you actually want to get the whole solution and you're you're cool with that getting
+the actual solution and you don't want to cut it off if you know where to cut it off you know what the Lambda to use
+is then sometimes this can be a lot faster if D is small
+to do this so sometimes you want to do that
+here's the other cool thing we'll talk about it later this formula
+can be written in pytorch this formula is itself differentiable
+so sometimes you can use the formula itself as a layer
+and say okay go ahead and take derivatives through it
+and accelerate certain aspects of what's going on and bring just the focus of
+your model so this is another aspect another analogy which is useful to think about
+we think about inductive bias we want to think about what kind of stuff does our model learn
+and the classical perspective on this um sort of before the modern era which I'm
+going to date as being 2012 onward um okay what kind of things can you
+represent but when you when the focus shifted to understanding well what kind of things do we actually learn you need an analogy
+so one analogy is sometimes thinking about how you take pictures
+and you can think about the learning the model and the optimization as being like
+a lens or Optical apparatus and what they do is given data they
+bring different patterns into Focus and basically think about your analogy
+of lenses right as you adjust the spacing of the lenses in your Optical system different planes will be brought
+into Focus on the thing you want to capture in that same way the adjustment of the
+model the optimization algorithm and things you do are bringing different
+patterns into focus and that's where that's the name of the game of DPL so we have all these architectures why we
+adjust all these things it isn't about what the model can express it's about what that model brings into Focus
+this is one perspective another perspective related is the kind
+of musical instrument perspective which is closer to what's going on mathematically
+so a musical instrument resonates in certain ways
+and so you have a bell you hit the bell with an impulse but then it rings
+at a particular tone right so
+remember Spectra are called Spectra it's called the SVD
+right and related you call you Call these things like related spectrum because they are like frequencies
+and so the fact that these that gradient descent will sort of for a model will
+fit the high the high energy Parts first is like saying the model resonates
+at those things and the data pattern that comes out comes into it excites the
+model but what you learn is the thing the combination of the bad thing that comes in and where the model resonates
+so that's another perspective on what's going on in deep learning is you're crafting a kind of musical instrument
+and what you wanted to do is to bring out a certain quality of Sound by
+resonating that way this is different from the
+um classical view of what matters is constraining capacity of models this is not about the capacity
+of models it's about their inductive bias okay so these are additional analogies
+that are useful um to have in your repertoire of how to think
+so usually like in many classes you're told this is the right way to think about X unfortunately we don't know the
+right way to think about everything so I'm going to tell you lots of different ways to think about things because you have to navigate between them
+okay so important thing is that kind of closing out this part about gradient descent in OLS is because the gradient
+descent will go through effectively a sequence of models that are different
+early stopping looking at checkpoints of your model as it's trained and saying hey how good
+was that one and deciding to stop and use one of those instead of the final converged model the reason that's useful is because it
+has the same regularizing effect this is a very very important thing in Practical deep learning
+you'll often do this you won't just train a model to convergence then use the final thing you'll look at
+checkpoints along the way okay so this is another kind of regularizer
+okay any questions on that foreign
+now we spent a lot of energy and time kind of thinking about
+these linear models and we did this to sort of hopefully help you understand
+uh that there's something about these linear models and the inductive bias
+which is really important the MSB thing the most significant thing
+that then seems to happen is what is the singular value structure
+of in this story so far of this thing X
+what is X x is your Matrix of inputs
+of your features right so it's how your features like show up in terms of their singular
+value structure that determines what these kinds of algorithms will learn okay so that's the lesson we've learned
+from so now we need to have a way to bridge to non-linear models
+deep models and for that we're going to use this local linearization point of view which
+I introduced at the end of last lecture I wrote something in the ad for but I want to make sure everyone understands it and we'll talk about it in the
+context of example I think you did a little bit in discussion also
+related to this so let's move this over
+then I want to get into initial that will then help us understand something that we want in initializations
+okay so
+a general model it could be deep this is like following what I wrote
+is I have a bunch of parameters Theta I act on inputs and the model emits
+something I want to learn these
+okay this is like our story I'm going to do gradient style
+algorithms so the important thing is this General model is deep and non-linear
+foreign
+or non-athlines we mean it's non-linear in what it's
+non-linear in x the input
+y so you can have expressive power and actually kind of capture the patterns you're interested in relative to the
+inputs right you don't want to just be a non-linear function of the actual input
+but it's also non-linear in Theta
+it's not just a linear function of the Theta it's a nonlinear function of the Theta non-linearity in Theta or
+non-alphinedness and in Theta is inevitable whenever you have a deep
+Network because in a deep Network the sum layers are inputs to the next layer
+and so if the layer is doing something non-linear even if the weights were acting in an
+affine way before now they're going to be non-linear coming out so generally you'll get
+non-linearity so now you want to learn Theta using
+training data and when you talk about a local linearization right we're talking about a local
+linearization we say let me look at f at Theta naught plus some small variation
+around it on generic inputs X
+and we'll say this thing is basically the function at
+wherever you're thinking of the Anchor Place being acting on x
+plus this derivative
+evaluated at beta not acting on
+Delta Theta this is local perspective this thing
+is par f Theta 1 you know or Theta one first
+first first parameter
+all the way out to however many total parameters you have in your model
+right it's a big thing filled with the partial derivatives
+so if you look at this approximation this
+approximation is has only learnable things like as you do a
+step of gradient to center a few steps of gradient descent the only thing you're actually going to be changing and
+learning is this these are the learnable parameters here
+locally learnable parameters
+this is just where you're starting right there's nothing locally that's
+changing here of course you're changing Theta as a whole but you've decomposed
+it this way to have this local versus uh like where you're anchored split
+so in this after you do this approximation what you get is a generalized linear model where these
+guys are the features
+foreign X because each of them takes an argument X right because
+it's a partial derivative of this um and but you use them
+by taking a linear combination so now the model is a generalized linear
+model locally it's not deep anymore at all it's flat
+it just has a width of d different things that you're learning
+weights on okay I posted this uh on as I mentioned it last time but I
+want to make sure everyone understands it any questions about this picture
+ah sorry so I'm just saying this thing is these derivatives
+these are all what these are all functions of x right that's what it means to take this
+partial derivative so they're functions of x
+L functions of X we call features if we're going to use them for learning right that's what it means what's a
+Feature Feature is some function of your input it could be the seventh coordinate that's like a trivial kind of feature or
+it could be like the add all the energy or could be any kind of weird nonlinear combination of things so it's like a
+lifting it's a lifting of x so you can view these as being features
+so this points to something really important which is that when you have a
+deep model and someone asks you what are the features your deep model has learned
+there's actually two different points of view on what that means
+one point of view is the point of view expressed by this expansion
+it says well however it is I've trained my model I've learned some Theta not if
+I'm going to view this model as something which acts as an initial condition as a starting point for fine
+tuning which is how we use this modern pre-trained models today
+if this is going to be used for optimization and I'm going to allow myself to tune all those parameters
+then the features I've learned are actually these guys
+because that's what the optimization sees the optimization just sees these guys because optimization is acting locally
+and taking derivatives so it doesn't see anything else it just sees these
+and so it's going to be this is D of them right
+it's going to be the singular values and the singular vectors associated with
+this lifting on your training set that determines what kinds of stuff are going
+to be brought into focus by gradient descent or not
+do you see that okay so it's this thing that determines
+these derivatives so these derivatives interestingly are also what pytorch
+calculates right Pi torch calculates what is the
+sensitivity to you know your model with respect to a certain parameter by doing
+back prop so these are things that pytorch is also calculating for you all the time
+because that's how it does the optimization so this is one view of the features
+so these are let's call them the local features
+for learning
+now there is another sense which is not unrelated to this sense so I'm going to
+draw a picture for that to make sure you understand that one too so in a deep Network
+right a deep Network looks like this I'm just going to draw it I have some input X
+there's some layer right it has some weights it has some biases it has lots of stuff inside of it
+and it has a bunch of outputs
+those go into the next layer which also has some weights some biases
+and some maybe different number of outputs right and then it goes into another layer
+right which has its own weights
+and his own biases and so on until finally
+at the end game of this the end of your neural net how do you like cap or neural net at the end what happens is I have
+some set of some weights some biases I have some set of outputs that come out
+and then I add a linear layer
+that generates something it's usually a structure of these networks a bunch of stuff happens
+non-linearities red loose whatever stuff are happening in here then have a linear layer and then something comes out then I
+attach this to a loss in some way right this gets attached to a loss
+for training is that cleared everybody
+okay so this linear layer has its own features its own weights associated with
+it let's call them weight linear
+one perspective a different perspective on the features learned by the neural
+net is to say that what the neural net has learned is actually these different features that correspond
+to these outputs right before the linear layer so you can call this the last layer and this is like the penultimate
+layer so the outputs of the penultimate layer the last place where non-linearity
+showed up right those are also viewed as some as the features that
+the network has learned because after this point is just a
+linear model you see that there's like two different perspectives this is saying that when I look at the
+entire thing I have a bunch of non-linear stuff which is some kind of learned lifting and then I have a linear
+model at the end his other perspective
+says actually I have a local linear model
+where I have D different features nonlinear features corresponding to all the weights and
+biases so there's lots of different sizes these two different views
+so this view is also a view that you will see represented and so when you use a
+deep model and you freeze a bunch of weights and you don't train them at all and you just
+train a new linear layer at the end that's this that corresponds to one perspective
+and if you tune all the weights in your model that corresponds to this other perspective
+so there's two different perspectives right one is this local features for learning perspective
+and the second one is penultimate layer
+the outputs of your penultimate layer are the Learned features and this says the learn features are these local derivatives
+does everyone see how these are two different things they're like different numbers of things very important like
+they're completely different like not they're not just like D things but they're different it's like
+this could be like 27 and this could be like a hundred thousand right so it's like two different size
+objects okay yeah question
+ing a model that's been thing right there so when people say they're using a model
+standard deep learning terminology is they say I'm using a pre-trained model
+if they say I'm using a pre-trained model and they don't use the word fine tuning then they typically will mean I'm just
+adjusting this linear layer they say I'm using a pre-trained model if they say I'm fine tuning a linear a pre-trained
+model then they're often adjusting everything we'll talk a lot more about this later that's a major topic for the
+class that's very useful but now this helps you see like what the difference is
+but I want to connect the two together to show you that they're not entirely disparate
+so associated with this linear layer are a set of weights
+right what is the derivative of this with respect to these weights remember
+linearly means that a bunch of weights and I add them up so what are these local features
+corresponding to that linear layer
+so let's write it out this function f at the end is a sum over
+I equals 1 to 27 however many things there are here right of w i final layer
+times GI
+of x so what is the partial derivative of
+this with respect to W3
+gi3 so in this set is included these outputs
+so this is the subset this perspective is a subset of features
+in this strict subset
+so these are also derivatives because the derivative of something
+linear is just the thing that multiplies it right that way which is actually the output
+here
+okay is this hopefully is much clearer now uh to people what's going on here
+so now for the case of a relu network you can actually compute what these guys
+look like did you guys do this in discussion
+right did you plop them right and you see that they have interesting shapes right they're not just like
+you know Corners elbows like some are some are discontinuous right they're
+like constant zero and there's something that corresponds to bias right and then
+some are interesting where you have uh you know you move then you jump and then
+you go so these are these are much more interesting shapes than just what you
+get with the railers and the homework has you also doing this and the next homework will have you doing more of this
+so this way you can get a sense for what's going on here but uh yeah so
+the if you want to understand fine tuning you need to know what are the singular value structures on your
+training data of these guys if you want to understand simply using a pre-trained model and what it will learn you look at
+the singular value structure of these guys and see what I learned would be great in
+descent okay so I have gone slower than I
+expected but that's fine because I have Monday to catch up um before discussion
+um so yeah what I want to say next is that once you have this picture
+you can now begin to understand if you're going to look at initialization so one thing is to look
+at this after you've trained it but the other thing is to make sure you can train it to anything at all interesting so that requires to understand how does
+this thing behave at initialization so it's very important to understand at initialization what this guy looks like
+and behaves like and that's the thing that drives the choices of how you randomly initialize
+your network you want to make sure this thing will behave nicely
+it won't go cuckoo on you and that we'll talk about next time and
+we'll talk about optimizers next time okay I have office hours now any
+questions on the stuff on the board I can answer right now and then we can move over of
+okay let's I guess started stuff is already on the board so that's good they can reuse it
+um so uh
+I want to make sure I repeat the announcement very important announcement the midterm is Tuesday March 21st 7 9 pm
+so that's the room that we got for everybody that fits so the goal today
+is to you know try to catch up some more um to talk about initializations and optimizers and
+then to move into a little bit of a high level survey
+of the actual neuron that things we're going to talk about in the class
+I want to talk about this first um
+so uh remember our goal in you know working with deep neural
+Nets is to achieve a certain performance we want to do well on a certain task
+want to learn certain kinds of patterns from data to learn those patterns we
+have to have the combination of so you need to need to design
+in a sense a triple right we have to have a network
+a circuit that we have two has tunable parameters that we're gonna hopefully be
+able to in encode the pattern into that it'll be able to take data and encode the pattern into this neural network so
+that can generalize but in addition because we have to use an Optimizer we do some optimizer
+design slash choose some Optimizer that's going to actually
+be able to take the data and tune the different parameters so that
+you know you got a good fit why do we do this is because fitting is what we know how to do
+and but you have to be able to start your Optimizer somewhere so you need to
+have initialization
+so the combination of these three you expect you hope will work well
+so you want the combination of these three to bring the right kinds of
+patterns into focus is the way I described it last time so it's not enough for the neural
+network or the circuit to be able in principle to express the pattern that doesn't do you
+what you need you definitely that's a necessary condition right if you can't possibly Express the pattern at the
+Fidelity you need well then you're hopeless but it's not a sufficient condition
+Because the actual initialization and actual Optimizer when faced with the data has to actually be able to do it so
+I will augment this a little bit to say Optimizer right and training strategy we'll talk a
+little bit about some stuff for the training strategy later
+right this is like the big picture which you have um so uh just a preview of stuff that's
+going to come later is sometimes our training strategy uh could involve uh doing things
+um differently we already know it has some things like choosing the loss function for example but also includes
+things like doing data augmentations during training it also includes things like
+having parts of your network that exist only during training that don't exist
+when you're actually going to use it they're just scaffolding to help you build so think about a building right a
+building isn't put up there's lots of construction going around Berkeley a building isn't just put up
+um just by itself right you also have stuff around the building scaffolding that helps you build the building so the
+same thing exists in New Orleans we'll talk more about that later but big picture is this the stuff you have
+to do um we talked about it before so it's already on the board that what we understand is simple linear models and
+now we have a way of thinking about non-linear deep models by view of a local linearization
+so at the last lecture we talked about how basically you can view the model as
+having for the purposes of optimization that it has this local view of what the
+features are and it's acting like a generalized linear model in terms of what's where the where the optimizer
+will be focusing its efforts you can say for the next part
+so you know and for simple linear model these things like you know least squares
+and again a part of the training strategy
+um aspect of running the optimizer as we talked about last time about early stopping that we can run the for free
+we can run the optimizer and take checkpoints as we go of the network that's learned and then
+at the end instead of just choosing where we converge to at the end we could choose any of the checkpoints we saved
+and that can often be useful because we said last time that what's happening is fundamentally when you think about how
+gradient descent at least fits models is it fits the
+if it's the largest singular values vectors first
+then the next ones and the next ones the next ones and so implicitly it's going through a sequence of more and more
+complex models that's fundamental to how gradient descent itself works so because of that you get to just by writing the
+optimizer and taking checkpoints you get a kind of view at many different models
+instead of just one trained one and you can pick it the advantage of this what I said for free is that if you think about
+instead using something like a ridge parameter or some explicit dimensional reduction that would involve a hyper
+parameter search you have to retrain the network using different values of this Piper parameter and that costs a lot of
+wall clock type so whereas this approach of early stop being just uses one run
+and different checkpoints so this is the stuff we talked about last time so now
+what I want to do is I want to start thinking about initialization
+so for initialization I'm going to start with the model we had last time
+that we talked about about the simple one-dimensional value model let's draw it here
+so what are things you might want to do for initialization how do we think about it so consider an example
+or motivation so the real example we had was very simple it was you take a scalar input
+you multiply it by weight you add to it a bias
+you put that into a relative unit which is
+Max zero what comes in and this is another linearity and then you look at
+the output and we saw before that this thing as a function of x if I
+think of this as y it behaves like this
+either you have a corner like this
+or sorry it's a straight line
+straight line or you have a corner like this
+and in either case the location of this corner is
+minus B over w okay so that's where the essence of the
+non-linearity exists for this particular little setup so you know notice on this side it's
+looking linear on this side it's looking linear that's where you kind of feel the effect of the nonlinearity and we mentioned
+before you know you need this non-linearity to be able to gain the expressive power to express interesting
+things without it you know you just have linear functions only
+so to understand initializations let's first understand uh what would happen if
+we initialize this weight and this bias to just be normal 0 1.
+insight
+foreign
+ly so if you do this uh the interesting thing to look at is
+where is this corner right does everyone see that because that initialization in the corner you
+ran these you know you played it in the homework you've you've seen what happens you have these little you know corners
+and then you know like the sides this side changes during training and the corner moves around but you know the
+initial placement of the corner is kind of interesting to know right so
+how is minus B over W distributed
+and we won't do the math to calculate this distribution it's a standard distribution so this turns out
+kaushi
+so the PDF I'll just write it here
+of this corner corner
+turns out to be so you know where is the placement of
+this corner it's called C pi 1 plus
+c squared what does that look like
+well it's peaked at zero and it
+goes down like that
+so this particular PDF tells us where that corner randomly is going to get thrown down and where it's going to show
+up so it's useful and interesting um to
+think about well like let's recall some properties of the kaushi distribution that might be interesting
+so if you look at the koshy distribution and you say well what's the properties
+you see what it looks like it's definitely symmetric about zero so you could ask what's the mean
+right and it turns out the expectation of this thing's mean is undefined
+right so the question is actually you know undefined it doesn't converge
+so if you've never done this as a side
+exercise I would recommend that you take something like the Koshi and simulate it
+and track the running mean right just like you would say what does
+it mean for the expectation to be undefined because you've never seen this before like what does that mean I take
+any I this is a distribution it generates numbers that are between you know minus infinity and plus infinity is
+never actually Infinity so I can always take the average of you
+know 100 of them or a thousand of them or ten thousand of them like the computation of these averages will
+already exist so what does it mean for the expectation to be uh undefined well
+you should see it for yourself uh I think Wikipedia article on because she
+actually has an animation of this but you should if you haven't done HBO might want to do it yourself just to believe it um yeah
+probability we're very close because they're on the highest yeah yeah so we'll talk about that so
+the probability is that this thing is going to be somewhere near zero but if you compute the expectation you know you
+won't you won't get anything and the reason you won't get anything is you'll end up having to do an integral
+that looks like this
+great are you taking expectation like that now if you look at this integral and you
+looked at it for like one of the halves you might look at this integral and say
+wait actually I know how to do this integral right you can do this in a real close form
+right I'll leave that to you uh but if you look at this what you'll see
+is that asymptotically the denominator behaves like B squared
+right and the numerator behaves like C so asymptotically when values are big
+this thing is behaving like 1 over C but one over C the integral diverges
+so the integral diverges on both sides so this thing tends to Infinity slowly
+but it does tend to Infinity okay so this thing doesn't have a mean
+which means that you know it's heavy tailed right you can see it's a polynomial tail um so it's heavy tail so in this case
+doesn't even have a mean so it definitely doesn't have a variance right it doesn't have any moments
+um higher than or equal to one so you can still ask well sure it's still a
+distribution though so it still puts its probability Mass somewhere right it still has a CDF and everything
+so it turns out for looking at this that if you go out I picked a couple of
+numbers at random to -10 and plus 10.
+in between that right this contains
+at least 94 percent of the
+corners right so although this thing has a diverging
+uh you know expectation it still means that actually the
+action you know the the corner is going to be between minus Ten to Ten you can go you could pull in much closer right and look at minus three to three
+oops just as a way to you know get some
+intuition and between minus three and three this is 80 percent
+foreign
+look at where these nonlinearities are so this actually instantly tells you some Concepts you know we'll also will
+come up come up in deep learning that's good to know so first is hey actually
+whenever you have a relu network that as well as in it and you have random initialization
+um it could be that all of your data that you have is all living like here
+right like your data is whatever it is and we'll talk about this in a moment your data is wherever it is and
+that means that some of the relus will be like have a corner that's out
+here so they'll be like initialization do you see that because random right
+where these things fall and you have you know tens of thousands of them or more you know 94 fine 94 but six
+percent is still six percent of it's thousands of units right are all
+they're looking like this so during gradient descent and during sarcastic greeting descent they always
+just give zero did everyone see that so these are what are called Dead relues
+right so when that happens they're called dead so you could be like this or it could also be you know the other side
+so a relative that on training data always shows up as zero is dead it will have no gradients it will never
+undie so
+okay that happens for other networks but even the ones that are the counterpart of this right that look like
+they might as well be dead right I mean they're okay they're not dead they'll have a
+gradient but to actually have them do anything interesting you would need to have the corner actually move such that
+it's actually different for that someday training points are on different sides of it but it might never do that
+so in that case this kind of value will just always behave like just some linear thing
+but it won't contribute any interesting non-linearity and so all the relatives that are in that kind of state will be
+you know their own uh you know different kind of uh object
+where there's just a linear thing that's happening okay so these are all things that can happen in threadlets
+now one of the well you know why do we care about this
+we care about this because we definitely want it to be the case that from a
+pragmatic perspective if you're going to have a local gradient descent type Optimizer learn an interesting pattern
+that we don't want all of the inputs all of the training data to be out here
+right at the you know past minus 10. do you see that because if you do that you're going to start with almost
+everything being dead or effectively that not interesting patterns
+so what you want a desirable kind of quality kind of intuitively is to have
+the input that's going into one of these units kind of be centered around zero
+and have most of its probability kind of in the near neighborhood of zero
+does everyone see that ask a question if you don't understand
+that yeah
+yeah so what you want to do is you want to think about your your input to like
+so remember we're trying to understand what's going on in a deep neural net but that's our goal so in the Deep neural
+net you have many many layers but all the time you'll have these non-linearities and stuff like right in front of them weights and biases in
+front of them so we want to make sure that as we're going
+that if we need to do a mean shift or something that at initialization things
+should be at a reasonable place so there's two parts of it there's what your actual training data is
+and we'll talk about the normalization or standardization of your actual trading data later like it's fine exactly so you could for example take
+your actual training data the things you actually get from you know observed from nature or something and change units
+so that there's zero mean and you know for example you know standardize the variance to be one across your data
+um yes you could do that that's a very reasonable thing but the problem is that in a deep neural net so I'll draw a
+little picture of it recall what this class is about
+if you have layers upon layers of stuff
+right
+and so even if you have standardized the X coming in
+from the perspective of grading descent and learning this thing is the input to this guy
+and so if you don't initialize properly right what will happen is that this is nicely standardized but then this isn't
+everyone see that and so the same problem that we talked about will happen not here but here
+like everything here will be a dead relu or we'll be hitting like a linear thing in which case maybe everything passed
+here all this depth that you were adding to get certain things into Focus or to do something interesting all that depth
+is just like one big linear layer effectively right if everything is sort
+of you know dying over here
+great question the question is can you standardize at every layer we will be talking about that and we do do things
+like this um as an alternative thing we'll talk about that we talk about contents because required to make modern contents
+work is stuff like that so we will we will do stuff like that but another thing we could also do is to say that
+look at initialization stuff should behave reasonably that the main work shouldn't be coming from the standardization
+are those about that random absolutely a bad thing because I think uh they would
+be like you know the dropout so the good question the question is are the dead resus bad or good
+right it's always good to ask if you see a phenomena you have to ask you know is this thing a good thing or a bad thing so uh from the perspective of
+implementation and you know wall clock time and
+um you know how many meals you can cook on your server while it's running um the dead redues are a bad thing
+because their computations are being executed to compute for them like a
+whole bunch of numbers are being multiplied by weights advice is being added and then it's compared to zero and
+it always is less than zero so a whole bunch of compute is wasted
+from that perspective dead values are typically viewed as being bad things but you could ask is does the presence
+of a lot of dead red loose act in a good way for your network like in some regularizing way and
+the jury is kind of out on that um in terms of people aren't really sure
+they mostly to think it doesn't help um dead railers have another since we're talking about dead Brothers
+I'll mention another thing about dead red about dead Rattlers is sometimes stochastic gradient descent
+so you have this homework problem right we worked out how does gradient descent work on this right in terms of like
+moving this corner but sometimes stochastic gradient descent type algorithms can because of local
+randomness um in the batch that was selected
+could generate a gradient and if the learning rate is high enough it could kick the relu
+in such a way that it becomes dead okay like I said sitting there isn't a
+reasonable place but some weird thing happens with the batch this thing gets kicked you know especially if you're
+using an Adaptive Optimizer it gets kicked in some way and Bam now it's dead
+problem is when that happens it's going to stay dead
+so there is this problem that people have observed in real neural net training when you train for a very very
+long time is that slowly Ray Lewis will start dying
+right it's randomly they'll die they'll die more will die more will die more will die more will die and some of that
+might be a good thing like it might be actually removing degrees of freedom you don't need but people have observed that
+sometimes performance gets worse because now you've too many of them have died and uh
+so it's a really good question to think about what happens with dead values um
+but yeah this is you have to be aware of the phenomena so notice that I'm talking
+about the relu non-linearity because it is in some sense the easiest to understand
+um intuitively because it has the non-linearity constant at one point but a similar kind of concern of wanting
+to keep things in some appropriate Center applies to all the other non-linearities too
+right so if your non-linearity is something like has a sigmoidal shape
+right then something that saturates then the problem is if you're too far out
+where it's saturating you're going to get extremely tiny gradients and you're basically not going to move it might as
+well be dead okay so this kind of concern exists um
+in all uh non-linearities that you have that you work with that you want to keep
+things kind of so we want the action here
+and so one of the approaches that we do if you want to think about
+some kind of object which a random object which is
+hangs around zero and is kind of of some reasonable um width our default thing to think
+about is normal zero one right so we think about hey maybe we want to have stuff have mean zero and
+variance one I want to give myself more space you all
+can remember that
+I'll just draw the picture again here I'll draw it here and we keep
+at initialization
+now we don't really care about the fact that it's normal we just want it to be kind of contained
+the only thing we have easy abilities to work with is to think about you know
+scaling and things like that because we have a network that's built out of you know weights and biases so the picture
+I'm going to draw so I'll just repurpose this into a boundary
+um is remember we have a deep Network
+okay so I'm going to zoom in you know somewhere in this story
+like here
+so here we have the preceding layer
+in the preceding layer has some stuff okay
+followed by some nonlinearity
+it could be a relu it could be uh you know something that's a sigmoid tan H
+whatever nonlinearity you have there's something back here and the out by convention the output of the
+non-linearity is deemed the output um in for standard multi-layer perceptrons now you just have a big
+graph a big circus you have to decide what's the layer you say the output of the non-linearity defines the boundary of the layer okay so this is the output
+output of previous layer
+and you have many such things right so many such outputs
+and then we have the next layer okay this layer
+and this layer we start with a bunch of weights so I'm going to look at this the top one
+so this gets multiplied by a particular weight this also gets multiplied by another
+weight and so on
+all of them get added up and to this a bias is added
+some bias and then this enters the nonlinearity
+right that's how these networks are put together right and so on it repeats for all the others right so this is the next output of the next layer
+everyone good with the picture zooming in so what I want is I will make the
+Assumption I'll say for starting off I'll make the assumption that suppose
+the output of the previous layer is the input to the next suppose I've already achieved the output
+of the previous layer is already like normal zero once a bunch of normal zero ones
+and I want to make sure that what I actually see in the neighborhood of this non-linearity
+is also like normal zero ones okay
+what do I need to do so I focus on this point
+and I say look all these weights are going to be multiplying a bunch of numbers that are all kind of in the
+neighborhood of you know zero in a nice neighbor to zeros I said there total
+uh variance is something that's like you know one
+so I want to multiply them by things add them up so that I get something which is
+also in the neighborhood of zero right so what can I do how can I
+initialize these weights so I'm going to make the Assumption for
+initialization that you know I'm going to assume that all of these
+things are uh you know whatever they are right these things I'm initialize is
+going to be independent of each other so I would like to have some this thing
+are all normal zero ones so they all as a one way of viewing it is as a giant
+vector this Vector has a norm which is about the fan in right so the norm of this
+vector is roughly the fan in of this unit so think about the number of things here so
+say there's D of them D such edges
+so from a circus I heard the term fan in but the number of things connecting to a gate right so
+there's D things the norm of this is typically going to be D
+and so I want to have these W's be initialized some way independent such
+that the output comes out to look like it's you know around one you know at you know
+zero normal zero one so the way to do this right so I'll write it here
+it's called Xavier initialization foreign
+it says initialize the weights
+IID normal instead of zero make them one over
+the fan in for the variance if I do this
+then when I multiply it by something right
+like I have there so sorry I I said if this thing where if these things okay
+people precise if this because these are all normal zero one the norm here of
+this Vector is at is can align to be about D if everything
+was actually aligned right but if all these things were random it's actually going to have a Norm
+that's like square root of d if you're adding a bunch of independent things right when you add a bunch of when you add D independent things
+together and you look at the you know what happens you'll get something that's
+order square root of D because of the central limit theorem so
+if you think that this in initialization all these things are as though they were independent now
+notice they're not independent right because you have a single X whatever it is going through all these
+things there's some dependency structure that's induced by all this but you want to say it's as though they're independent
+vis-a-vis at least second order properties right in terms of correlation and you just hope there's literally a
+hope okay let's hope that's true then I can use this initialization to
+get the desired effect any questions on Xavier initialization
+so their initialization will result in the thing that comes in before the bias being roughly you know variance one
+excellent question so initially I said look we just have to be in the neighborhood of zero and I
+immediately jumped to variance one okay so the question is what's so
+special about one right is one does one matter and here's why one matters one's a very
+special number right because there's two numbers
+such that in the reals there's two numbers such that if you multiply by them repeatedly
+you will stay in the same place one times one times one times one is one
+and zero times zero times zero is zero everything else
+if you do it repeatedly will either blow up to Infinity or Decay down to zero does that hurt
+everybody it's a really great question like why one so we're thinking about a deep Network right there's many many
+layers here so we're going to do the same thing over and over again
+so if we said you know what I'm fine with the kind of variance coming out of
+here being you know like three and then I'm using some nonlinearity
+that's not so saturating but there's assumption here it's not so saturating that it'll manage to squash
+it down then I'll get something coming out that's also going to be variance that's you know bigger than one
+at that point what will happen is I'll repeat this process and they'll get
+bigger bigger bigger bigger bigger and that we don't want
+why don't we want that we can go all the way back to see the gradients right the gradients will be too big yeah
+initialization the the variance of the output maybe
+then why because there will be some um
+yeah so the great question so I'm talking about Xavier initialization exactly let's do the next thing right
+not quite right for red loose
+exactly right problem is that if the non-linearity in the previous layer was
+a relu then you expect half of these outputs to be zero
+by dumb luck right they didn't put land on some side of it so half of them are zero so
+although it looks like you have D of them you actually only have D over two
+right so for not quite right for relu and so that's why there's her initialization
+It's the final initialization applies when the output of the previous layer is reluts like when the previous thing was
+relused you use high initialization initialization says you don't have D things you have
+D over two things so you take the reciprocal of D over two Yeah question
+um
+ah yes so great this is d which is Fan in
+per unit so all the weights are connecting into something so all the weights look like
+this right so if your layer has a asymmetric fan in it's like whatever the
+fan is for this unit use the deeper that
+so same thing here step out in for the unit for and now what matters here is
+use when previous layer
+has relu yeah
+ah so great question the question is when the previous when this previous non-linearity was a relu
+um the fan in is still in the graph d but you expect at initialized remember
+everything you expect is you want the inputs to look like they're you know kind of zero mean and on either side
+right balanced around zero so that the linearity that relu non-linearity
+looks like this so you expect at least that
+initialization that ah whatever that input was the previous layer half of the relus are here
+and the other half are on this part of the value so for half the values you expect the
+output at the previous layer to actually be zero
+um draw a gaussian draw something from a gaussian let's say
+and what is the probability that the sign for the relu center is zero what's
+the probability the sign is greater than you know is is positive one half
+okay so you say wait but the relatives are at different places sure they are but as many of them that are on this
+side are on that side so on balance you still expect about half of them to be for that particular
+input to be dead now they might be they're not actually dead resus they're just zero relus for that input a dead
+relu is dead for is zero for everything but
+it still matters right because the next layer actually sees for any particular input something
+so you can't have it blowing up for a particular input
+okay so that's why you do high initialization any questions on how initialization
+so so it's a great question what I meant is that typically we'll have a symmetric fan in
+for the entire layer but you might just abstractly it might be that at the next layer some particular
+your non-linearities are connected to a bias and a set of Weights that touches everything in the previous layer but
+some might have weights that only multiply a subset of the previous layer this because of how it's built
+right so you can't just use the size of the previous layer you have to look at the fan in for that unit like how many
+things does it act does it actually have non-zero weights multiply that's what it's meant
+so in the going looking ahead right in a standard multi-layer perceptron you know
+a deep neural net the D will just be the number of outputs in the previous layer but when we think
+about convolutional neural Nets and the like then everything won't be connected to everything in the previous layer
+and so we'll have to think about what that actual fan is Bannon is for doing the initializations
+which is why I'm talking about in terms of pattern
+sorry ah great question the question is what
+is the gain in terms of dead Rattlers when we do this um the game is that
+that if you have regulars in the previous layer then about half of them will be
+zero so when you do this when you make this a little bit bigger
+like square root of two bigger effectively because of the you know um what happens is the input to the
+before the bias term will actually tend to be you know something that's like normal zero one as opposed to normal
+zero one-half and so what will happen is that as you keep going through deeper and deeper
+you'll prevent everything dying out to zero is trying to fight uh things as dying
+out to zero as you go through on particular instances yeah
+great question we'll talk about Dropout later um you know as another wreck like well as we go through we'll introduce more
+and more building blocks as we need them I want to give you like a basic picture first but yeah so but I'll answer your
+question so Dropout is another thing that one does during training it's a training strategy for some
+regularization um it's something that operates when you're actually training we're talking about here is
+initialization from scratch so when you're going to do initialization from scratch you you
+pretend you're going to use the entire network it's a good question uh to ask which says if you're actually going to
+be training with Dropout and your every time you're going to be running your training you're going to only have half
+of your units actually be giving outputs and the other halfs will be set to zero then do you need to adjust your
+initialization great question however the way we solve that problem is not by adjusting the
+initialization we solve that problem by adjusting during training what we do
+okay so there's like uh something you can do like there now you could also say okay it is a choice of where you put it
+right there's training time there's initialization time and there's inference time and so you can think
+about how you do the adjustments but yeah it's a good question um and it's it's kind of a choice of
+what you do yeah
+um
+so when we change the distribution do they have do they still follows
+excellent question great question question was okay we started off by saying we have something that's normal
+zero one just to tell you why we care about the neighborhood of zero because we get the culture right but now we're
+talking about initialization to different things and so we have to say with these new initializations do we still care about
+the neighborhood of zero right that's kind of a really good question so
+it's good to step back and look at this thing again
+and ask hey why is this thing kaushi
+now you could grind out integrals okay to do it but that doesn't help you
+because now you change things so you need to understand more deeply spiritually why is this thing kaushi
+meaning why does it have heavy Tails like this right why does it look like this so the
+fact that it'll be centered around zero is coming from the biased term
+does everyone see that like clearly if the bias term is around zero like this thing will be centered at zero everyone
+good with that okay so that's the bias term even if the biased
+term was somewhere other than zero the fact that this thing in the
+denominator is symmetric would also say who cares about that sign right so the centering at zero is pretty
+solid everyone see that as long as I don't make the bias term like some big number
+right good so the other interesting quality we care about is the fact that
+this thing is heavy tails right there actually doesn't have a mean
+right good so does that need both of these to
+be gaussian no it does not what's making this tail extend like what
+would make what would throw an elbow out far we'll throw an elbow out far as if this
+weight became small right to move out far it doesn't matter like
+yeah sure the bias could be big but we already said we don't have that so it's got to be the case that the W is
+small so all that matters to make this thing spirit Spirit like Akashi is that
+whatever this distribution is should look flat near zero you see that
+because if it has a density around zero that's flat that'll induce a heavy tail in the ratio
+so everything we're doing is still making the distribution flat near zero
+and so we still have this qualitative Behavior okay great question and why you have to
+like be able to reason about these things more closely you start with a simple example that you can kind of analyze
+that you can think about and kind of draw results for but you have to understand why it's actually true from
+an intuitive point of view what I'm talking about here is math intuition because that helps you deal with okay we've changed things is it's still going
+to happen so yeah great question yeah
+great question if I made this W have more and more mass near zero
+what happens to where the corner goes
+when you divide by something that's closer to zero does it get bigger or smaller
+bigger so that will throw these things out further which is bad right it'll make everything dead which
+is corresponding to the or or linear right everything's gonna be dead or linear which corresponds to the loss of
+expressive power that we're afraid of at initialization good question
+um I want to be able to talk about Optimizer so like unless it's particularly urgent I want to be able to move to the
+next thing okay so hopefully this gives you a sense for the initialization so
+um final comment on initialization is
+what about biases
+so I I've told you how to initialize the weights so that things don't blow up and the thing stays kind of nice hopefully at initialization all the way through
+um what about the biases so it turns out for biases there are many choices of what to do all of which
+are tried in the literature and that remember what's the standard default rule in deep learning it's look at the
+papers that you're building on do exactly what they did right so as a starting point so the same
+thing applies even for these initializations right but um what about biases so it turns out
+there's like four choices that are all used depending on the paper before so just be aware of them
+one is Pete Fannin
+as D plus one and use Xavier
+so just instead of doing it instead of thinking about this sum followed by us of all the stuff
+that's been weighted followed by a second sum as the bias think about the bias as connecting to a unit that always
+says one and just being another weight never understand that just changes the
+pattern just like Xavier of course this one will never die so you can do the appropriate adjustment perhap
+right so that's like one approach just treat it like the everyone else
+there's the second one that'll strike you as being weird but it actually works in many cases which is
+just use bias equals zero this relies to zero
+so you might say wait if I initialize to zero then all the corners will be at zero to start with
+um doesn't that reduce a lot of redundancy the answer is yes it does but remember everything before is being
+multiplied by random weights so the first few steps of stochastic gradient descent will kick that bias
+somewhere so let's let SGD initialize the bias for you in the first few steps they don't see the kind of spirit of
+this it's like why should I have to do the work let us do the work related to this
+is um maybe zero is not so great so pick a small number
+or some other small number um
+again people have empirically seen that sometimes this does better than just using zero despite the fact that stochastic still
+shaking everything at the beginning four says what's so special about .01 or
+any other constant use a small random number
+so people use uniforms and things like this again you look at papers you'll see what they do you should follow that for
+initialization um all this stuff for random initialization is becoming less and less
+practically relevant today because as we said before that in many cases today
+when using deep Networks you're gonna initialize not something random but to
+something that has been trained in some other way but you still have to initialize that in some random way so this is still like
+in the background you need to know okay good so now hopefully you understand a bit about how this
+initialization Works in deep networks what it is that we're trying to do we're trying to avoid things exploding or
+decaying away in the network ad initialization which is required to make sure that ad initialization the features
+that the optimizer sees are interesting they don't just have like everything being zero or everything being one
+um I want to comment a little bit about why it's bad if everything gets really
+big you can understand why it's bad if everything gets really small because it just goes to zero but what's wrong with
+everything being really big so what's wrong with everything getting really big is that the gradients will
+also get really big and if the gradients get really big it means that there are certain directions
+that you're moving in in terms of the giant space of weights and biases which will have enormous
+singular values in certain directions it'll be huge singularized there still might be other
+directions that have very small singular values or even moderately reasonable ones
+and what will happen is that the giant singular values will force you to use a learning rate in gradient descent that's
+small to avoid Divergence but having used a small learning rate
+for those you're using the same small learning rate for the other directions and those other directions will
+basically not be able to move enough during wall clock time and so you'll just not get to be able to converge to
+anything interesting if just initialization is causing you to have wildly huge singular values yeah
+let's say okay if it gets big enough or small enough would it cause issues such as integer
+overflow or uh or like floating points to be undefined when you're actually
+doing calculating yeah great great comment I'll repeat it to make sure it's been recorded
+um I've focused on things as though we were doing arithmetic all the arithmetic using perfect real numbers and just
+talking about what happens singular values and the like in real systems you're using some kind of floating Point
+representation and there's increasing call for reasons of wall clock time and
+computer architecture of trying to use smaller floating Point representations
+um and so the danger of overflow and underflow is is present
+and in fact yeah if you have if you have anything which threatens exploding gradients or completely dying gradients
+um you'll just overflow or underflow your um finite Precision arithmetic and then
+you will get like complete gibberish and so yeah in real life that's another
+consideration which is important but thankfully we can talk about this consideration without
+having to at this level we can talk about the issue without having to reference finite precision
+right you can just think about even if we had perfect Precision uh real real arithmetic
+Okay so this is good is I'm going to
+switch to talking about optimizers and I want to make sure that I at least
+get to introduce the key ideas behind momentum
+one thing I think there is
+thank you okay so let's understand the problem
+first so for understanding the problem uh
+if you don't understand what I'm saying right now discussion tomorrow will help you make sure you completely understand
+what I'm saying right now okay but it's kind of the prereq to everything else so
+the problem is if I look at the singular values again I'm going to go to the linear model because that's what we know
+how to understand but look at the singular values um I'm going to count the different singular values and I look at what they
+are right I might have the first one be big and then another big one another big
+one this might be on a log scale right I have some big ones
+and then I have some that are getting small but it might be that these small ones
+still represent uh directions in terms of singular vectors that are
+actually relevant to the pattern you want to capture okay so your pattern is actually
+think about it it's locally you know 20 dimensional and you
+you have these 20 singular values that are all relevant and then you have a bunch that are much smaller
+okay like tiny tiny ones
+what you would like to do is to get good convergence in walk lock time on all of
+these so you care about these
+these ones down here that are hopefully much smaller are
+represent directions that you don't really care about converging in in fact if you did converge in them maybe you
+would get uh you know if you were doing Ridge regularization you'd regularize these out
+right but uh you could do early stopping and you don't want to necessarily have these guys get too big
+okay so we have a goal which is we want to make sure that we can optimize as
+fast as we can by taking steps on the directions we
+care about without causing us lots of trouble on the directions we don't care about
+okay things like a high level vague uh introduction of the problem but that's really what we Face uh in in real
+life so if you're using gradient descent
+Sigma Max is limiting our learning rate
+because if you make the learning rate too big this will go unstable
+let's think about what happens qualitatively here's learning rate
+call it data using the step size standard notation and I think qualitatively what happens
+so here's zero so four
+the direction associated with Sigma Max how does convergence behave
+when you're close to zero it's you know slow exponential
+which might as well be linear right it's too slow
+then you have various call it very slow expansion then you have slow exponential
+then you have medium slash nice exponential
+then you have a magic value which is instant
+right there's like a particular for a particular Sigma Max there's a particular learning rate so I said in
+one step you'll converge right that's just like a magic value that's when the Rel when the eigenvalue goes to zero
+basically instant uh conversions and then you have
+learning rates that are bigger and the ones that are bigger are like mirror images of what's Happening here except
+kind of so you know like unit circle
+these ones are slow here you're moving Closer Closer this is the
+zero and then you're going over on this side so
+on the other side you are oscillating
+you know exponential nice
+and then your
+oscillating ominously but not quite dangerous yet and then you
+diverge by oscillation
+increasing like bigger and bigger oscillations
+so when we say the sigma Max is limiting our learning rate it's actually it's limiting this puts a
+hard limit here you can't make the learning rate bigger than this or you'll oscillate away
+um but actually it doesn't particularly like um what's happening here either
+okay so this is something you need to understand if you don't understand it from the very quick descriptions that
+we've talked about so far discussion tomorrow will definitely help you do this as will defer and we it's so
+important we repeated the question will be on discussion tomorrow on the homework you have to know how you have to know
+this um anyway so you have this problem of limiting the learning rate
+so what happens is the learning rate exists kind of on Sigma Max scale
+so um for the smallest singular value of Interest
+small but interesting
+for that one so that this is this is this one and this is this one
+what does this picture look like on the same scale what happens is that
+everything just kind of expands out right
+into larger windows so the problem is that what you're really worried about is
+actually not this case where in this case if you take the sigma Max and you
+put it into a nice place like here right that's oscillatory
+down here this is still you know maybe kind of good slow exponential
+right and you'll still get things to convert you can increase the learning rate and
+have things work the problem is that it could be that this is like even more
+spread out in terms of where the regions are and even if you took this Sigma Max to the
+kind of nicest place the the limit of oscillation that you can still converge reasonably you're still super slow
+on this value and so you're just going to converge slowly there's no choice you balance the
+two out and you converge slowly don't understand this concern with gradient descent
+this is like the core issue with gradient descent is yes it has this implicit
+regularization effect of not favoring directions that are small but maybe some
+of those small directions or directions you want to favor a little bit but you don't know where
+they are a priori so what can you do how can you make the learning rate bigger
+foreign
+while avoiding
+instability foreign
+ER ones
+so there's all the optimization approaches we have at some high level are trying to attack this problem
+right like what can you do so uh the first approach we're going to
+talk about is called momentum
+and momentum does is momentum says hey
+foreign I actually have a warning sign
+in spirit of when I'm making the learning rate too big which is that
+I'll see oscillation everyone see that can you make the learning rate big on
+the large Sigma C oscillation a particular kind of oscillation this is discrete time remember the learning
+algorithms run in discrete time so it's an oscillation that goes
+like that you know positive negative positive negative positive negative like
+that so you ask hey
+do I know anything that will allow me to suppress oscillations
+but not suppress something which is steady remember this side is steady here
+the small uh eigenvalue the small singular value Direction the
+gradients are evolving steadily right they're smooth on the large one they're becoming
+oscillatory so there's a question right momentum says
+can I reject oscillations
+while preserving
+study things and the answer is yes we know how to do
+this we can use a low pass filter idea
+low pass filter gradients
+if I low pass filtered the gradients what would happen is that where I get the oscillations I would get
+attenuation of the gradient right it would get smaller
+which is exactly what I want the what I want is I want the gradients on this
+side effectively for the large Sigma Max to become smaller so that I could use a larger learning rate
+right so I want to be able to have the oscillation get attenuated while doing
+nothing to the almost DC looking behavior of the gradients for the small
+and so now the question you have an idea how can I low pass filter the gradients like what can I do so you just think of
+what's the simplest low-pass filter you have right what is low pass filtering it's a kind of averaging
+so make the simplest averager you can so average the gradients low pass filter just means average
+foreign
+and I'll show you a analogy for those who uh can understand it
+Okay so
+low pass filter all right I'm looking for something that
+looks like this circuit wise
+great circuit analogy
+this will low pass filter voltages right if something is steady
+the capacitor will charge to that level stay there and it'll steadily go through but if this is oscillating
+you'll be pushing charge in this capacitor this will stay small on the outside right so yeah I want this
+so the nice thing is this has a first order differential equation
+and it corresponds to the following approach to averaging right so I can make the falling averager
+this is interval this is State okay to discrete time
+so on average numbers I can say the average at time t plus 1 is the 1
+minus beta times the average at time t Plus
+beta times the thing you're averaging
+so the time sequence foreign
+number which is
+in zero one okay so first even if you don't remember
+this that this is the first drawer differential equation has low pass filter Behavior if you look at the discrete time formula
+you should see how this is a kind of lazy averaging it says how do I average I maintain an
+average and I multiply it by something that's you know pretty close to one
+and then I multiply the new thing by something that's small and by doing this I'm effectively averaging that sequence
+out do you see that because this isn't a constant coming in
+this will just be the same constant but
+if this thing is attempting to bounce back and forth right this will be a much smaller steady
+more steady thing right because this thing's attempt to bounce up and down will be a small
+fluctuation on top of this and so it'll get it'll get dampened down a lot
+so this is actually a classic trick um that we use all the time uh
+whenever you have the intuition of wanting to an average and you want to make it implementable in a way that you
+could analyze as well as make it easier to implement averages naively implemented are really annoying because
+if you want to take a moving average of 10 things you have to store 10 things in memory and take their average
+but this requires you to only have one internal state that you keep track of and it basically
+does the same kind of averaging you can adjust how long you average by choosing beta
+something is called exponentially smoothing things out um but this is a really useful trick and
+it's basically coming from the this analogy about the behavior of this thing so
+what you do is gradient descent
+says I take my parameters Theta p plus 1
+and I set them as Theta t plus an ETA times a negative gradient of
+something right the function you care about
+right so this has a you know a t in here
+right so what you want to do is gradient descent with momentum
+foreign
+I want to replace this object with instead a smoothed version of the
+gradient a low-pass filtered version of the gradient so I can do that so I say instead
+okay and
+does everyone see what we did we had we just it's like just like gradient descent except instead of using
+the gradient you use this smooth gradient which has been low pass filtered
+okay I'll pause here and take questions to make sure that people understand yeah
+yeah so exactly the question is if this you right the input of this little box right
+is constant is steady or is moving gently which is what would happen to the small uh singular derivative in the
+direction of small singular values because you haven't moved that much right it's very steady
+that will just pass through here happily and will not be attenuated at all
+so all of these guys don't get any attenuation while this guy gets a lot of attenuation
+what that means is that you can jack up the learning rate
+great question the question is will this prevent Divergence for the sigma Max and
+the answer is no but it will hold it off for a larger learning rate right it'll still diverge
+but the thing is that okay so um week this is so important you have an
+entire homework problem dedicated to analyzing what's going on here but let me tell you like some higher level
+pictures of what's going to happen um high level picture what's going to
+happen is singular value by singular value you instead of having one state only
+which is Theta in that singular value Direction you'll also have
+the component of a that's in that same direction okay for a linear problem
+so what you have instead of a when you finally look at it instead of having a one
+a recurrence relation in a scalar you'll have a two by two recurrence
+right because you'll have two two State variables the actual parameter and this
+kind of smoothed uh velocity
+how can two by two matrices evolve we'll look at complex eigenvalues and complex eigenvectors and so they will when they
+diverge they will diverge by oscillation uh by spiraling out
+okay so you can still get Divergence except instead of being kind of bang
+bang oscillation it'll be like a spiral that spins out of control
+and so momentum approaches that are called
+momentum uh I if I had my way I would call it just
+gradient descent with smooth gradients because that's more what you're trying to do
+it's called momentum because what you effectively have is the old gradients
+that happened are still affecting how you move through this
+so that's the idea that's why it got the name momentum now a warning
+uh I have drawn it for you and described it in the context of a parametrization that is the
+most natural to understand what is going on right because you have one minus beta beta and ETA kind of
+separated out in some nice way if you look at pie Church's documentation in pytorch's documentation the pi torch
+parameter is the control the level of momentum are not cleanly separated this way
+so here I've chosen learning rate to mean the same thing it meant before
+but in pytorch learning rate in the context of calling it momentum means something different
+this is confusing yes but so oh what so well you know nothing you can do best
+life that's why it's important to understand stuff and actually read the documentation and look at the formulas
+instead of just saying why is this not working I had the same learning it as before now it's not working anymore now
+it's diverging what's going on well you know like you have to understand what's actually the interaction the terms of drugs
+okay so um I'm out of time um next time what I'll talk about is
+there's one more approach you could do I wanted to get to it today but you guys ask great questions uh
+which is the other thing you could try to do is to try to be adaptive and try to see what's going on with the
+gradients there's a way of doing it that kind of builds off of gradient descent momentum
+um and that's called the atom Optimizer which we'll talk about next time and then we'll like get into how you use all
+this stuff okay lecture ends here switched office hours any questions
