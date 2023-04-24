@@ -8,8 +8,13 @@ For simplicity we set the architecture to have 1 layer. If it works for one laye
 Should test for 2 layers after to check multi-layer correctness.
 
 """
-from mingpt_pytorch.model import CausalSelfAttention, Block, GPT
-from mingpt_pytorch.utils import CfgNode
+import sys
+import os
+cwd = os.getcwd()
+dir_proj = cwd + "/.."
+sys.path.append(dir_proj)
+from cs282_project_gpt_jax.mingpt_pytorch.model import CausalSelfAttention, Block, GPT
+from cs282_project_gpt_jax.mingpt_pytorch.utils import CfgNode
 import torch
 
 from jax import lax, random, numpy as jnp
@@ -17,9 +22,9 @@ import jax
 from flax.core import freeze, unfreeze
 from flax import linen as nn, traverse_util
 
-from model import GPT as GPT_jax
+from cs282_project_gpt_jax.model import GPT as GPT_jax
 
-from config import config_gpt, config_jax, BATCH_SIZE
+from cs282_project_gpt_jax.tests.config import config_gpt, config_jax, BATCH_SIZE
 
 key1, key2, dropout_key = random.split(random.PRNGKey(1), 3)
 x = random.randint(key1, (BATCH_SIZE, config_jax["block_size"]), 0, config_jax["vocab_size"])
@@ -116,6 +121,6 @@ Here we produce output and check for equivalence between the two implementations
 y = model_jax.apply(unflat_params, x, rngs = {'dropout' : dropout_key})
 
 # out OG gpt
-y_gpt = model(torch.tensor(x.tolist()))
-
-#print(y == y_gpt)
+y_gpt, _ = model(torch.tensor(x.tolist()))
+y_gpt = jnp.array(y_gpt.detach().numpy() )
+print(y - y_gpt)

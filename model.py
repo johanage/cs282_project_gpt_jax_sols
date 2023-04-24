@@ -4,21 +4,6 @@ from tqdm import tqdm
 import numpy as np
 
 
-class LinearBlock(nn.Module):
-    dense1_features: int
-    dense2_features: int
-
-    def setup(self):
-        self.dense1 = nn.Dense(self.dense1_features)
-        self.dense2 = nn.Dense(self.dense2_features)
-
-    def __call__(self, x):
-        x = self.dense1(x)
-        x = nn.gelu(x)
-        x = self.dense2(x)
-        return x
-
-
 class CausalSelfAttention(nn.Module):
     n_head: int
     n_embd: int

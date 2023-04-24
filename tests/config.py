@@ -8,7 +8,7 @@ config_gpt = {
     "embd_pdrop": 0.1,
     "resid_pdrop": 0.1,
     "attn_pdrop": 0.1,
-    "train": True,
+    "train": False,
 	"model_type" : None
 }
 
@@ -20,5 +20,5 @@ config_jax = {
     "vocab_size": 10,
     "block_size": 10,
     "embd_pdrop": 0.1,
-    "train": True
+#    "train": True
 }
