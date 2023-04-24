@@ -266,9 +266,9 @@ class BPETokenizer:
         # single string input for now, in the future potentially a list of strings
         assert isinstance(text, str)
         # encode and create a "batch dimension" of 1
-        idx = [self.encoder.encode(text)]
+        idx = self.encoder.encode(text)
         # wrap into PyTorch tensor
-        out = jnp.asarray(idx, dtype=jnp.long)
+        out = jnp.asarray(idx)
         return out
 
     def decode(self, idx):
