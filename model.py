@@ -49,39 +49,21 @@ class CausalSelfAttention(nn.Module):
         q = q.reshape(batch_size, sequence_length, self.n_head, embds_pr_head).transpose(0, 2, 1, 3)
         v = v.reshape(batch_size, sequence_length, self.n_head, embds_pr_head).transpose(0, 2, 1, 3)
         k = k.reshape(batch_size, sequence_length, self.n_head, embds_pr_head).transpose(0, 2, 1, 3)
-
         att = (q @ k.transpose(0, 1, 3, 2)) * (1 / jnp.sqrt(embds_pr_head))
-
         # masking :  att = att.masked_fill(self.bias[:,:,:T,:T] == 0, float('-inf'))
         # replacing Tensor.masked_fill(mask, value)
         # mask  - boolean mask
         # value - the vbalue to fill in with
         # jax.lax.select(pred, on_true, on_false)
         minfs = lax.broadcast(-jnp.inf, att.shape)
-        # print("shape minfs : ", minfs.shape, "shape mask : ", self.mask.shape)
         mask = lax.broadcast(self.mask[:sequence_length, :sequence_length], (att.shape[0], att.shape[1]))
-        # print(mask)
         att = lax.select(mask == 0, att, minfs)
-
-        # print(att[0,0])
-        # apply softmax
         att = nn.softmax(att, axis=-1)
-
-        # the manual way
-        # key = random.PRNGKey(2023) # can/should be changed
-        # dropout = random.bernoulli(key, p = p_do, shape = att.size())
-        # att_do = att * dropout
-
-        # using the nn module and jax
-        # possibly use module.apply to get full jax functionality
-        # may have to inherit something from a flax/jax module class
         att = self.attn_dropout(att, deterministic=not training)
-
         y = att @ v
         y = y.transpose(0, 2, 1, 3)
         # MISSING: making y contiguous
         y = y.reshape((batch_size, sequence_length, self.n_embd))
-        # residual dropout
         y = self.resid_dropout(self.c_proj(y), deterministic=not training)
         return y
 
@@ -113,15 +95,10 @@ class Block(nn.Module):
                                         block_size=self.block_size)
         self.ln_2 = nn.LayerNorm(self.n_embd)
         self.mlpf = MLP(self.n_embd)
-        # self.fc = nn.Dense(self.n_embd*4)
-        # self.c_project = nn.Dense(self.n_embd)
-        # self.act = nn.gelu
-        # self.block_dropout = nn.Dropout(rate=do_rate)
 
     def __call__(self, x, training=False):
         attention_output = x + self.attn(self.ln_1(x), training=training)
         mlp_out = attention_output + self.mlpf(self.ln_2(attention_output), training=training)
-        # mlp_output = attention_output + self.c_project(self.act(self.fc( self.ln_2(attention_output) ) ) )
         return mlp_out
 
 
