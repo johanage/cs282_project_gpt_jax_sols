@@ -24,29 +24,33 @@ class CausalSelfAttention(nn.Module):
         self.resid_dropout = nn.Dropout(rate=do_rate)
 
     def __call__(self, x, training=False):
-        out = None
+        """
+        Args:
+        x    - input, jnp tensor
+        """
         batch_size, sequence_length, _ = x.shape
-        # ======================================================
-        # Start by applying the qdense, vdense, kdense to the x input to get values for q, k and v.
-
-        #YOUR CODE HERE.
-
-        # ======================================================
-
-        # ======================================================
-        # Use the values for q, k, v and self.mask to calculate causal self-attention
-
-        # YOUR CODE HERE.
-
-        # ======================================================
-
-        # ======================================================
-        # Add the final projection and dropout layers
-
-        # YOUR CODE HERE.
-
-        # ======================================================
-        return out
+        q, v, k = self.qdense(x), self.vdense(x), self.kdense(x)
+        embds_pr_head = self.n_embd // self.n_head
+        q = q.reshape(batch_size, sequence_length, self.n_head, embds_pr_head).transpose(0, 2, 1, 3)
+        v = v.reshape(batch_size, sequence_length, self.n_head, embds_pr_head).transpose(0, 2, 1, 3)
+        k = k.reshape(batch_size, sequence_length, self.n_head, embds_pr_head).transpose(0, 2, 1, 3)
+        att = (q @ k.transpose(0, 1, 3, 2)) * (1 / jnp.sqrt(embds_pr_head))
+        # masking :  att = att.masked_fill(self.bias[:,:,:T,:T] == 0, float('-inf'))
+        # replacing Tensor.masked_fill(mask, value)
+        # mask  - boolean mask
+        # value - the vbalue to fill in with
+        # jax.lax.select(pred, on_true, on_false)
+        minfs = lax.broadcast(-jnp.inf, att.shape)
+        mask = lax.broadcast(self.mask[:sequence_length, :sequence_length], (att.shape[0], att.shape[1]))
+        att = lax.select(mask == 0, att, minfs)
+        att = nn.softmax(att, axis=-1)
+        att = self.attn_dropout(att, deterministic=not training)
+        y = att @ v
+        y = y.transpose(0, 2, 1, 3)
+        # MISSING: making y contiguous
+        y = y.reshape((batch_size, sequence_length, self.n_embd))
+        y = self.resid_dropout(self.c_proj(y), deterministic=not training)
+        return y
 
 
 class MLP(nn.Module):
@@ -59,15 +63,9 @@ class MLP(nn.Module):
         self.mlp_dropout = nn.Dropout(rate=do_rate)
 
     def __call__(self, x, training=False):
-        out = None
-        # ======================================================
-        # Use the layers defined in setup to implement the MLP part of the transformer block
-
-        #YOUR CODE HERE.
-
-        # ======================================================
-
-        return out
+        mlp_out = self.c_project(self.act(self.fc(x)))
+        mlp_do_out = self.mlp_dropout(mlp_out, deterministic=not training)
+        return mlp_do_out
 
 
 class Block(nn.Module):
@@ -84,21 +82,9 @@ class Block(nn.Module):
         self.mlpf = MLP(self.n_embd)
 
     def __call__(self, x, training=False):
-        out = None
-        # ======================================================
-        # Add a normalized, residually connected attention layer
-
-        #YOUR CODE HERE.
-
-        # ======================================================
-        # ======================================================
-        # Add a normalized, residually connected MLP layer
-
-        #YOUR CODE HERE.
-
-        # ======================================================
-
-        return out
+        attention_output = x + self.attn(self.ln_1(x), training=training)
+        mlp_out = attention_output + self.mlpf(self.ln_2(attention_output), training=training)
+        return mlp_out
 
 
 class GPT(nn.Module):
@@ -125,26 +111,21 @@ class GPT(nn.Module):
             for _ in range(self.n_layers)]
 
         self.lm_head = nn.Dense(self.vocab_size, use_bias=False)
+        # TODO: Special init
 
     def __call__(self, x, training=False):
-        out = None
-        # ======================================================
-        # Embed the input vectors x, and the positional vector, and add them together
-        #YOUR CODE HERE.
+        bath_size, sequence_length = x.shape
+        pos = jnp.arange(0, sequence_length).reshape(1, sequence_length)
+        tok_emb = self.wte(x)  # token embeddings of shape (b, t, n_embd)
+        pos_emb = self.wpe(pos)  # position embeddings of shape (1, t, n_embd)
+        x = self.drop(tok_emb + pos_emb, deterministic=not training)
+        for block in self.blocks:
+            x = block(x)
 
-        # ======================================================
-        # ======================================================
-        # Run the Transformer blocks
-        # YOUR CODE HERE.
+        x = self.ln_f(x)
+        logits = self.lm_head(x)
 
-        # ======================================================
-        # ======================================================
-        # Run the final LayerNorm and lm_head layers
-        # YOUR CODE HERE.
-
-        # ======================================================
-
-        return out
+        return logits
 
     def generate(self, params, x, max_new_tokens, random_key, temperature=1.0):
         sequence = [int(x_i) for x_i in x[0]]
