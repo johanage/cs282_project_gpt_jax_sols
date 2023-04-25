@@ -49,8 +49,11 @@ model_config = CfgNode(**config_gpt)
 print(model_config)
 
 model = GPT(model_config)
+model.eval()
 block = Block(model_config)
+block.eval()
 csa = CausalSelfAttention(model_config)
+csa.eval()
 print(model)
 gpt_param_count = count_parameters(model)
 print("Number of parameters in 1-layer GPT model: ", gpt_param_count)
@@ -87,9 +90,9 @@ Checking the MLP architecture implementation.
 mlp_flat_params = traverse_util.flatten_dict(params_jax_mlp, sep='/')
 print("MLP flattened parameter tree: \n", jax.tree_util.tree_map(jnp.shape, mlp_flat_params) )
 mlp_flat_params['params/c_project/bias']   = mlp_param_dict['mlp.c_proj.bias']
-mlp_flat_params['params/c_project/kernel'] = mlp_param_dict['mlp.c_proj.weight']
+mlp_flat_params['params/c_project/kernel'] = mlp_param_dict['mlp.c_proj.weight'].T
 mlp_flat_params['params/fc/bias']          = mlp_param_dict['mlp.c_fc.bias']
-mlp_flat_params['params/fc/kernel']        = mlp_param_dict['mlp.c_fc.weight']
+mlp_flat_params['params/fc/kernel']        = mlp_param_dict['mlp.c_fc.weight'].T
 # Unflatten.
 unflat_params_mlp = traverse_util.unflatten_dict(mlp_flat_params, sep='/')
 # Refreeze.
@@ -98,8 +101,9 @@ jax.tree_util.tree_map(jnp.shape, unflat_params_mlp)
 
 y_mlp_set_params = mlp_jax.apply(unflat_params_mlp, x_mlp)
 y_mlp_gpt        = block.mlpf( torch.tensor(x_mlp.tolist(), dtype=torch.float) )
-print("y jax\n", y_mlp_set_params)
-print("y GPT\n", y_mlp_gpt)
+
+print("y jax\n", y_mlp_set_params.shape)
+print("y GPT\n", y_mlp_gpt.size())
 print(y_mlp_set_params - y_mlp_gpt.detach().numpy())
 
 """
@@ -116,23 +120,33 @@ att_b = block.get_parameter('attn.c_attn.bias')
 q_w, k_w, v_w = att_w.split(att_w.size()[-1], dim=0)
 q_b, k_b, v_b = att_b.split(att_w.size()[-1], dim=0)
 block_flat_params['params/attn/c_proj/bias']      = block_param_dict['attn.c_proj.bias'] 
-block_flat_params['params/attn/c_proj/kernel']    = block_param_dict['attn.c_proj.weight']
-block_flat_params['params/attn/kdense/bias']      = k_b
-block_flat_params['params/attn/kdense/kernel']    = k_w
-block_flat_params['params/attn/qdense/bias']      = q_b
-block_flat_params['params/attn/qdense/kernel']    = q_w
-block_flat_params['params/attn/vdense/bias']      = v_b
-block_flat_params['params/attn/vdense/kernel']    = v_w
+block_flat_params['params/attn/c_proj/kernel']    = block_param_dict['attn.c_proj.weight'].T
+block_flat_params['params/attn/kdense/bias']      = jnp.array(k_b.detach().numpy())
+block_flat_params['params/attn/kdense/kernel']    = jnp.array(k_w.detach().numpy()).T
+block_flat_params['params/attn/qdense/bias']      = jnp.array(q_b.detach().numpy())
+block_flat_params['params/attn/qdense/kernel']    = jnp.array(q_w.detach().numpy()).T
+block_flat_params['params/attn/vdense/bias']      = jnp.array(v_b.detach().numpy())
+block_flat_params['params/attn/vdense/kernel']    = jnp.array(v_w.detach().numpy()).T
 block_flat_params['params/ln_1/bias']             = block_param_dict['ln_1.bias']
-block_flat_params['params/ln_1/scale']            = block_param_dict['ln_1.weight']
+block_flat_params['params/ln_1/scale']            = block_param_dict['ln_1.weight'].T
 block_flat_params['params/ln_2/bias']             = block_param_dict['ln_2.bias']
-block_flat_params['params/ln_2/scale']            = block_param_dict['ln_2.weight']
+block_flat_params['params/ln_2/scale']            = block_param_dict['ln_2.weight'].T
 block_flat_params['params/mlpf/c_project/bias']   = block_param_dict['mlp.c_proj.bias']
-block_flat_params['params/mlpf/c_project/kernel'] = block_param_dict['mlp.c_proj.weight']
+block_flat_params['params/mlpf/c_project/kernel'] = block_param_dict['mlp.c_proj.weight'].T
 block_flat_params['params/mlpf/fc/bias']          = block_param_dict['mlp.c_fc.bias']
-block_flat_params['params/mlpf/fc/kernel']        = block_param_dict['mlp.c_fc.weight']
-y_block_set_params = block_jax.apply(params_jax_block, x_csa)
+block_flat_params['params/mlpf/fc/kernel']        = block_param_dict['mlp.c_fc.weight'].T
+# Unflatten.
+unflat_params_block = traverse_util.unflatten_dict(block_flat_params, sep='/')
+# Refreeze.
+unflat_params_block = freeze(unflat_params_block)
+jax.tree_util.tree_map(jnp.shape, unflat_params_block)
+
+y_block_set_params = block_jax.apply(unflat_params_block, x_csa)
 y_block_gpt        = block( torch.tensor(x_csa.tolist() ) )
+
+print("y block jax\n", y_block_set_params.shape)
+print("y block GPT\n", y_block_gpt.size())
+print(y_block_set_params - y_block_gpt.detach().numpy())
 
 
 """
@@ -145,13 +159,25 @@ Checking the Block architecture implementation.
 csa_flat_params = traverse_util.flatten_dict(params_jax_csa, sep='/')
 print("CSA flattened parameter tree: \n", jax.tree_util.tree_map(jnp.shape, csa_flat_params) )
 
-csa_flat_params['params/c_proj/bias']   = csa_param_dict['c_proj.weight']
-csa_flat_params['params/c_proj/kernel'] = csa_param_dict['c_proj.bias']
-csa_flat_params['params/kdense/bias']   = k_b 
-csa_flat_params['params/kdense/kernel'] = k_w
-csa_flat_params['params/qdense/bias']   = q_b
-csa_flat_params['params/qdense/kernel'] = q_w
-csa_flat_params['params/vdense/bias']   = v_b
-csa_flat_params['params/vdense/kernel'] = v_w
-y_csa_set_params = csa_jax.apply(params_jax_csa, x_csa)
+csa_flat_params['params/c_proj/bias']   = csa_param_dict['c_proj.bias']
+csa_flat_params['params/c_proj/kernel'] = csa_param_dict['c_proj.weight'].T
+csa_flat_params['params/kdense/bias']   = jnp.array(k_b.detach().numpy()) 
+csa_flat_params['params/kdense/kernel'] = jnp.array(k_w.detach().numpy()).T
+csa_flat_params['params/qdense/bias']   = jnp.array(q_b.detach().numpy())
+csa_flat_params['params/qdense/kernel'] = jnp.array(q_w.detach().numpy()).T
+csa_flat_params['params/vdense/bias']   = jnp.array(v_b.detach().numpy())
+csa_flat_params['params/vdense/kernel'] = jnp.array(v_w.detach().numpy()).T
+
+
+# Unflatten.
+unflat_params_csa = traverse_util.unflatten_dict(csa_flat_params, sep='/')
+# Refreeze.
+unflat_params_csa = freeze(unflat_params_csa)
+jax.tree_util.tree_map(jnp.shape, unflat_params_csa)
+
+y_csa_set_params = csa_jax.apply(unflat_params_csa, x_csa)
 y_csa_gpt        = csa( torch.tensor( x_csa.tolist() ) )
+print("y csa jax\n", y_csa_set_params.shape)
+print("y csa GPT\n", y_csa_gpt.size())
+print(y_block_set_params - y_block_gpt.detach().numpy())
+
