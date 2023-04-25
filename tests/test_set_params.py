@@ -11,7 +11,7 @@ Should test for 2 layers after to check multi-layer correctness.
 import sys
 import os
 cwd = os.getcwd()
-dir_proj = cwd + "/.."
+dir_proj = cwd + "/../.."
 sys.path.append(dir_proj)
 from cs282_project_gpt_jax.mingpt_pytorch.model import CausalSelfAttention, Block, GPT
 from cs282_project_gpt_jax.mingpt_pytorch.utils import CfgNode
@@ -49,7 +49,6 @@ print(model)
 gpt_param_count = count_parameters(model)
 print("Number of parameters in 1-layer GPT model: ", gpt_param_count)
 assert gpt_param_count == param_count, "jax implementation does not have the same amount of parameters as OG GPT"
-
 
 """
 ===========================================================================================================0
@@ -123,4 +122,4 @@ y = model_jax.apply(unflat_params, x, rngs = {'dropout' : dropout_key})
 # out OG gpt
 y_gpt, _ = model(torch.tensor(x.tolist()))
 y_gpt = jnp.array(y_gpt.detach().numpy() )
-print(y - y_gpt)
+print(y,y_gpt)
