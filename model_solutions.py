@@ -35,11 +35,6 @@ class CausalSelfAttention(nn.Module):
         v = v.reshape(batch_size, sequence_length, self.n_head, embds_pr_head).transpose(0, 2, 1, 3)
         k = k.reshape(batch_size, sequence_length, self.n_head, embds_pr_head).transpose(0, 2, 1, 3)
         att = (q @ k.transpose(0, 1, 3, 2)) * (1 / jnp.sqrt(embds_pr_head))
-        # masking :  att = att.masked_fill(self.bias[:,:,:T,:T] == 0, float('-inf'))
-        # replacing Tensor.masked_fill(mask, value)
-        # mask  - boolean mask
-        # value - the vbalue to fill in with
-        # jax.lax.select(pred, on_true, on_false)
         minfs = lax.broadcast(-jnp.inf, att.shape)
         mask = lax.broadcast(self.mask[:sequence_length, :sequence_length], (att.shape[0], att.shape[1]))
         att = lax.select(mask == 0, att, minfs)
@@ -47,7 +42,6 @@ class CausalSelfAttention(nn.Module):
         att = self.attn_dropout(att, deterministic=not training)
         y = att @ v
         y = y.transpose(0, 2, 1, 3)
-        # MISSING: making y contiguous
         y = y.reshape((batch_size, sequence_length, self.n_embd))
         y = self.resid_dropout(self.c_proj(y), deterministic=not training)
         return y
@@ -111,7 +105,6 @@ class GPT(nn.Module):
             for _ in range(self.n_layers)]
 
         self.lm_head = nn.Dense(self.vocab_size, use_bias=False)
-        # TODO: Special init
 
     def __call__(self, x, training=False):
         bath_size, sequence_length = x.shape
