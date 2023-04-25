@@ -74,11 +74,11 @@ class Block(nn.Module):
     block_size: int
 
     def setup(self, do_rate=0.1) -> None:
-        self.ln_1 = nn.LayerNorm(1e-6)
+        self.ln_1 = nn.LayerNorm(1e-5)
         self.attn = CausalSelfAttention(n_head=self.n_head,
                                         n_embd=self.n_embd,
                                         block_size=self.block_size)
-        self.ln_2 = nn.LayerNorm(1e-6)
+        self.ln_2 = nn.LayerNorm(1e-5)
         self.mlpf = MLP(self.n_embd)
 
     def __call__(self, x, training=False):
@@ -100,7 +100,7 @@ class GPT(nn.Module):
         self.wpe = nn.Embed(self.block_size, self.n_embd)
 
         self.drop = nn.Dropout(self.embd_pdrop)
-        self.ln_f = nn.LayerNorm(1e-6)
+        self.ln_f = nn.LayerNorm(1e-5)
 
         self.blocks = [Block(
             n_head=self.n_head,
