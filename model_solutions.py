@@ -1,3 +1,5 @@
+from typing import List
+
 import flax.linen as nn
 from jax import lax, random, numpy as jnp
 from tqdm import tqdm
@@ -120,7 +122,7 @@ class GPT(nn.Module):
 
         return logits
 
-    def generate(self, params, x, max_new_tokens, random_key, temperature=1.0):
+    def generate(self, params, x, max_new_tokens, random_key, temperature=1.0, stop_token=None) -> List[int]:
         sequence = [int(x_i) for x_i in x[0]]
         for i in tqdm(range(max_new_tokens)):
             key = random.fold_in(random_key, i)
@@ -135,4 +137,32 @@ class GPT(nn.Module):
 
             x[0, 0:-1] = x[0, 1:]
             x[0, -1] = pred_token
+            if pred_token == stop_token:
+                break
+        return sequence
+
+    def verbose_generate(self, params, x, max_new_tokens, random_key, token_to_char, temperature=1.0, stop_token=None) -> str:
+        sequence = [int(x_i) for x_i in x[0]]
+
+        word = "".join(token_to_char[x_i] for x_i in sequence)
+        print(word, end="")
+        for i in range(max_new_tokens):
+            key = random.fold_in(random_key, i)
+            x = jnp.array(x)
+            pred = self.apply(params, x, training=False)
+
+            pred_token = int(random.categorical(key, pred[0][-1] / temperature))
+
+            sequence.append(pred_token)
+
+            x = np.array(x)
+            chr = token_to_char[pred_token]
+            word += chr
+            print(chr, end="")
+
+            x[0, 0:-1] = x[0, 1:]
+            x[0, -1] = pred_token
+            if pred_token == stop_token:
+                break
+        print()
         return sequence
