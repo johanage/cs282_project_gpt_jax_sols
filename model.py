@@ -12,7 +12,7 @@ class CausalSelfAttention(nn.Module):
     n_embd     - embedding dimension
     block_size - the block 
     """
-
+        
     n_head: int
     n_embd: int
     block_size: int
@@ -40,23 +40,35 @@ class CausalSelfAttention(nn.Module):
 
         out = None
         batch_size, sequence_length, _ = x.shape
+        embds_pr_head = self.n_embd // self.n_head
         # ======================================================
         # Start by applying the qdense, vdense, kdense to the x input to get values for q, k and v.
-
+        # q, v, k 
+        # shape of q, k, and v should be (batch size, sequence length, # heads, embeddings per head)
         #YOUR CODE HERE.
-
+        q = q.reshape(batch_size, sequence_length, ?, ?).transpose(0, 2, 1, 3)
+        v = v.reshape(batch_size, sequence_length, ?, ?).transpose(0, 2, 1, 3)
+        k = k.reshape(batch_size, sequence_length, ?, ?).transpose(0, 2, 1, 3)
         # ======================================================
 
         # ======================================================
         # Use the values for q, k, v and self.mask to calculate causal self-attention
-
+        att = (q @ k.transpose(0, 1, 3, 2)) * (1 / ?) # ? = normalization
+        minfs = lax.broadcast(? , ?) #jax array of negative infinities. Shape should be that of attention
+        mask = lax.broadcast(, (att.shape[0], att.shape[1]))
         # YOUR CODE HERE.
-
+        att = # Apply causal mask to attention (HINT: Use lax.select)
+        att = # Softmax attention output
+        att = self.attn_dropout(att, deterministic=not training)
         # ======================================================
 
         # ======================================================
-        # Add the final projection and dropout layers
-
+        # Get the outputs by multiplying attention with values
+        #y = 
+        y = y.reshape((?, ? ,?)) # y should be of shape (batch size, sequence length, number of embeddings)
+        
+        #Apply dropout to the projection of y
+        y = self.?(?, deterministic=not training)
         # YOUR CODE HERE.
 
         # ======================================================
@@ -78,7 +90,10 @@ class MLP(nn.Module):
         # Use the layers defined in setup to implement the MLP part of the transformer block
 
         #YOUR CODE HERE.
-
+        # fc_out = ? Apply fully connected layer to x
+        # act_out = ? Apply activation
+        # mlp_out = ? Apply projection
+        # out = # Apply dropout [Make sure deterministic is not training]
         # ======================================================
 
         return out
@@ -100,15 +115,17 @@ class Block(nn.Module):
     def __call__(self, x, training=False):
         out = None
         # ======================================================
-        # Add a normalized, residually connected attention layer
+        # Add a normalized, residually connected attention layer to x
 
         #YOUR CODE HERE.
+        attention_output = ? 
 
         # ======================================================
         # ======================================================
         # Add a normalized, residually connected MLP layer
 
         #YOUR CODE HERE.
+        out = attention_output + ?
 
         # ======================================================
 
@@ -124,8 +141,8 @@ class GPT(nn.Module):
     embd_pdrop: float
 
     def setup(self):
-        self.wte = nn.Embed(self.vocab_size, self.n_embd)
-        self.wpe = nn.Embed(self.block_size, self.n_embd)
+        self.wte = nn.Embed(self.vocab_size, self.n_embd) # Token Embedding Layer
+        self.wpe = nn.Embed(self.block_size, self.n_embd) # Position Embedding Layer
 
         self.drop = nn.Dropout(self.embd_pdrop)
         self.ln_f = nn.LayerNorm(1e-5)
@@ -142,25 +159,33 @@ class GPT(nn.Module):
 
     def __call__(self, x, training=False):
         out = None
+        bath_size, sequence_length = x.shape
         # ======================================================
         # Embed the input vectors x, and the positional vector, and add them together
         #YOUR CODE HERE.
+        pos = ? #Hint: Use jnp.arange. Shape should be (1, sequence length)
+        tok_emb = ? 
+        pos_emb = ?
+        x = ? # Apply dropout to sum, [Make sure deterministic when not training]
 
         # ======================================================
         # ======================================================
         # Run the Transformer blocks
         # YOUR CODE HERE.
+        for _ in _:
+            x = some_block_func()
 
         # ======================================================
         # ======================================================
         # Run the final LayerNorm and lm_head layers
         # YOUR CODE HERE.
-
+        x = ?
+        out = ?
         # ======================================================
 
         return out
 
-    def generate(self, params, x, max_new_tokens, random_key, temperature=1.0):
+    def generate(self, params, x, max_new_tokens, random_key, temperature=1.0, stop_tokens=None) -> List[int]:
         sequence = [int(x_i) for x_i in x[0]]
         for i in tqdm(range(max_new_tokens)):
             key = random.fold_in(random_key, i)
@@ -175,4 +200,32 @@ class GPT(nn.Module):
 
             x[0, 0:-1] = x[0, 1:]
             x[0, -1] = pred_token
+            if stop_tokens is not None and pred_token in stop_tokens:
+                break
         return sequence
+
+    def verbose_generate(self, params, x, max_new_tokens, random_key, token_to_char, temperature=1.0, stop_tokens=None) -> str:
+        sequence = [int(x_i) for x_i in x[0]]
+
+        word = "".join(token_to_char[x_i] for x_i in sequence)
+        print(word, end="")
+        for i in range(max_new_tokens):
+            key = random.fold_in(random_key, i)
+            x = jnp.array(x)
+            pred = self.apply(params, x, training=False)
+
+            pred_token = int(random.categorical(key, pred[0][-1] / temperature))
+
+            sequence.append(pred_token)
+
+            x = np.array(x)
+            chr = token_to_char[pred_token]
+            word += chr
+            print(chr, end="")
+
+            x[0, 0:-1] = x[0, 1:]
+            x[0, -1] = pred_token
+            if stop_tokens is not None and pred_token in stop_tokens:
+                break
+        print()
+        return word
