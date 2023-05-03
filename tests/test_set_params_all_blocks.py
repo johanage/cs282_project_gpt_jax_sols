@@ -154,7 +154,7 @@ print(jnp.mean(jnp.abs( ( y_block_set_params - y_block_gpt.detach().numpy()) ) )
 """
 =================================================================================
 
-Checking the Block architecture implementation.
+Checking the Causal Self-attention architecture implementation.
 =================================================================================
 """
 # Get a flattened key-value list.

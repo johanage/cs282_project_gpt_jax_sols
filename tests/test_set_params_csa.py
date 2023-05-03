@@ -40,7 +40,7 @@ for name, param in csa.named_parameters():
 """
 =================================================================================
 
-Checking the Block architecture implementation.
+Checking the Causal Self-Attention architecture implementation.
 =================================================================================
 """
 # Get a flattened key-value list.
