@@ -20,5 +20,5 @@ config_jax = {
     "vocab_size": 10,
     "block_size": 10,
     "embd_pdrop": 0.1,
-#    "train": True
+    #"train": False
 }

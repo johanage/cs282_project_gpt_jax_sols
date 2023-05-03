@@ -5,14 +5,23 @@ import numpy as np
 
 
 class CausalSelfAttention(nn.Module):
+    """
+    The Causal self-attention block.
+
+    n_head     - number of heads in in the multi-headed attention
+    n_embd     - embedding dimension
+    block_size - the block 
+    """
+
     n_head: int
     n_embd: int
     block_size: int
 
     def setup(self, do_rate=0.1):
         """
-        Sets up the attention block
-        do_rate - dropout probability, float
+        Sets up the attention block as illustrated in the model graph from the notebook.
+
+        do_rate - float, dropout probability
         """
         total_number_of_features = self.n_embd
         self.qdense = nn.Dense(total_number_of_features)
@@ -24,6 +33,11 @@ class CausalSelfAttention(nn.Module):
         self.resid_dropout = nn.Dropout(rate=do_rate)
 
     def __call__(self, x, training=False):
+        """
+        x        - torch.tensor, input dat
+        training - bool, indicating whether training is activated or not
+        """
+
         out = None
         batch_size, sequence_length, _ = x.shape
         # ======================================================

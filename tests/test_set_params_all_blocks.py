@@ -34,9 +34,9 @@ params_jax_mlp = mlp_jax.init({"params" : key2}, x_mlp)
 params_jax_csa = csa_jax.init({"params" : key2}, x_csa)
 params_jax_block = block_jax.init({"params" : key2}, x_csa)
 params_jax = model_jax.init({"params": key2, 'dropout' : dropout_key}, x)
-param_count = sum(x.size for x in jax.tree_leaves(params_jax))
-print("Number of parameters: ", param_count)
-print('initialized parameter shapes:\n', jax.tree_util.tree_map(lambda x: x.shape, params_jax)) # Checking output shapes
+param_count = sum(x.size for x in jax.tree_util.tree_leaves(params_jax))
+#print("Number of parameters: ", param_count)
+#print('initialized parameter shapes:\n', jax.tree_util.tree_map(lambda x: x.shape, params_jax)) # Checking output shapes
 
 def count_parameters(model, full=False):
     if full:
@@ -46,7 +46,7 @@ def count_parameters(model, full=False):
 
 
 model_config = CfgNode(**config_gpt)
-print(model_config)
+#print(model_config)
 
 model = GPT(model_config)
 model.eval()
@@ -54,9 +54,9 @@ block = Block(model_config)
 block.eval()
 csa = CausalSelfAttention(model_config)
 csa.eval()
-print(model)
+#print(model)
 gpt_param_count = count_parameters(model)
-print("Number of parameters in 1-layer GPT model: ", gpt_param_count)
+#print("Number of parameters in 1-layer GPT model: ", gpt_param_count)
 assert gpt_param_count == param_count, "jax implementation does not have the same amount of parameters as OG GPT"
 
 # Get the weights from the OG GPT implementation
@@ -76,9 +76,9 @@ for name, param in csa.named_parameters():
         csa_param_dict[name] = jnp.array(param.detach().numpy())
 
 
-print("Block dict of named parameters that req grad: \n",list(block_param_dict.keys()) )
-print("MLP dict of named parameters that req grad: \n",list(mlp_param_dict.keys()) )
-print("CSA dict of named parameters that req grad: \n",list(csa_param_dict.keys()) )
+#print("Block dict of named parameters that req grad: \n",list(block_param_dict.keys()) )
+#print("MLP dict of named parameters that req grad: \n",list(mlp_param_dict.keys()) )
+#print("CSA dict of named parameters that req grad: \n",list(csa_param_dict.keys()) )
 
 """
 =================================================================================
@@ -88,7 +88,7 @@ Checking the MLP architecture implementation.
 """
 # Get a flattened key-value list.
 mlp_flat_params = traverse_util.flatten_dict(params_jax_mlp, sep='/')
-print("MLP flattened parameter tree: \n", jax.tree_util.tree_map(jnp.shape, mlp_flat_params) )
+#print("MLP flattened parameter tree: \n", jax.tree_util.tree_map(jnp.shape, mlp_flat_params) )
 mlp_flat_params['params/c_project/bias']   = mlp_param_dict['mlp.c_proj.bias']
 mlp_flat_params['params/c_project/kernel'] = mlp_param_dict['mlp.c_proj.weight'].T
 mlp_flat_params['params/fc/bias']          = mlp_param_dict['mlp.c_fc.bias']
@@ -102,9 +102,10 @@ jax.tree_util.tree_map(jnp.shape, unflat_params_mlp)
 y_mlp_set_params = mlp_jax.apply(unflat_params_mlp, x_mlp)
 y_mlp_gpt        = block.mlpf( torch.tensor(x_mlp.tolist(), dtype=torch.float) )
 
-print("y jax\n", y_mlp_set_params.shape)
-print("y GPT\n", y_mlp_gpt.size())
-print(y_mlp_set_params - y_mlp_gpt.detach().numpy())
+#print("y jax\n", y_mlp_set_params.shape)
+#print("y GPT\n", y_mlp_gpt.size())
+print(" If the number below is below 10e-6 then the MLP works!:")
+print(jnp.mean(jnp.abs( (y_mlp_set_params - y_mlp_gpt.detach().numpy() ))))
 
 """
 =================================================================================
@@ -114,7 +115,7 @@ Checking the Block architecture implementation.
 """
 # Get a flattened key-value list.
 block_flat_params = traverse_util.flatten_dict(params_jax_block, sep='/')
-print("Transformer block flattened parameter tree: \n", jax.tree_util.tree_map(jnp.shape, block_flat_params) )
+#print("Transformer block flattened parameter tree: \n", jax.tree_util.tree_map(jnp.shape, block_flat_params) )
 att_w = block.get_parameter('attn.c_attn.weight').T
 att_b = block.get_parameter('attn.c_attn.bias')
 q_w, k_w, v_w = att_w.split(att_w.size()[0], dim=1)
@@ -144,9 +145,10 @@ jax.tree_util.tree_map(jnp.shape, unflat_params_block)
 y_block_set_params = block_jax.apply(unflat_params_block, x_csa)
 y_block_gpt        = block( torch.tensor(x_csa.tolist() ) )
 
-print("y block jax\n", y_block_set_params.shape)
-print("y block GPT\n", y_block_gpt.size())
-print(y_block_set_params - y_block_gpt.detach().numpy())
+#print("y block jax\n", y_block_set_params.shape)
+#print("y block GPT\n", y_block_gpt.size())
+print(" If the number below is below 10e-6 then the Transformer block works!:")
+print(jnp.mean(jnp.abs( ( y_block_set_params - y_block_gpt.detach().numpy()) ) ) )
 
 
 """
@@ -157,12 +159,12 @@ Checking the Block architecture implementation.
 """
 # Get a flattened key-value list.
 csa_flat_params = traverse_util.flatten_dict(params_jax_csa, sep='/')
-print("CSA flattened parameter tree: \n", jax.tree_util.tree_map(jnp.shape, csa_flat_params) )
+#print("CSA flattened parameter tree: \n", jax.tree_util.tree_map(jnp.shape, csa_flat_params) )
 
 att_w = csa.get_parameter('c_attn.weight').T
 att_b = csa.get_parameter('c_attn.bias')
-print("csa att_w size : ", att_w.size())
-print("csa att_b size : ", att_b.size())
+#print("csa att_w size : ", att_w.size())
+#print("csa att_b size : ", att_b.size())
 q_w, k_w, v_w = att_w.split(att_w.size()[0], dim=1)
 q_b, k_b, v_b = att_b.split(att_w.size()[0], dim=0)
 
@@ -184,7 +186,8 @@ jax.tree_util.tree_map(jnp.shape, unflat_params_csa)
 
 y_csa_set_params = csa_jax.apply(unflat_params_csa, x_csa)
 y_csa_gpt        = csa( torch.tensor( x_csa.tolist() ) )
-print("y csa jax\n", y_csa_set_params.shape)
-print("y csa GPT\n", y_csa_gpt.size())
-print(y_csa_set_params - y_csa_gpt.detach().numpy())
+#print("y csa jax\n", y_csa_set_params.shape)
+#print("y csa GPT\n", y_csa_gpt.size())
+print(" If the number below is below 10e-6 then the Causal Self-Attention works!:")
+print( jnp.mean(jnp.abs( (y_csa_set_params - y_csa_gpt.detach().numpy()) ) ) )
 
