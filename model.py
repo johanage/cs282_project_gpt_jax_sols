@@ -42,33 +42,36 @@ class CausalSelfAttention(nn.Module):
         batch_size, sequence_length, _ = x.shape
         embds_pr_head = self.n_embd // self.n_head
         # ======================================================
+
+        raise NotImplementedError # remove this when you implement the code
+
         # Start by applying the qdense, vdense, kdense to the x input to get values for q, k and v.
-        # q, v, k 
+        # q, v, k =
         # shape of q, k, and v should be (batch size, sequence length, # heads, embeddings per head)
-        #YOUR CODE HERE.
-        q = q.reshape(batch_size, sequence_length, ?, ?).transpose(0, 2, 1, 3)
-        v = v.reshape(batch_size, sequence_length, ?, ?).transpose(0, 2, 1, 3)
-        k = k.reshape(batch_size, sequence_length, ?, ?).transpose(0, 2, 1, 3)
+        # YOUR CODE HERE.
+        # q = q.reshape(batch_size, sequence_length, ?, ?).transpose(0, 2, 1, 3)
+        # v = v.reshape(batch_size, sequence_length, ?, ?).transpose(0, 2, 1, 3)
+        # k = k.reshape(batch_size, sequence_length, ?, ?).transpose(0, 2, 1, 3)
         # ======================================================
 
         # ======================================================
         # Use the values for q, k, v and self.mask to calculate causal self-attention
-        att = (q @ k.transpose(0, 1, 3, 2)) * (1 / ?) # ? = normalization
-        minfs = lax.broadcast(? , ?) #jax array of negative infinities. Shape should be that of attention
-        mask = lax.broadcast(, (att.shape[0], att.shape[1]))
+        # att = (q @ k.transpose(0, 1, 3, 2)) * (1 / ?) # ? = normalization
+        # minfs = lax.broadcast(? , ?) # JAX array of negative infinities. Shape should be that of attention
+        # mask = lax.broadcast(, (att.shape[0], att.shape[1]))
         # YOUR CODE HERE.
-        att = # Apply causal mask to attention (HINT: Use lax.select)
-        att = # Softmax attention output
-        att = self.attn_dropout(att, deterministic=not training)
+        # att = # Apply causal mask to attention (HINT: Use lax.select)
+        # att = # Softmax attention output
+        # att = self.attn_dropout(att, deterministic=not training)
         # ======================================================
 
         # ======================================================
         # Get the outputs by multiplying attention with values
-        #y = 
-        y = y.reshape((?, ? ,?)) # y should be of shape (batch size, sequence length, number of embeddings)
+        # y = 
+        # y = y.reshape((?, ? ,?)) # y should be of shape (batch size, sequence length, number of embeddings)
         
-        #Apply dropout to the projection of y
-        y = self.?(?, deterministic=not training)
+        # Apply dropout to the projection of y
+        # y = self.?(?, deterministic=not training)
         # YOUR CODE HERE.
 
         # ======================================================
@@ -87,12 +90,15 @@ class MLP(nn.Module):
     def __call__(self, x, training=False):
         out = None
         # ======================================================
+
+        raise NotImplementedError # remove this when you implement the code
+
         # Use the layers defined in setup to implement the MLP part of the transformer block
 
-        #YOUR CODE HERE.
-        # fc_out = ? Apply fully connected layer to x
-        # act_out = ? Apply activation
-        # mlp_out = ? Apply projection
+        # YOUR CODE HERE.
+        # fc_out = ? # Apply fully connected layer to x
+        # act_out = ? # Apply activation
+        # mlp_out = ? # Apply projection
         # out = # Apply dropout [Make sure deterministic is not training]
         # ======================================================
 
@@ -115,17 +121,20 @@ class Block(nn.Module):
     def __call__(self, x, training=False):
         out = None
         # ======================================================
+
+        raise NotImplementedError # remove this when you implement the code
+
         # Add a normalized, residually connected attention layer to x
 
-        #YOUR CODE HERE.
-        attention_output = ? 
+        # YOUR CODE HERE.
+        # attention_output = ? 
 
         # ======================================================
         # ======================================================
         # Add a normalized, residually connected MLP layer
 
-        #YOUR CODE HERE.
-        out = attention_output + ?
+        # YOUR CODE HERE.
+        # out = attention_output + ?
 
         # ======================================================
 
@@ -161,26 +170,29 @@ class GPT(nn.Module):
         out = None
         bath_size, sequence_length = x.shape
         # ======================================================
+
+        raise NotImplementedError # remove this when you implement the code
+
         # Embed the input vectors x, and the positional vector, and add them together
-        #YOUR CODE HERE.
-        pos = ? #Hint: Use jnp.arange. Shape should be (1, sequence length)
-        tok_emb = ? 
-        pos_emb = ?
-        x = ? # Apply dropout to sum, [Make sure deterministic when not training]
+        # YOUR CODE HERE.
+        # pos = ? # Hint: Use jnp.arange. Shape should be (1, sequence length)
+        # tok_emb = ? 
+        # pos_emb = ?
+        # x = ? # Apply dropout to sum, [Make sure deterministic when not training]
 
         # ======================================================
         # ======================================================
         # Run the Transformer blocks
         # YOUR CODE HERE.
-        for _ in _:
-            x = some_block_func()
+        # for _ in _:
+            # x = some_block_func()
 
         # ======================================================
         # ======================================================
         # Run the final LayerNorm and lm_head layers
         # YOUR CODE HERE.
-        x = ?
-        out = ?
+        # x = ?
+        # out = ?
         # ======================================================
 
         return out
